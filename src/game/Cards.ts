@@ -31,4 +31,5 @@ export interface GameAction {
   requiredCharacter?: CharacterType;
   canBeBlocked: boolean;
   blockingCharacters?: CharacterType[];
+  discussion?: string;
 }

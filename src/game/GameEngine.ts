@@ -1,19 +1,37 @@
 import chalk from 'chalk';
 import { GameState, GamePhase, PlayerState } from './GameState';
-import { Player } from './Player';
+import { Player, PlayerStats } from './Player';
 import { ActionType, CharacterType, GameAction } from './Cards';
 
 export class GameEngine {
 	private gameState: GameState;
 	private players: Player[];
 	private round: number = 1;
+	private playerStats: PlayerStats[];
+	private discussion: boolean;
 
-	constructor(players: Player[]) {
+	constructor(players: Player[], discussion: boolean = false) {
 		this.players = players;
+		this.discussion = discussion;
 		this.gameState = this.initializeGame(players);
+		this.playerStats = this.players.map(p => ({
+			id: p.id,
+			name: p.name,
+			winner: false,
+			elimination_round: 0,
+			num_bluffs: 0,
+			successful_bluffs: 0,
+			failed_bluffs: 0,
+			challenges_won: 0,
+			challenges_lost: 0,
+			coups_launched: 0,
+			assassinations_blocked: 0,
+			total_coins_earned: 2,
+			coins_lost_to_theft: 0,
+		}));
 	}
 
-	async playGame(): Promise<string> {
+	async playGame(): Promise<PlayerStats[]> {
 		console.log(chalk.bold.blue('Starting Coup Game!'));
 		this.logGameState();
 
@@ -22,8 +40,14 @@ export class GameEngine {
 		}
 
 		const winner = this.getWinner();
+		if (winner) {
+			const winnerStats = this.getPlayerStats(winner.id)!;
+			winnerStats.winner = true;
+		}
+
 		console.log(chalk.bold.green(`Game Over! Winner: ${winner?.name}`));
-		return winner?.id || '';
+		this.logPlayerStats();
+		return this.playerStats;
 	}
 
 	private initializeGame(players: Player[]): GameState {
@@ -65,7 +89,7 @@ export class GameEngine {
 
 	private async playTurn(): Promise<void> {
 		if (this.gameState.currentPlayerIndex === 0) {
-			console.log(chalk.gray(`\n--- Round ${this.round} ---`));
+			console.log(chalk.gray(`--- Round ${this.round} ---`));
 		}
 		const currentPlayer = this.getCurrentPlayerState();
 		if (!currentPlayer.isAlive) {
@@ -73,7 +97,7 @@ export class GameEngine {
 			return;
 		}
 
-		console.log(chalk.yellow(`\n${currentPlayer.name}'s turn`));
+		console.log(chalk.yellow(`${currentPlayer.name}'s turn. Cards: ${currentPlayer.cards.join(', ')}, Coins: ${currentPlayer.coins}`));
 
 		const player = this.players.find(p => p.id === currentPlayer.id)!;
 
@@ -89,6 +113,9 @@ export class GameEngine {
 		}
 
 		const action = await player.decideAction(this.gameState);
+		if (this.discussion && action.discussion) {
+			this.gameState.gameLog.push({ type: 'discussion', message: `${currentPlayer.name}: ${action.discussion}` });
+		}
 		console.log(`${currentPlayer.name} chooses: ${action.type}${action.targetId ? ` -> ${this.getPlayerName(action.targetId)}` : ''}`);
 
 		await this.processAction(action);
@@ -146,15 +173,25 @@ export class GameEngine {
 	private async resolveChallenge(action: GameAction, challengerId: string): Promise<boolean> {
 		const playerState = this.getPlayerState(action.playerId)!;
 		const hasCard = playerState.cards.includes(action.requiredCharacter!);
+		const actionPlayerStats = this.getPlayerStats(action.playerId)!;
+		const challengerStats = this.getPlayerStats(challengerId)!;
+
+		if (action.requiredCharacter) {
+			actionPlayerStats.num_bluffs++;
+		}
 
 		if (hasCard) {
 			console.log(`${playerState.name} reveals ${action.requiredCharacter}! Challenge failed.`);
 			this.shuffleCard(action.playerId, action.requiredCharacter!);
-			await this.loseInfluence(challengerId);
+			actionPlayerStats.successful_bluffs++;
+			challengerStats.challenges_lost++;
+			await this.loseInfluence(challengerId, 'failed_challenge');
 			return true; // Challenge failed, action proceeds
 		} else {
 			console.log(`${playerState.name} does not have ${action.requiredCharacter}! Challenge successful.`);
-			await this.loseInfluence(action.playerId);
+			actionPlayerStats.failed_bluffs++;
+			challengerStats.challenges_won++;
+			await this.loseInfluence(action.playerId, 'failed_challenge');
 			return false; // Challenge successful, action fails
 		}
 	}
@@ -194,6 +231,10 @@ export class GameEngine {
 
 		if (challenger) {
 			const success = await this.resolveChallenge(blockAction, challenger);
+			if (action.type === 'ASSASSINATE' && success) {
+				const blockerStats = this.getPlayerStats(blockerId)!;
+				blockerStats.assassinations_blocked++;
+			}
 			return { success: !success }; // if challenge is successful, block fails
 		}
 
@@ -202,6 +243,7 @@ export class GameEngine {
 
 	private async executeAction(action: GameAction): Promise<void> {
 		const playerState = this.getPlayerState(action.playerId)!;
+		const stats = this.getPlayerStats(action.playerId)!;
 
 		if (action.cost) {
 			playerState.coins -= action.cost;
@@ -210,24 +252,31 @@ export class GameEngine {
 		switch (action.type) {
 			case ActionType.INCOME:
 				playerState.coins++;
+				stats.total_coins_earned++;
 				break;
 			case ActionType.FOREIGN_AID:
 				playerState.coins += 2;
+				stats.total_coins_earned += 2;
 				break;
 			case ActionType.COUP:
-				await this.loseInfluence(action.targetId!);
+				stats.coups_launched++;
+				await this.loseInfluence(action.targetId!, 'coup');
 				break;
 			case ActionType.TAX:
 				playerState.coins += 3;
+				stats.total_coins_earned += 3;
 				break;
 			case ActionType.ASSASSINATE:
-				await this.loseInfluence(action.targetId!);
+				await this.loseInfluence(action.targetId!, 'assassination');
 				break;
 			case ActionType.STEAL:
 				const target = this.getPlayerState(action.targetId!)!;
+				const targetStats = this.getPlayerStats(action.targetId!)!;
 				const amount = Math.min(2, target.coins);
 				playerState.coins += amount;
+				stats.total_coins_earned += amount;
 				target.coins -= amount;
+				targetStats.coins_lost_to_theft += amount;
 				break;
 			case ActionType.BLOCK:
 				// Block is a virtual action, its effects are handled in the challenge/block resolution phase.
@@ -246,12 +295,18 @@ export class GameEngine {
 		this.logGameState();
 	}
 
-	private async loseInfluence(playerId: string): Promise<void> {
+	private async loseInfluence(playerId: string, cause?: string): Promise<void> {
 		const playerState = this.getPlayerState(playerId)!;
 		if (!playerState.isAlive) return;
 
 		const player = this.players.find(p => p.id === playerId)!;
-		const cardToLose = await player.chooseCardToLose(this.gameState);
+		let cardToLose: CharacterType;
+
+		if (playerState.cards.length === 1) {
+			cardToLose = playerState.cards[0];
+		} else {
+			cardToLose = await player.chooseCardToLose(this.gameState);
+		}
 
 		const cardIndex = playerState.cards.indexOf(cardToLose);
 		if (cardIndex > -1) {
@@ -266,6 +321,9 @@ export class GameEngine {
 
 		if (playerState.cards.length === 0) {
 			playerState.isAlive = false;
+			const stats = this.getPlayerStats(playerId)!;
+			stats.elimination_round = this.round;
+			stats.cause_of_elimination = cause;
 			console.log(chalk.red(`${playerState.name} has been eliminated!`));
 		}
 	}
@@ -281,12 +339,13 @@ export class GameEngine {
 	}
 
 	private nextTurn(): void {
+		const currentIndex = this.gameState.currentPlayerIndex;
 		let nextPlayerIndex = (this.gameState.currentPlayerIndex + 1) % this.players.length;
 		while (!this.gameState.players[nextPlayerIndex].isAlive) {
 			nextPlayerIndex = (nextPlayerIndex + 1) % this.players.length;
 		}
 		this.gameState.currentPlayerIndex = nextPlayerIndex;
-		if (this.gameState.currentPlayerIndex === 0) {
+		if (nextPlayerIndex < currentIndex) {
 			this.round++;
 		}
 	}
@@ -307,17 +366,46 @@ export class GameEngine {
 		return this.gameState.players.find(p => p.id === playerId);
 	}
 
+	private getPlayerStats(playerId: string): PlayerStats | undefined {
+		return this.playerStats.find(p => p.id === playerId);
+	}
+
 	private getPlayerName(playerId: string): string {
 		return this.getPlayerState(playerId)?.name || playerId;
 	}
 
 	private logGameState(): void {
 		console.log(chalk.bold('\n--- Game State ---'));
-		this.gameState.players.forEach(p => {
-			const status = p.isAlive ? chalk.green('Alive') : chalk.red('Eliminated');
-			console.log(`${chalk.bold(p.name)}: ${status}, Coins: ${chalk.yellow(p.coins)}, Cards: ${p.cards.length}, Lost: ${p.lostCards.join(', ') || 'None'}`);
-		});
+		const tableData = this.gameState.players.map(p => ({
+			Player: p.name,
+			Status: p.isAlive ? 'Alive' : 'Eliminated',
+			Coins: p.coins,
+			Cards: p.cards.length,
+			'Lost Cards': p.lostCards.join(', ') || 'None',
+		}));
+		console.table(tableData);
 		console.log(`Deck size: ${this.gameState.deck.length}`);
 		console.log(chalk.bold('------------------\n'));
+	}
+
+	private logPlayerStats(): void {
+		console.log(chalk.bold.blue('\n--- Player Stats ---'));
+		const tableData = this.playerStats.map(stats => ({
+			Player: stats.name,
+			Winner: stats.winner ? 'Yes' : 'No',
+			'Elim. Round': stats.elimination_round || '-',
+			'Elim. Cause': stats.cause_of_elimination || '-',
+			Bluffs: stats.num_bluffs,
+			'Successful Bluffs': stats.successful_bluffs,
+			'Failed Bluffs': stats.failed_bluffs,
+			'Chal. Won': stats.challenges_won,
+			'Chal. Lost': stats.challenges_lost,
+			Coups: stats.coups_launched,
+			'Assassinations Blocked': stats.assassinations_blocked,
+			'Coins Earned': stats.total_coins_earned,
+			'Coins Lost to Theft': stats.coins_lost_to_theft,
+		}));
+		console.table(tableData);
+		console.log(chalk.bold.blue('--------------------\n'));
 	}
 }
