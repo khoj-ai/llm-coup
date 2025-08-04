@@ -169,8 +169,35 @@ export class PromptBuilder {
 	  .map(p => p.id)
 	  .join(', ');
 	const personalityText = personality ? personalityMap[personality] : '';
+	const gameHistory = this.buildGameHistory(gameState);
 	
-	return `You are playing Coup, a bluffing card game. ${personalityText ? `Your personality: ${personalityText}` : ''}\n\nGAME STATE:\n${gameContext}\n\nYOUR CARDS: ${player.cards.join(', ')}\nYOUR COINS: ${player.coins}\n\nAVAILABLE TARGETS: ${availableTargets}\n\nGAME RULES REMINDER:\n- Income: Take 1 coin (always available)\n- Foreign Aid: Take 2 coins (can be blocked by Duke)\n- Coup: Pay 7 coins to eliminate a player's card (costs 7 coins, cannot be blocked)\n${player.coins >= 10 ? '- You MUST coup if you have 10+ coins!' : ''}\n\nCHARACTER ACTIONS (you can bluff having these):\n- Tax (Duke): Take 3 coins\n- Assassinate (Assassin): Pay 3 coins to force target to lose a card\n- Steal (Captain): Take 2 coins from another player  \n- Exchange (Ambassador): Draw 2 cards, keep your hand size, shuffle rest back\n\nChoose your action wisely considering your cards, coins, and strategy!`;
+	return `You are playing Coup, a bluffing card game. ${personalityText ? `Your personality: ${personalityText}` : ''}
+
+GAME STATE:
+${gameContext}
+
+GAME HISTORY:
+${gameHistory}
+
+YOUR CARDS: ${player.cards.join(', ')}
+YOUR COINS: ${player.coins}
+
+AVAILABLE TARGETS: ${availableTargets}
+
+GAME RULES REMINDER:
+- Income: Take 1 coin (always available)
+- Foreign Aid: Take 2 coins (can be blocked by Duke)
+- Coup: Pay 7 coins to eliminate a player's card (costs 7 coins, cannot be blocked)
+${player.coins >= 10 ? '- You MUST coup if you have 10+ coins!' : ''}
+- You lose if you have no cards left
+
+CHARACTER ACTIONS (you can bluff having these):
+- Tax (Duke): Take 3 coins
+- Assassinate (Assassin): Pay 3 coins to force target to lose a card
+- Steal (Captain): Take 2 coins from another player  
+- Exchange (Ambassador): Draw 2 cards, keep your hand size, shuffle rest back
+
+Choose your action wisely considering your cards, coins, and strategy!`;
   }
 
   static buildChallengePrompt(gameState: GameState, action: GameAction, playerId: string, personality?: Personality): string {
@@ -178,8 +205,29 @@ export class PromptBuilder {
 	const actingPlayer = gameState.players.find(p => p.id === action.playerId)!;
 	const gameContext = this.buildGameContext(gameState, playerId);
 	const personalityText = personality ? personalityMap[personality] : '';
+	const gameHistory = this.buildGameHistory(gameState);
 	
-	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}\n\nGAME STATE:\n${gameContext}\n\nYOUR CARDS: ${player.cards.join(', ')}\n\nCHALLENGE SITUATION:\n${actingPlayer.id} is attempting to use ${action.type}${action.requiredCharacter ? ` (claiming to have ${action.requiredCharacter})` : ''}.\n\nCHALLENGE RULES:\n- If you challenge and they DON'T have the character: they lose a card\n- If you challenge and they DO have the character: you lose a card, they shuffle and redraw\n- Consider what cards you have (they're less likely to have what you have)\n- Consider what's been revealed/discarded already\n- Think about their previous actions and bluffing patterns\n\nRisk vs Reward: Is it worth the gamble?`;
+	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}
+
+GAME STATE:
+${gameContext}
+
+GAME HISTORY:
+${gameHistory}
+
+YOUR CARDS: ${player.cards.join(', ')}
+
+CHALLENGE SITUATION:
+${actingPlayer.id} is attempting to use ${action.type}${action.requiredCharacter ? ` (claiming to have ${action.requiredCharacter})` : ''}.
+
+CHALLENGE RULES:
+- If you challenge and they DON'T have the character: they lose a card
+- If you challenge and they DO have the character: you lose a card, they shuffle and redraw
+- Consider what cards you have (they're less likely to have what you have)
+- Consider what's been revealed/discarded already
+- Think about their previous actions and bluffing patterns
+
+Risk vs Reward: Is it worth the gamble?`;
   }
 
   static buildBlockPrompt(gameState: GameState, action: GameAction, playerId: string, personality?: Personality): string {
@@ -188,13 +236,34 @@ export class PromptBuilder {
 	const gameContext = this.buildGameContext(gameState, playerId);
 	const isTargeted = action.targetId === playerId;
 	const personalityText = personality ? personalityMap[personality] : '';
+	const gameHistory = this.buildGameHistory(gameState);
 	
 	const blockingInfo = action.blockingCharacters?.map(char => {
 	  const hasCard = player.cards.includes(char);
 	  return `- ${char}${hasCard ? ' (you have this!)' : ' (you would be bluffing)'}`;
 	}).join('\n') || 'No blocking possible for this action';
 	
-	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}\n\nGAME STATE:\n${gameContext}\n\nYOUR CARDS: ${player.cards.join(', ')}\n\nBLOCK SITUATION:\n${actingPlayer.id} is attempting ${action.type}${isTargeted ? ' against YOU!' : ''}.\n\nBLOCKING OPTIONS:\n${blockingInfo}\n\nBLOCK RULES:\n- You can claim to have a blocking character even if you don't (bluffing)\n- If challenged on your block and you don't have the character: you lose a card\n- If not challenged, the action is blocked successfully\n- Consider: Do you actually have the blocking character? Is it worth the bluff?`;
+	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}
+
+GAME STATE:
+${gameContext}
+
+GAME HISTORY:
+${gameHistory}
+
+YOUR CARDS: ${player.cards.join(', ')}
+
+BLOCK SITUATION:
+${actingPlayer.id} is attempting ${action.type}${isTargeted ? ' against YOU!' : ''}.
+
+BLOCKING OPTIONS:
+${blockingInfo}
+
+BLOCK RULES:
+- You can claim to have a blocking character even if you don't (bluffing)
+- If challenged on your block and you don't have the character: you lose a card
+- If not challenged, the action is blocked successfully
+- Consider: Do you actually have the blocking character? Is it worth the bluff?`;
   }
 
   static buildCardLossPrompt(gameState: GameState, playerId: string, personality?: Personality): string {
@@ -202,8 +271,30 @@ export class PromptBuilder {
 	const gameContext = this.buildGameContext(gameState, playerId);
     const isLastCard = player.cards.length === 1;
 	const personalityText = personality ? personalityMap[personality] : '';
+	const gameHistory = this.buildGameHistory(gameState);
 	
-	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}\n\nGAME STATE:\n${gameContext}\n\nYOUR CARDS: ${player.cards.join(', ')}\n\nCARD LOSS SITUATION:\nYou must choose one of your cards to lose and discard face-up.${isLastCard ? '\n\n**WARNING: This is your last card! Losing it will eliminate you from the game!**' : ''}\n\nSTRATEGY CONSIDERATIONS:\n- Which card is least useful for your current strategy?\n- Which card would you least want opponents to know you had?\n- What future actions do you want to keep available?\n- Consider what losing each card reveals about your hand\n\nChoose carefully - this card will be revealed to all players!`;
+	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}
+
+GAME STATE:
+${gameContext}
+
+GAME HISTORY:
+${gameHistory}
+
+YOUR CARDS: ${player.cards.join(', ')}
+
+CARD LOSS SITUATION:
+You must choose one of your cards to lose and discard face-up.${isLastCard ? `
+
+**WARNING: This is your last card! Losing it will eliminate you from the game!**` : ''}
+
+STRATEGY CONSIDERATIONS:
+- Which card is least useful for your current strategy?
+- Which card would you least want opponents to know you had?
+- What future actions do you want to keep available?
+- Consider what losing each card reveals about your hand
+
+Choose carefully - this card will be revealed to all players!`;
   }
 
   static buildExchangePrompt(gameState: GameState, playerId: string, availableCards: CharacterType[], personality?: Personality): string {
@@ -211,8 +302,33 @@ export class PromptBuilder {
 	const gameContext = this.buildGameContext(gameState, playerId);
 	const handSize = player.cards.length;
 	const personalityText = personality ? personalityMap[personality] : '';
+	const gameHistory = this.buildGameHistory(gameState);
 	
-	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}\n\nGAME STATE:\n${gameContext}\n\nEXCHANGE SITUATION:\nYour current cards: ${player.cards.join(', ')}\nAvailable options: ${availableCards.join(', ')}\n\nYou must choose exactly ${handSize} card(s) to keep. The rest will be shuffled back into the deck.\n\nSTRATEGY CONSIDERATIONS:\n- What actions do you want to be able to take/claim?\n- What would give you the best bluffing opportunities?\n- What characters work well together?\n- Consider what other players might expect you to have\n\nChoose your new hand wisely!`;
+	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}
+
+GAME STATE:
+${gameContext}
+
+GAME HISTORY:
+${gameHistory}
+
+EXCHANGE SITUATION:
+Your current cards: ${player.cards.join(', ')}
+Available options: ${availableCards.join(', ')}
+
+You must choose exactly ${handSize} card(s) to keep. The rest will be shuffled back into the deck.
+
+STRATEGY CONSIDERATIONS:
+- What actions do you want to be able to take/claim?
+- What would give you the best bluffing opportunities?
+- What characters work well together?
+- Consider what other players might expect you to have
+
+Choose your new hand wisely!`;
+  }
+
+  private static buildGameHistory(gameState: GameState): string {
+	return gameState.gameLog.map(event => `[${event.type}] ${event.message}`).join('\n');
   }
 
   private static buildGameContext(gameState: GameState, currentPlayerId: string): string {

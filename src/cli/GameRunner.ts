@@ -68,14 +68,15 @@ export class GameRunner {
 	private async writeResultsToCsv(gameId: string, playerStats: PlayerStats[], model: string, personalities: boolean): Promise<void> {
 		const csvPath = path.join(process.cwd(), 'results.csv');
 		const fileExists = fs.existsSync(csvPath);
-		const headers = 'game_id,player_id,player_name,winner,elimination_round,cause_of_elimination,num_bluffs,successful_bluffs,failed_bluffs,challenges_won,challenges_lost,coups_launched,assassinations_blocked,total_coins_earned,coins_lost_to_theft,model,personalities\n';
+		const headers = 'game_id,date,player_id,player_name,winner,elimination_round,cause_of_elimination,num_bluffs,successful_bluffs,failed_bluffs,challenges_won,challenges_lost,coups_launched,assassinations_blocked,total_coins_earned,coins_lost_to_theft,model,personalities\n';
 
 		if (!fileExists) {
 			fs.writeFileSync(csvPath, headers);
 		}
 
+		const gameDate = new Date().toISOString();
 		const rows = playerStats.map(stats =>
-			[gameId, stats.id, stats.name, stats.winner, stats.elimination_round, stats.cause_of_elimination, stats.num_bluffs, stats.successful_bluffs, stats.failed_bluffs, stats.challenges_won, stats.challenges_lost, stats.coups_launched, stats.assassinations_blocked, stats.total_coins_earned, stats.coins_lost_to_theft, model, personalities].join(',')
+			[gameId, gameDate, stats.id, stats.name, stats.winner, stats.elimination_round, stats.cause_of_elimination, stats.num_bluffs, stats.successful_bluffs, stats.failed_bluffs, stats.challenges_won, stats.challenges_lost, stats.coups_launched, stats.assassinations_blocked, stats.total_coins_earned, stats.coins_lost_to_theft, model, personalities].join(',')
 		).join('\n');
 
 		fs.appendFileSync(csvPath, rows + '\n');
@@ -121,7 +122,7 @@ export class GameRunner {
 	}
 
 	private createPlayers(count: number, apiKey: string, model: string, usePersonalities: boolean, provider: LLMProvider): LLMPlayer[] {
-		const personalities = usePersonalities ? Object.values(Personality) : [];
+		const personalities = usePersonalities ? this.shuffleArray(Object.values(Personality)) : [];
 
 		return Array.from({ length: count }, (_, i) => {
 			const personality = personalities[i % personalities.length];
@@ -136,6 +137,14 @@ export class GameRunner {
 				provider
 			)
 		});
+	}
+
+	private shuffleArray<T>(array: T[]): T[] {
+		for (let i = array.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[array[i], array[j]] = [array[j], array[i]];
+		}
+		return array;
 	}
 
 	private getProvider(options: any): LLMProvider {
