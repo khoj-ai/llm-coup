@@ -10,10 +10,8 @@ import { Personality } from '../ai/PromptBuilder';
 
 export class GameRunner {
 	private program: Command;
-	private provider: LLMProvider;
 
-	constructor(provider: LLMProvider) {
-		this.provider = provider;
+	constructor() {
 		this.program = new Command();
 		this.setupCommands();
 	}
@@ -28,12 +26,8 @@ export class GameRunner {
 			.command('play')
 			.description('Start a new game')
 			.option('-p, --players <number>', 'Number of players (2-6)', '4')
-			.option('-m, --model <model>', 'LLM model to use')
-			.option('-k, --api-key <key>', 'API key for the LLM')
+			.option('--player-model <value>', 'Specify a player model in the format provider:model_name. This option can be used multiple times.', (value, previous: string[]) => previous.concat(value), [])
 			.option('--personalities', 'Use different personalities for players')
-			.option('--gemini', 'Use the Gemini API')
-			.option('--anthropic', 'Use the Anthropic API')
-			.option('--openai', 'Use the OpenAI API')
 			.option('--discussion', 'Enable player discussions')
 			.action(this.startGame.bind(this));
 	}
@@ -76,7 +70,7 @@ export class GameRunner {
 
 		const gameDate = new Date().toISOString();
 		const rows = playerStats.map(stats =>
-			[gameId, gameDate, stats.id, stats.name, stats.winner, stats.elimination_round, stats.cause_of_elimination, stats.num_bluffs, stats.successful_bluffs, stats.failed_bluffs, stats.challenges_won, stats.challenges_lost, stats.coups_launched, stats.assassinations_blocked, stats.total_coins_earned, stats.coins_lost_to_theft, model, personalities].join(',')
+			[gameId, gameDate, stats.id, stats.name, stats.winner, stats.elimination_round, stats.cause_of_elimination.join(';'), stats.num_bluffs, stats.successful_bluffs, stats.failed_bluffs, stats.challenges_won, stats.challenges_lost, stats.coups_launched, stats.assassinations_blocked, stats.total_coins_earned, stats.coins_lost_to_theft, model, personalities].join(',')
 		).join('\n');
 
 		fs.appendFileSync(csvPath, rows + '\n');
@@ -86,57 +80,80 @@ export class GameRunner {
 		const gameId = this.generateGameId();
 		this.setupLogging(gameId);
 
-		const provider = this.getProvider(options);
+		if (options.personalities && options.playerModel.length > 1) {
+			console.error('When using --personalities, only one --player-model can be specified.');
+			return;
+		}
+
+		const playerModels = options.playerModel.map((pm: string) => {
+			const [provider, model] = pm.split(':');
+			return { provider: provider.toLowerCase() as LLMProvider, model };
+		});
+
+		const allProviders = [...new Set(playerModels.map((pm: any) => pm.provider))];
+		for (const provider of allProviders) {
+			if (!this.getApiKey(provider as LLMProvider)) {
+				return; // Error message is handled in getApiKey
+			}
+		}
+
 		const numPlayers = parseInt(options.players);
 		if (numPlayers < 2 || numPlayers > 6) {
 			console.error('Number of players must be between 2 and 6');
 			return;
 		}
 
-		const apiKey = options.apiKey || process.env.API_KEY;
-		if (!apiKey) {
-			console.error('API key required. Set API_KEY environment variable or use --api-key option');
-			return;
-		}
-
-		let model = options.model;
-		if (!model) {
-			switch (provider) {
-				case LLMProvider.GEMINI:
-					model = 'gemini-1.5-flash-latest';
-					break;
-				case LLMProvider.ANTHROPIC:
-					model = 'claude-3-opus-20240229';
-					break;
-				case LLMProvider.OPENAI:
-					model = 'gpt-4';
-					break;
-			}
-		}
-
-		const players = this.createPlayers(numPlayers, apiKey, model, options.personalities, provider);
+		const players = this.createPlayers(numPlayers, playerModels, options.personalities);
 		const engine = new GameEngine(players, options.discussion);
 
 		const finalStats = await engine.playGame();
-		await this.writeResultsToCsv(gameId, finalStats, model, options.personalities || false);
+		await this.writeResultsToCsv(gameId, finalStats, playerModels.map((pm: any) => pm.model).join(';'), options.personalities || false);
 	}
 
-	private createPlayers(count: number, apiKey: string, model: string, usePersonalities: boolean, provider: LLMProvider): LLMPlayer[] {
+	private createPlayers(count: number, playerModels: { provider: LLMProvider, model: string }[], usePersonalities: boolean): LLMPlayer[] {
 		const personalities = usePersonalities ? this.shuffleArray(Object.values(Personality)) : [];
 
 		return Array.from({ length: count }, (_, i) => {
+			const playerModel = playerModels[i % playerModels.length];
 			const personality = personalities[i % personalities.length];
-			const playerName = usePersonalities ? `Player ${i + 1} (${personality})` : `Player ${i + 1}`;
+			const playerName = usePersonalities ? `Player ${i + 1} (${personality})` : `Player ${i + 1} (${playerModel.provider}:${playerModel.model})`;
+			const apiKey = this.getApiKey(playerModel.provider)!;
 
 			return new LLMPlayer(
 				`player${i + 1}`,
 				playerName,
 				apiKey,
-				model,
+				playerModel.model,
 				personality,
-				provider
+				playerModel.provider
 			)
 		});
+	}
+
+	private getApiKey(provider: LLMProvider): string | undefined {
+		let apiKey: string | undefined;
+		let envVar: string;
+
+		switch (provider) {
+			case LLMProvider.GEMINI:
+				envVar = 'GEMINI_API_KEY';
+				apiKey = process.env.GEMINI_API_KEY;
+				break;
+			case LLMProvider.ANTHROPIC:
+				envVar = 'ANTHROPIC_API_KEY';
+				apiKey = process.env.ANTHROPIC_API_KEY;
+				break;
+			case LLMProvider.OPENAI:
+				envVar = 'OPENAI_API_KEY';
+				apiKey = process.env.OPENAI_API_KEY;
+				break;
+		}
+
+		if (!apiKey) {
+			console.error(`API key for ${provider} not found. Please set the ${envVar} environment variable.`);
+		}
+
+		return apiKey;
 	}
 
 	private shuffleArray<T>(array: T[]): T[] {
@@ -145,13 +162,6 @@ export class GameRunner {
 			[array[i], array[j]] = [array[j], array[i]];
 		}
 		return array;
-	}
-
-	private getProvider(options: any): LLMProvider {
-		if (options.gemini) return LLMProvider.GEMINI;
-		if (options.anthropic) return LLMProvider.ANTHROPIC;
-		if (options.openai) return LLMProvider.OPENAI;
-		return this.provider;
 	}
 
 	run(): void {

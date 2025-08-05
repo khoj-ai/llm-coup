@@ -15,7 +15,7 @@ export type PlayerStats = {
   assassinations_blocked: number;
   total_coins_earned: number;
   coins_lost_to_theft: number;
-  cause_of_elimination?: string;
+  cause_of_elimination: string[];
 };
 
 export abstract class Player {

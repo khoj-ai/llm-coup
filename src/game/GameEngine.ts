@@ -28,6 +28,7 @@ export class GameEngine {
 			assassinations_blocked: 0,
 			total_coins_earned: 2,
 			coins_lost_to_theft: 0,
+			cause_of_elimination: [],
 		}));
 	}
 
@@ -131,6 +132,12 @@ export class GameEngine {
 		this.gameState.phase = GamePhase.CHALLENGE;
 
 		if (action.requiredCharacter) {
+			const playerState = this.getPlayerState(action.playerId)!;
+			const hasCard = playerState.cards.includes(action.requiredCharacter!)
+			if (!hasCard) {
+				const stats = this.getPlayerStats(action.playerId)!;
+				stats.num_bluffs++;
+			}
 			const challenger = await this.checkForChallenges(action);
 			if (challenger) {
 				const success = await this.resolveChallenge(action, challenger);
@@ -179,15 +186,10 @@ export class GameEngine {
 		const actionPlayerStats = this.getPlayerStats(action.playerId)!;
 		const challengerStats = this.getPlayerStats(challengerId)!;
 
-		if (action.requiredCharacter) {
-			actionPlayerStats.num_bluffs++;
-		}
-
 		if (hasCard) {
 			console.log(`${playerState.name} reveals ${action.requiredCharacter}! Challenge failed.`);
 			this.gameState.gameLog.push({ type: 'challenge_failed', message: `${challengerId} challenged ${action.playerId} but failed.` });
 			this.shuffleCard(action.playerId, action.requiredCharacter!);
-			actionPlayerStats.successful_bluffs++;
 			challengerStats.challenges_lost++;
 			await this.loseInfluence(challengerId, 'failed_challenge');
 			return true; // Challenge failed, action proceeds
@@ -261,6 +263,13 @@ export class GameEngine {
 			playerState.coins -= action.cost;
 		}
 
+		if (action.requiredCharacter) {
+			const hasCard = playerState.cards.includes(action.requiredCharacter!)
+			if (!hasCard) {
+				stats.successful_bluffs++;
+			}
+		}
+
 		switch (action.type) {
 			case ActionType.INCOME:
 				playerState.coins++;
@@ -306,7 +315,7 @@ export class GameEngine {
 		}
 	}
 
-	private async loseInfluence(playerId: string, cause?: string): Promise<void> {
+	private async loseInfluence(playerId: string, cause: string): Promise<void> {
 		const playerState = this.getPlayerState(playerId)!;
 		if (!playerState.isAlive) return;
 
@@ -332,11 +341,12 @@ export class GameEngine {
 			this.gameState.gameLog.push({ type: 'lose_influence', message: `${playerId} loses ${lostCard}.` });
 		}
 
+		const stats = this.getPlayerStats(playerId)!;
+		stats.cause_of_elimination.push(cause);
+
 		if (playerState.cards.length === 0) {
 			playerState.isAlive = false;
-			const stats = this.getPlayerStats(playerId)!;
 			stats.elimination_round = this.round;
-			stats.cause_of_elimination = cause;
 			console.log(chalk.red(`${playerState.name} has been eliminated!`));
 			this.gameState.gameLog.push({ type: 'elimination', message: `${playerId} has been eliminated.` });
 		}
@@ -394,7 +404,7 @@ export class GameEngine {
 			Player: p.name,
 			Status: p.isAlive ? 'Alive' : 'Eliminated',
 			Coins: p.coins,
-			Cards: p.cards.length,
+			Hand: p.cards.join(', '),
 			'Lost Cards': p.lostCards.join(', ') || 'None',
 		}));
 		console.table(tableData);

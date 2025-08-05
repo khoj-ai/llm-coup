@@ -196,6 +196,7 @@ CHARACTER ACTIONS (you can bluff having these):
 - Assassinate (Assassin): Pay 3 coins to force target to lose a card
 - Steal (Captain): Take 2 coins from another player  
 - Exchange (Ambassador): Draw 2 cards, keep your hand size, shuffle rest back
+- Block (Contessa): Block Assassinate
 
 Choose your action wisely considering your cards, coins, and strategy!`;
   }
@@ -223,7 +224,8 @@ ${actingPlayer.id} is attempting to use ${action.type}${action.requiredCharacter
 CHALLENGE RULES:
 - If you challenge and they DON'T have the character: they lose a card
 - If you challenge and they DO have the character: you lose a card, they shuffle and redraw
-- Consider what cards you have (they're less likely to have what you have)
+- Consider what cards you have
+- There are three of each character in the deck
 - Consider what's been revealed/discarded already
 - Think about their previous actions and bluffing patterns
 
@@ -240,7 +242,7 @@ Risk vs Reward: Is it worth the gamble?`;
 	
 	const blockingInfo = action.blockingCharacters?.map(char => {
 	  const hasCard = player.cards.includes(char);
-	  return `- ${char}${hasCard ? ' (you have this!)' : ' (you would be bluffing)'}`;
+	  return `- ${char}${hasCard ? ' (you have this)' : ' (you would be bluffing)'}`;
 	}).join('\n') || 'No blocking possible for this action';
 	
 	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}
@@ -254,7 +256,7 @@ ${gameHistory}
 YOUR CARDS: ${player.cards.join(', ')}
 
 BLOCK SITUATION:
-${actingPlayer.id} is attempting ${action.type}${isTargeted ? ' against YOU!' : ''}.
+${actingPlayer.id} is attempting ${action.type}${isTargeted ? ' against you' : ''}.
 
 BLOCKING OPTIONS:
 ${blockingInfo}
