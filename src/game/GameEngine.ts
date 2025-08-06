@@ -75,7 +75,7 @@ export class GameEngine {
 		const deck: CharacterType[] = [];
 		const characters = Object.values(CharacterType);
 		for (let i = 0; i < 3; i++) {
-			deck.push(...characters);
+			deck.push(...[...characters]);
 		}
 		return this.shuffle(deck);
 	}
@@ -145,6 +145,12 @@ export class GameEngine {
 					this.gameState.pendingAction = undefined;
 					return; // Action was successfully challenged
 				}
+			} else {
+				if (!hasCard) {
+					const stats = this.getPlayerStats(action.playerId)!;
+					stats.successful_bluffs++;
+					console.log(chalk.green(`${this.getPlayerName(action.playerId)} successfully bluffed!`));
+				}
 			}
 		}
 
@@ -167,7 +173,7 @@ export class GameEngine {
 	}
 
 	private async checkForChallenges(action: GameAction): Promise<string | undefined> {
-		const challengers = await Promise.all(this.players.map(async player => {
+		const challengers = (await Promise.all(this.players.map(async player => {
 			if (player.id !== action.playerId && this.getPlayerState(player.id)!.isAlive) {
 				const challenge = await player.decideChallengeAction(this.gameState, action);
 				if (challenge) {
@@ -176,12 +182,24 @@ export class GameEngine {
 				}
 			}
 			return undefined;
-		}));
-		return challengers.find(c => c !== undefined);
+		}))).filter((c): c is string => c !== undefined);
+
+		if (challengers.length === 0) {
+			return undefined;
+		}
+
+		if (challengers.length > 1) {
+			console.log(chalk.magenta(`Multiple challengers: ${challengers.map(c => this.getPlayerName(c)).join(', ')}. Randomly selecting one.`));
+		}
+
+		const randomIndex = Math.floor(Math.random() * challengers.length);
+		return challengers[randomIndex];
 	}
 
 	private async resolveChallenge(action: GameAction, challengerId: string): Promise<boolean> {
 		const playerState = this.getPlayerState(action.playerId)!;
+		console.log(chalk.gray(`Resolving challenge: ${this.getPlayerName(challengerId)} challenges ${playerState.name} over ${action.requiredCharacter}`));
+		console.log(chalk.gray(`${playerState.name} has cards: ${playerState.cards.join(', ')}`));
 		const hasCard = playerState.cards.includes(action.requiredCharacter!);
 		const actionPlayerStats = this.getPlayerStats(action.playerId)!;
 		const challengerStats = this.getPlayerStats(challengerId)!;
@@ -198,7 +216,7 @@ export class GameEngine {
 			this.gameState.gameLog.push({ type: 'challenge_successful', message: `${challengerId} successfully challenged ${action.playerId}.` });
 			actionPlayerStats.failed_bluffs++;
 			challengerStats.challenges_won++;
-			await this.loseInfluence(action.playerId, 'failed_challenge');
+			await this.loseInfluence(action.playerId, 'failed_bluff');
 			return false; // Challenge successful, action fails
 		}
 	}
@@ -226,17 +244,25 @@ export class GameEngine {
 	}
 
 	private async resolveBlock(action: GameAction, blockerId: string, blockingCharacter: CharacterType): Promise<{ success: boolean }> {
+		const blockerPlayerState = this.getPlayerState(blockerId)!;
+		const hasBlockingCard = blockerPlayerState.cards.includes(blockingCharacter);
+		if (!hasBlockingCard) {
+			const blockerStats = this.getPlayerStats(blockerId)!;
+			blockerStats.num_bluffs++;
+		}
+
 		this.gameState.phase = GamePhase.CHALLENGE; // Challenge on the block
 		const blockAction: GameAction = {
 			type: ActionType.BLOCK, // A virtual action to represent the block
 			playerId: blockerId,
-			requiredCharacter: blockingCharacter,
+			requiredCharacter: blockingCharacter as CharacterType,
 			canBeBlocked: false
 		};
 
 		const challenger = await this.checkForChallenges(blockAction);
 
 		if (challenger) {
+			// Pass the blockAction instead of the original action
 			const success = await this.resolveChallenge(blockAction, challenger);
 			if (action.type === 'ASSASSINATE' && success) {
 				const blockerStats = this.getPlayerStats(blockerId)!;
@@ -251,6 +277,11 @@ export class GameEngine {
 			return { success: blockResult }; // if challenge is successful, block fails
 		}
 
+		if (!hasBlockingCard) {
+			const blockerStats = this.getPlayerStats(blockerId)!;
+			blockerStats.successful_bluffs++;
+		}
+
 		this.gameState.gameLog.push({ type: 'block_successful', message: `${blockerId} successfully blocked ${action.playerId}.` });
 		return { success: true }; // No challenge, block succeeds
 	}
@@ -261,13 +292,6 @@ export class GameEngine {
 
 		if (action.cost) {
 			playerState.coins -= action.cost;
-		}
-
-		if (action.requiredCharacter) {
-			const hasCard = playerState.cards.includes(action.requiredCharacter!)
-			if (!hasCard) {
-				stats.successful_bluffs++;
-			}
 		}
 
 		switch (action.type) {
@@ -319,6 +343,11 @@ export class GameEngine {
 		const playerState = this.getPlayerState(playerId)!;
 		if (!playerState.isAlive) return;
 
+		// Check if game is already over before processing influence loss
+		if (this.isGameOver()) {
+			return;
+		}
+
 		const player = this.players.find(p => p.id === playerId)!;
 		let cardToLose: CharacterType;
 
@@ -359,6 +388,7 @@ export class GameEngine {
 			this.gameState.deck.push(playerState.cards.splice(cardIndex, 1)[0]);
 			this.shuffle(this.gameState.deck);
 			playerState.cards.push(this.gameState.deck.pop()!);
+			this.gameState.gameLog.push({ type: 'shuffle_and_draw', message: `${playerId} shuffles ${card} back into the deck and draws a new card.` });
 		}
 	}
 

@@ -97,7 +97,7 @@ export class PromptBuilder {
 				},
 				character: {
 				  type: "string",
-				  enum: ["DUKE", "ASSASSIN", "CAPTAIN", "AMBASSADOR", "CONTESSA"],
+				  enum: Object.values(CharacterType),
 				  description: "Which character you claim to have for blocking (required if block is true)"
 				},
 				reasoning: {
@@ -145,7 +145,7 @@ export class PromptBuilder {
 				  type: "array",
 				  items: {
 					type: "string",
-					enum: ["DUKE", "ASSASSIN", "CAPTAIN", "AMBASSADOR", "CONTESSA"]
+					enum: Object.values(CharacterType)
 				  },
 				  description: "The cards you want to keep (must match your hand size)",
 				},
@@ -207,6 +207,32 @@ Choose your action wisely considering your cards, coins, and strategy!`;
 	const gameContext = this.buildGameContext(gameState, playerId);
 	const personalityText = personality ? personalityMap[personality] : '';
 	const gameHistory = this.buildGameHistory(gameState);
+	const isTargeted = action.targetId === playerId;
+
+	let blockInfo = '';
+	if (action.type === 'BLOCK') {
+		// Don't show block info when challenging a block
+	} else if (action.canBeBlocked) {
+		if (isTargeted) {
+			blockInfo = `
+If you don't challenge, you will have the opportunity to block this action.
+This action can be blocked by: ${action.blockingCharacters?.join(', ')}.
+You can bluff having these cards.`;
+		} else {
+			blockInfo = `
+If no one challenges, the target will have an opportunity to block.
+This action can be blocked, if the target has one of these cards: ${action.blockingCharacters?.join(', ')}.`;
+		}
+	} else {
+		blockInfo = `
+This action cannot be blocked. If no one challenges, it will resolve immediately.`;
+	}
+
+	if (blockInfo) {
+		// Prepend the block info phase review
+		blockInfo = `BLOCKING PHASE PREVIEW:
+${blockInfo}`;
+	}
 	
 	return `You are playing Coup. ${personalityText ? `Your personality: ${personalityText}` : ''}
 
@@ -228,6 +254,8 @@ CHALLENGE RULES:
 - There are three of each character in the deck
 - Consider what's been revealed/discarded already
 - Think about their previous actions and bluffing patterns
+
+${blockInfo}
 
 Risk vs Reward: Is it worth the gamble?`;
   }
