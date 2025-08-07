@@ -117,6 +117,7 @@ export class GameEngine {
 		const action = await player.decideAction(this.gameState);
 		if (this.discussion && action.discussion) {
 			this.gameState.gameLog.push({ type: 'discussion', message: `${currentPlayer.name}: ${action.discussion}` });
+			console.log(chalk.cyan(`[DISCUSSION] ${currentPlayer.name}: ${action.discussion}`));
 		}
 		console.log(`${currentPlayer.name} chooses: ${action.type}${action.targetId ? ` -> ${this.getPlayerName(action.targetId)}` : ''}`);
 
@@ -263,18 +264,20 @@ export class GameEngine {
 
 		if (challenger) {
 			// Pass the blockAction instead of the original action
-			const success = await this.resolveChallenge(blockAction, challenger);
-			if (action.type === 'ASSASSINATE' && success) {
+			const canContinueAction = await this.resolveChallenge(blockAction, challenger);
+			if (action.type === 'ASSASSINATE' && canContinueAction) {
 				const blockerStats = this.getPlayerStats(blockerId)!;
 				blockerStats.assassinations_blocked++;
 			}
-			const blockResult = !success;
-			if (blockResult) {
+			const continueBlock = canContinueAction;
+			if (continueBlock) {
+				console.log(chalk.gray(`${blockerId} successfully blocked ${action.playerId} with ${blockingCharacter}`));
 				this.gameState.gameLog.push({ type: 'block_successful', message: `${blockerId} successfully blocked ${action.playerId}.` });
 			} else {
+				console.log(chalk.gray(`${blockerId} failed to block ${action.playerId} with ${blockingCharacter} due to challenge`));
 				this.gameState.gameLog.push({ type: 'block_failed', message: `${blockerId} failed to block ${action.playerId}.` });
 			}
-			return { success: blockResult }; // if challenge is successful, block fails
+			return { success: continueBlock }; // if challenge is successful, block fails
 		}
 
 		if (!hasBlockingCard) {
@@ -376,7 +379,7 @@ export class GameEngine {
 		if (playerState.cards.length === 0) {
 			playerState.isAlive = false;
 			stats.elimination_round = this.round;
-			console.log(chalk.red(`${playerState.name} has been eliminated!`));
+			console.log(chalk.red(`${playerState.name} has been eliminated due to ${cause}.`));
 			this.gameState.gameLog.push({ type: 'elimination', message: `${playerId} has been eliminated.` });
 		}
 	}
