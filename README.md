@@ -16,13 +16,25 @@ The primary motivation for this experiment is to create a controlled environment
 *   **Self-Play:** The simulation can be run with a single LLM playing against itself, allowing for the study of emergent strategies and behaviors.
 *   **Personality Manipulation:** Players can be assigned different personalities via prompts, allowing for the study of how different behavioral archetypes affect game dynamics.
 
+### Why Coup?
+
+Well, being able to measure the tendency that LLMs have for deception and longer-horizon strategy games is useful, especially as they're released into the wild in environments that reward those behaviors. This game gives us a toy environment where we can measure LLM capabilities for deception & strategy, measuring on baseline how well and individual model is able to compete, and then how models play against one another.
+
+Pros of Coup:
+- Rewards deception
+- Requires some multi-stage thinking
+
+Cons of Coup:
+- Large element of chance based on initial conditions / "luck of the draw"
+- Doesn't reward deception _enough_; it's somewhat easy to get far in the game just playing honestly
+
 ## How to Play Coup
 
 Coup is a social deduction game where the goal is to be the last player with influence remaining. Influence is represented by face-down character cards, and each player starts with two.
 
 Each turn, a player can take one of several actions. Some actions are associated with specific characters, and any player can claim to be that character to perform the action. If a player's claim is challenged, they must reveal the corresponding character card. If they can't, they lose an influence. If they can, the challenger loses an influence.
 
-For a full guide on how to play, please see the [Coup Wiki](https://www.wikihow.com/Play-Coup).
+For a full guide on how to play, checkout the [Coup Wikihow Page](https://www.wikihow.com/Play-Coup).
 
 ## Getting Started
 
