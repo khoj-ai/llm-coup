@@ -4,6 +4,7 @@ import { GameAction, CharacterType } from "./Cards";
 export type PlayerStats = {
   id: string;
   name: string;
+  model: string;
   winner: boolean;
   elimination_round: number;
   num_bluffs: number;
@@ -16,15 +17,17 @@ export type PlayerStats = {
   total_coins_earned: number;
   coins_lost_to_theft: number;
   cause_of_elimination: string[];
+  attacks_received: number;
+  attacks_launched: number;
 };
 
 export abstract class Player {
-  constructor(public id: string, public name: string) {}
+  constructor(public id: string, public name: string, public model: string) {}
   
   abstract decideAction(gameState: GameState): Promise<GameAction>;
-  abstract decideChallengeAction(gameState: GameState, action: GameAction): Promise<boolean>;
-  abstract decideBlockAction(gameState: GameState, action: GameAction): Promise<{block: boolean, character?: CharacterType}>;
-  abstract chooseCardToLose(gameState: GameState): Promise<CharacterType>;
-  abstract chooseCardsForExchange(gameState: GameState, availableCards: CharacterType[]): Promise<CharacterType[]>;
+  abstract decideChallengeAction(gameState: GameState, action: GameAction): Promise<{challenge: boolean, discussion?: string}>;
+  abstract decideBlockAction(gameState: GameState, action: GameAction): Promise<{block: boolean, character?: CharacterType, discussion?: string}>;
+  abstract chooseCardToLose(gameState: GameState): Promise<{card: CharacterType, discussion?: string}>;
+  abstract chooseCardsForExchange(gameState: GameState, availableCards: CharacterType[]): Promise<{cards: CharacterType[], discussion?: string}>;
 }
 

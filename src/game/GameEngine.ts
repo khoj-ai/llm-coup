@@ -3,6 +3,11 @@ import { GameState, GamePhase, PlayerState } from './GameState';
 import { Player, PlayerStats } from './Player';
 import { ActionType, CharacterType, GameAction } from './Cards';
 
+type Challenger = {
+	id: string;
+	discussion?: string;
+};
+
 export class GameEngine {
 	private gameState: GameState;
 	private players: Player[];
@@ -17,6 +22,7 @@ export class GameEngine {
 		this.playerStats = this.players.map(p => ({
 			id: p.id,
 			name: p.name,
+			model: p.model,
 			winner: false,
 			elimination_round: 0,
 			num_bluffs: 0,
@@ -29,6 +35,8 @@ export class GameEngine {
 			total_coins_earned: 2,
 			coins_lost_to_theft: 0,
 			cause_of_elimination: [],
+			attacks_received: 0,
+			attacks_launched: 0,
 		}));
 	}
 
@@ -177,24 +185,31 @@ export class GameEngine {
 		const challengers = (await Promise.all(this.players.map(async player => {
 			if (player.id !== action.playerId && this.getPlayerState(player.id)!.isAlive) {
 				const challenge = await player.decideChallengeAction(this.gameState, action);
-				if (challenge) {
-					console.log(chalk.magenta(`Challenge! ${player.name} challenges ${this.getPlayerName(action.playerId)}`));
-					return player.id;
+				if (challenge.challenge) {
+					return { id: player.id, discussion: challenge.discussion };
 				}
 			}
 			return undefined;
-		}))).filter((c): c is string => c !== undefined);
+		}))).filter(c => c !== undefined);
 
 		if (challengers.length === 0) {
 			return undefined;
 		}
 
 		if (challengers.length > 1) {
-			console.log(chalk.magenta(`Multiple challengers: ${challengers.map(c => this.getPlayerName(c)).join(', ')}. Randomly selecting one.`));
+			console.log(chalk.magenta(`Multiple challengers: ${challengers.map(c => this.getPlayerName(c!.id)).join(', ')}. Randomly selecting one.`));
 		}
 
 		const randomIndex = Math.floor(Math.random() * challengers.length);
-		return challengers[randomIndex];
+		const selectedChallenger = challengers[randomIndex]!;
+
+		if (this.discussion && selectedChallenger.discussion) {
+			this.gameState.gameLog.push({ type: 'discussion', message: `${this.getPlayerName(selectedChallenger.id)}: ${selectedChallenger.discussion}` });
+			console.log(chalk.cyan(`[DISCUSSION] ${this.getPlayerName(selectedChallenger.id)}: ${selectedChallenger.discussion}`));
+		}
+
+		console.log(chalk.magenta(`Challenge! ${this.getPlayerName(selectedChallenger.id)} challenges ${this.getPlayerName(action.playerId)}`));
+		return selectedChallenger.id;
 	}
 
 	private async resolveChallenge(action: GameAction, challengerId: string): Promise<boolean> {
@@ -222,7 +237,7 @@ export class GameEngine {
 		}
 	}
 
-	private async checkForBlocks(action: GameAction): Promise<{ id: string, character: CharacterType } | undefined> {
+	private async checkForBlocks(action: GameAction): Promise<{ id: string, character: CharacterType, discussion?: string } | undefined> {
 		const potentialBlockers = this.players.filter(p => {
 			const playerState = this.getPlayerState(p.id);
 			if (!playerState?.isAlive) {
@@ -236,9 +251,14 @@ export class GameEngine {
 
 		for (const player of potentialBlockers) {
 			const decision = await player.decideBlockAction(this.gameState, action);
+			if (this.discussion && decision.discussion) {
+				this.gameState.gameLog.push({ type: 'discussion', message: `${player.name}: ${decision.discussion}` });
+				console.log(chalk.cyan(`[DISCUSSION] ${player.name}: ${decision.discussion}`));
+			}
+
 			if (decision.block) {
 				console.log(chalk.cyan(`${player.name} blocks with ${decision.character}`));
-				return { id: player.id, character: decision.character! };
+				return { id: player.id, character: decision.character!, discussion: decision.discussion };
 			}
 		}
 		return undefined;
@@ -308,6 +328,9 @@ export class GameEngine {
 				break;
 			case ActionType.COUP:
 				stats.coups_launched++;
+				stats.attacks_launched++;
+				const coupTargetStats = this.getPlayerStats(action.targetId!)!;
+				coupTargetStats.attacks_received++;
 				await this.loseInfluence(action.targetId!, 'coup');
 				break;
 			case ActionType.TAX:
@@ -315,11 +338,16 @@ export class GameEngine {
 				stats.total_coins_earned += 3;
 				break;
 			case ActionType.ASSASSINATE:
+				stats.attacks_launched++;
+				const assassinateTargetStats = this.getPlayerStats(action.targetId!)!;
+				assassinateTargetStats.attacks_received++;
 				await this.loseInfluence(action.targetId!, 'assassination');
 				break;
 			case ActionType.STEAL:
+				stats.attacks_launched++;
 				const target = this.getPlayerState(action.targetId!)!;
 				const targetStats = this.getPlayerStats(action.targetId!)!;
+				targetStats.attacks_received++;
 				const amount = Math.min(2, target.coins);
 				playerState.coins += amount;
 				stats.total_coins_earned += amount;
@@ -333,7 +361,12 @@ export class GameEngine {
 				const player = this.players.find(p => p.id === action.playerId)!;
 				const cardsToExchange = [this.gameState.deck.pop()!, this.gameState.deck.pop()!];
 				const allCards = [...playerState.cards, ...cardsToExchange];
-				const keptCards = await player.chooseCardsForExchange(this.gameState, allCards);
+				const exchangeChoice = await player.chooseCardsForExchange(this.gameState, allCards);
+				if (this.discussion && exchangeChoice.discussion) {
+					this.gameState.gameLog.push({ type: 'discussion', message: `${player.name}: ${exchangeChoice.discussion}` });
+					console.log(chalk.cyan(`[DISCUSSION] ${player.name}: ${exchangeChoice.discussion}`));
+				}
+				const keptCards = exchangeChoice.cards;
 				playerState.cards = keptCards;
 				const returnedCards = allCards.filter(c => !keptCards.includes(c));
 				this.gameState.deck.push(...returnedCards);
@@ -357,7 +390,12 @@ export class GameEngine {
 		if (playerState.cards.length === 1) {
 			cardToLose = playerState.cards[0];
 		} else {
-			cardToLose = await player.chooseCardToLose(this.gameState);
+			const lossChoice = await player.chooseCardToLose(this.gameState);
+			if (this.discussion && lossChoice.discussion) {
+				this.gameState.gameLog.push({ type: 'discussion', message: `${player.name}: ${lossChoice.discussion}` });
+				console.log(chalk.cyan(`[DISCUSSION] ${player.name}: ${lossChoice.discussion}`));
+			}
+			cardToLose = lossChoice.card;
 		}
 
 		const cardIndex = playerState.cards.indexOf(cardToLose);
@@ -461,6 +499,8 @@ export class GameEngine {
 			'Assassinations Blocked': stats.assassinations_blocked,
 			'Coins Earned': stats.total_coins_earned,
 			'Coins Lost to Theft': stats.coins_lost_to_theft,
+			'Attacks Received': stats.attacks_received,
+			'Attacks Launched': stats.attacks_launched,
 		}));
 		console.table(tableData);
 		console.log(chalk.bold.blue('--------------------\n'));

@@ -59,10 +59,10 @@ export class GameRunner {
 		};
 	}
 
-	private async writeResultsToCsv(gameId: string, playerStats: PlayerStats[], model: string, personalities: boolean, publicDiscussion: boolean): Promise<void> {
+	private async writeResultsToCsv(gameId: string, playerStats: PlayerStats[], model: string, personalities: boolean, publicDiscussion: boolean, totalPlayTime: number): Promise<void> {
 		const csvPath = path.join(process.cwd(), 'results.csv');
 		const fileExists = fs.existsSync(csvPath);
-		const headers = 'game_id,date,player_id,player_name,winner,elimination_round,cause_of_elimination,num_bluffs,successful_bluffs,failed_bluffs,challenges_won,challenges_lost,coups_launched,assassinations_blocked,total_coins_earned,coins_lost_to_theft,model,personalities,public_discussion\n';
+		const headers = 'game_id,date,player_id,player_name,winner,elimination_round,cause_of_elimination,num_bluffs,successful_bluffs,failed_bluffs,challenges_won,challenges_lost,coups_launched,assassinations_blocked,total_coins_earned,coins_lost_to_theft,attacks_received,attacks_launched,model,all_models,personalities,public_discussion,total_play_time\n';
 
 		if (!fileExists) {
 			fs.writeFileSync(csvPath, headers);
@@ -70,13 +70,14 @@ export class GameRunner {
 
 		const gameDate = new Date().toISOString();
 		const rows = playerStats.map(stats =>
-			[gameId, gameDate, stats.id, stats.name, stats.winner, stats.elimination_round, stats.cause_of_elimination.join(';'), stats.num_bluffs, stats.successful_bluffs, stats.failed_bluffs, stats.challenges_won, stats.challenges_lost, stats.coups_launched, stats.assassinations_blocked, stats.total_coins_earned, stats.coins_lost_to_theft, model, personalities, publicDiscussion].join(',')
+			[gameId, gameDate, stats.id, stats.name, stats.winner, stats.elimination_round, stats.cause_of_elimination.join(';'), stats.num_bluffs, stats.successful_bluffs, stats.failed_bluffs, stats.challenges_won, stats.challenges_lost, stats.coups_launched, stats.assassinations_blocked, stats.total_coins_earned, stats.coins_lost_to_theft, stats.attacks_received, stats.attacks_launched, stats.model, model, personalities, publicDiscussion, totalPlayTime].join(',')
 		).join('\n');
 
 		fs.appendFileSync(csvPath, rows + '\n');
 	}
 
 	private async startGame(options: any): Promise<void> {
+		const startTime = Date.now();
 		const gameId = this.generateGameId();
 		this.setupLogging(gameId);
 
@@ -107,7 +108,8 @@ export class GameRunner {
 		const engine = new GameEngine(players, options.discussion);
 
 		const finalStats = await engine.playGame();
-		await this.writeResultsToCsv(gameId, finalStats, playerModels.map((pm: any) => pm.model).join(';'), options.personalities || false, options.discussion || false);
+		const totalPlayTime = (Date.now() - startTime) / 1000;
+		await this.writeResultsToCsv(gameId, finalStats, playerModels.map((pm: any) => pm.model).join(';'), options.personalities || false, options.discussion || false, totalPlayTime);
 	}
 
 	private createPlayers(count: number, playerModels: { provider: LLMProvider, model: string }[], usePersonalities: boolean): LLMPlayer[] {

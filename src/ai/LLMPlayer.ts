@@ -15,30 +15,33 @@ interface ActionResponse {
 interface ChallengeResponse {
 	reasoning: string;
 	challenge: boolean;
+	discussion?: string;
 }
 
 interface BlockResponse {
 	reasoning: string;
 	block: boolean;
 	character?: CharacterType;
+	discussion?: string;
 }
 
 interface CardLossResponse {
 	reasoning: string;
 	card: CharacterType;
+	discussion?: string;
 }
 
 interface ExchangeResponse {
 	reasoning: string;
 	keep: CharacterType[];
+	discussion?: string;
 }
 
 export class LLMPlayer extends Player {
 	private openai: OpenAI;
-	private model: string;
+	public model: string;
 	private personality?: Personality;
 	private tools: any;
-	private provider: LLMProvider;
 
 	constructor(
 		id: string,
@@ -48,8 +51,7 @@ export class LLMPlayer extends Player {
 		personality: Personality,
 		provider: LLMProvider = LLMProvider.OPENAI
 	) {
-		super(id, name);
-		this.provider = provider;
+		super(id, name, model);
 		const baseURL = this.getBaseUrl(provider);
 		this.openai = new OpenAI({ apiKey, baseURL });
 		this.personality = personality;
@@ -95,7 +97,7 @@ export class LLMPlayer extends Player {
 		}
 	}
 
-	async decideChallengeAction(gameState: GameState, action: GameAction): Promise<boolean> {
+	async decideChallengeAction(gameState: GameState, action: GameAction): Promise<{challenge: boolean, discussion?: string}> {
 		const prompt = PromptBuilder.buildChallengePrompt(gameState, action, this.id, this.personality);
 
 		try {
@@ -115,14 +117,14 @@ export class LLMPlayer extends Player {
 			const challengeData: ChallengeResponse = JSON.parse(toolCall.function.arguments);
 			console.log(`💭 ${this.name}: ${challengeData.reasoning}`);
 
-			return challengeData.challenge;
+			return { challenge: challengeData.challenge, discussion: challengeData.discussion };
 		} catch (error) {
 			console.warn(`⚠️ LLM call failed for ${this.name}, defaulting to no challenge`);
-			return false;
+			return { challenge: false };
 		}
 	}
 
-	async decideBlockAction(gameState: GameState, action: GameAction): Promise<{ block: boolean, character?: CharacterType }> {
+	async decideBlockAction(gameState: GameState, action: GameAction): Promise<{ block: boolean, character?: CharacterType, discussion?: string }> {
 		const prompt = PromptBuilder.buildBlockPrompt(gameState, action, this.id, this.personality);
 
 		try {
@@ -144,7 +146,8 @@ export class LLMPlayer extends Player {
 
 			return {
 				block: blockData.block,
-				character: blockData.character
+				character: blockData.character,
+				discussion: blockData.discussion
 			};
 		} catch (error) {
 			console.warn(`⚠️ LLM call failed for ${this.name}, defaulting to no block`);
@@ -152,7 +155,7 @@ export class LLMPlayer extends Player {
 		}
 	}
 
-	async chooseCardToLose(gameState: GameState): Promise<CharacterType> {
+	async chooseCardToLose(gameState: GameState): Promise<{card: CharacterType, discussion?: string}> {
 		const prompt = PromptBuilder.buildCardLossPrompt(gameState, this.id, this.personality);
 
 		try {
@@ -175,19 +178,19 @@ export class LLMPlayer extends Player {
 			// Validate the player actually has this card
 			const player = gameState.players.find(p => p.id === this.id)!;
 			if (player.cards.includes(lossData.card as CharacterType)) {
-				return lossData.card as CharacterType;
+				return { card: lossData.card as CharacterType, discussion: lossData.discussion };
 			} else {
 				// Fallback to first available card
-				return player.cards[0];
+				return { card: player.cards[0] };
 			}
 		} catch (error) {
 			console.warn(`⚠️ LLM call failed for ${this.name}, choosing random card to lose`);
 			const player = gameState.players.find(p => p.id === this.id)!;
-			return player.cards[0];
+			return { card: player.cards[0] };
 		}
 	}
 
-	async chooseCardsForExchange(gameState: GameState, availableCards: CharacterType[]): Promise<CharacterType[]> {
+	async chooseCardsForExchange(gameState: GameState, availableCards: CharacterType[]): Promise<{cards: CharacterType[], discussion?: string}> {
 		const prompt = PromptBuilder.buildExchangePrompt(gameState, this.id, availableCards, this.personality);
 
 		try {
@@ -213,15 +216,15 @@ export class LLMPlayer extends Player {
 			// Validate the selection
 			if (exchangeData.keep.length === requiredCount &&
 				exchangeData.keep.every(card => availableCards.includes(card as CharacterType))) {
-				return exchangeData.keep as CharacterType[];
+				return { cards: exchangeData.keep as CharacterType[], discussion: exchangeData.discussion };
 			} else {
 				// Fallback: keep current cards if available, otherwise take first available
-				return availableCards.slice(0, requiredCount) as CharacterType[];
+				return { cards: availableCards.slice(0, requiredCount) as CharacterType[] };
 			}
 		} catch (error) {
 			console.warn(`⚠️ LLM call failed for ${this.name}, using fallback card selection`);
 			const player = gameState.players.find(p => p.id === this.id)!;
-			return availableCards.slice(0, player.cards.length) as CharacterType[];
+			return { cards: availableCards.slice(0, player.cards.length) as CharacterType[] };
 		}
 	}
 
