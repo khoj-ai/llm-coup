@@ -76,6 +76,10 @@ export class PromptBuilder {
 				reasoning: {
 				  type: "string",
 				  description: "Your reasoning for challenging or not challenging"
+				},
+				discussion: {
+				  type: "string",
+				  description: "An optional message to say to the other players about your decision."
 				}
 			  },
 			  required: ["challenge", "reasoning"],
@@ -103,6 +107,10 @@ export class PromptBuilder {
 				reasoning: {
 				  type: "string",
 				  description: "Your reasoning for blocking or not blocking"
+				},
+				discussion: {
+				  type: "string",
+				  description: "An optional message to say to the other players about your decision."
 				}
 			  },
 			  required: ["block", "reasoning"],
@@ -120,12 +128,16 @@ export class PromptBuilder {
 			  properties: {
 				card: {
 				  type: "string",
-				  enum: ["DUKE", "ASSASSIN", "CAPTAIN", "AMBASSADOR", "CONTESSA"],
+				  enum: Object.values(CharacterType),
 				  description: "The character card you choose to lose"
 				},
 				reasoning: {
 				  type: "string",
 				  description: "Why you chose to lose this card"
+				},
+				discussion: {
+				  type: "string",
+				  description: "An optional message to say to the other players about your decision."
 				}
 			  },
 			  required: ["card", "reasoning"],
@@ -152,6 +164,10 @@ export class PromptBuilder {
 				reasoning: {
 				  type: "string",
 				  description: "Your strategy for these card choices"
+				},
+				discussion: {
+				  type: "string",
+				  description: "An optional message to say to the other players about your decision."
 				}
 			  },
 			  required: ["keep", "reasoning"],
