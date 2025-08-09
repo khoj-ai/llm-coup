@@ -16,7 +16,10 @@ def get_metric_descriptions():
         'bluffing_frequency': 'The average number of bluffs a model makes per game it plays (a simple average across all player instances).',
         'bluffs_per_round': 'The average number of bluffs a model makes per round survived, providing a more normalized measure of bluffing tendency.',
         'average_coins_earned': 'The average number of coins earned by a model\'s players by the end of each game.',
-        'economic_efficiency_ratio': 'The ratio of total coins earned to total coins lost to theft for a model. Higher is better. A value of NaN or inf means the model never had coins stolen.'
+        'economic_efficiency_ratio': 'The ratio of total coins earned to total coins lost to theft for a model. Higher is better. A value of NaN or inf means the model never had coins stolen.',
+        'challenge_win_rate': 'The ratio of challenges won to total challenges made (won + lost).',
+        'aggression_ratio': 'The ratio of attacks launched to attacks received. Higher indicates a more aggressive playstyle.',
+        'avg_play_time': 'The average total play time in seconds for games involving this model.'
     }
 
 def run_analysis(df, output_dir, analysis_type):
@@ -43,7 +46,15 @@ def run_analysis(df, output_dir, analysis_type):
     fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Win Rate: %{y}<br>' + descriptions['win_rate'])
     fig.write_html(os.path.join(output_dir, "win_rate_by_model.html"))
 
-    # 2. Deception Effectiveness
+    # 2. Average Elimination Round
+    logging.info("Calculating Average Elimination Round...")
+    elimination_stats = df[~df['winner']].groupby('model')['elimination_round'].mean().reset_index(name='average_elimination_round')
+    fig = px.bar(elimination_stats, x='model', y='average_elimination_round', title=f"Average Elimination Round ({analysis_type})",
+                 hover_name='model', hover_data={'model': False, 'average_elimination_round': ':.2f'})
+    fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Average Elimination Round: %{y}<br>' + descriptions['average_elimination_round'])
+    fig.write_html(os.path.join(output_dir, "average_elimination_round_by_model.html"))
+
+    # 3. Deception Effectiveness
     logging.info("Calculating Deception Effectiveness...")
     df['game_duration'] = df.groupby('game_id')['elimination_round'].transform('max')
     df['rounds_survived'] = np.where(df['winner'], df['game_duration'], df['elimination_round'])
@@ -70,7 +81,41 @@ def run_analysis(df, output_dir, analysis_type):
     fig = px.bar(eco_stats, x='model', y=['avg_coins_earned', 'efficiency_ratio'], title=f"Economic Performance ({analysis_type})", barmode='group')
     fig.write_html(os.path.join(output_dir, "economic_performance.html"))
 
-    logging.info(f"--- Finished {analysis_type} Analysis --- ")
+    # 4. Challenge Analysis
+    logging.info("Calculating Challenge Rates...")
+    challenge_stats = df.groupby('model').agg(
+        challenges_won=('challenges_won', 'sum'),
+        challenges_lost=('challenges_lost', 'sum')
+    ).reset_index()
+    challenge_stats['total_challenges'] = challenge_stats['challenges_won'] + challenge_stats['challenges_lost']
+    challenge_stats['challenge_win_rate'] = np.divide(challenge_stats['challenges_won'], challenge_stats['total_challenges'])
+    challenge_stats['challenge_win_rate'] = challenge_stats['challenge_win_rate'].replace([np.inf, -np.inf], np.nan)
+    fig = px.bar(challenge_stats, x='model', y=['challenge_win_rate'], title=f"Challenge Win Rate ({analysis_type})", barmode='group')
+    fig.update_traces(hovertemplate='<b>%{x}</b><br>Challenge Win Rate: %{y:.2f}<br>' + descriptions['challenge_win_rate'])
+    fig.write_html(os.path.join(output_dir, "challenge_behavior.html"))
+
+    # 5. Aggression Analysis
+    logging.info("Calculating Aggression Metrics...")
+    aggression_stats = df.groupby('model').agg(
+        attacks_launched=('attacks_launched', 'sum'),
+        attacks_received=('attacks_received', 'sum'),
+        coups_launched=('coups_launched', 'sum')
+    ).reset_index()
+    aggression_stats['aggression_ratio'] = np.divide(aggression_stats['attacks_launched'], aggression_stats['attacks_received'])
+    aggression_stats['aggression_ratio'] = aggression_stats['aggression_ratio'].replace([np.inf, -np.inf], np.nan)
+    fig = px.bar(aggression_stats, x='model', y=['attacks_launched', 'attacks_received', 'coups_launched', 'aggression_ratio'], title=f"Aggression Metrics ({analysis_type})", barmode='group')
+    fig.write_html(os.path.join(output_dir, "aggression_metrics.html"))
+
+    # 6. Game Dynamics
+    logging.info("Analyzing Game Dynamics...")
+    game_dynamics = df.groupby('model').agg(
+        avg_play_time=('total_play_time', 'mean')
+    ).reset_index()
+    fig = px.bar(game_dynamics, x='model', y='avg_play_time', title=f"Average Play Time per Game ({analysis_type})")
+    fig.update_traces(hovertemplate='<b>%{x}</b><br>Average Play Time: %{y:.2f}s<br>' + descriptions['avg_play_time'])
+    fig.write_html(os.path.join(output_dir, "game_dynamics.html"))
+
+    logging.info(f"--- Finished {analysis_type} Analysis ---")
 
 def main():
     df = pd.read_csv("../results.csv")

@@ -114,9 +114,10 @@ export class GameRunner {
 
 	private createPlayers(count: number, playerModels: { provider: LLMProvider, model: string }[], usePersonalities: boolean): LLMPlayer[] {
 		const personalities = usePersonalities ? this.shuffleArray(Object.values(Personality)) : [];
+		const shuffledPlayerModels = this.shuffleArray([...playerModels]);
 
 		return Array.from({ length: count }, (_, i) => {
-			const playerModel = playerModels[i % playerModels.length];
+			const playerModel = shuffledPlayerModels[i % shuffledPlayerModels.length];
 			const personality = personalities[i % personalities.length];
 			const playerName = usePersonalities ? `Player ${i + 1} (${personality})` : `Player ${i + 1} (${playerModel.provider}:${playerModel.model})`;
 			const apiKey = this.getApiKey(playerModel.provider)!;
@@ -148,6 +149,10 @@ export class GameRunner {
 			case LLMProvider.OPENAI:
 				envVar = 'OPENAI_API_KEY';
 				apiKey = process.env.OPENAI_API_KEY;
+				break;
+			case LLMProvider.GROK:
+				envVar = 'GROK_API_KEY';
+				apiKey = process.env.GROK_API_KEY;
 				break;
 		}
 

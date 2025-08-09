@@ -65,6 +65,8 @@ export class LLMPlayer extends Player {
 				return 'https://generativelanguage.googleapis.com/v1beta/openai/';
 			case LLMProvider.ANTHROPIC:
 				return 'https://api.anthropic.com/v1/'; // Placeholder, check actual API endpoint
+			case LLMProvider.GROK:
+				return 'https://api.x.ai/v1/';
 			default:
 				return undefined;
 		}
@@ -74,12 +76,13 @@ export class LLMPlayer extends Player {
 		const prompt = PromptBuilder.buildActionPrompt(gameState, this.id, this.personality);
 
 		try {
+			const temperature = this.model.startsWith('gpt-5') ? 1.0 : 0.7;
 			const response = await this.openai.chat.completions.create({
 				model: this.model,
 				messages: [{ role: 'user', content: prompt }],
 				tools: [this.tools.chooseAction],
 				tool_choice: { type: 'function', function: { name: 'choose_action' } },
-				temperature: 0.7
+				temperature: temperature
 			});
 
 			const toolCall = response.choices[0].message.tool_calls?.[0];
@@ -99,6 +102,7 @@ export class LLMPlayer extends Player {
 
 	async decideChallengeAction(gameState: GameState, action: GameAction): Promise<{challenge: boolean, discussion?: string}> {
 		const prompt = PromptBuilder.buildChallengePrompt(gameState, action, this.id, this.personality);
+		const temperature = this.model.startsWith('gpt-5') ? 1.0 : 0.7;
 
 		try {
 			const response = await this.openai.chat.completions.create({
@@ -106,7 +110,7 @@ export class LLMPlayer extends Player {
 				messages: [{ role: 'user', content: prompt }],
 				tools: [this.tools.decideChallengeAction],
 				tool_choice: { type: 'function', function: { name: 'decide_challenge' } },
-				temperature: 0.7
+				temperature: temperature
 			});
 
 			const toolCall = response.choices[0].message.tool_calls?.[0];
@@ -126,6 +130,7 @@ export class LLMPlayer extends Player {
 
 	async decideBlockAction(gameState: GameState, action: GameAction): Promise<{ block: boolean, character?: CharacterType, discussion?: string }> {
 		const prompt = PromptBuilder.buildBlockPrompt(gameState, action, this.id, this.personality);
+		const temperature = this.model.startsWith('gpt-5') ? 1.0 : 0.7;
 
 		try {
 			const response = await this.openai.chat.completions.create({
@@ -133,7 +138,7 @@ export class LLMPlayer extends Player {
 				messages: [{ role: 'user', content: prompt }],
 				tools: [this.tools.decideBlockAction],
 				tool_choice: { type: 'function', function: { name: 'decide_block' } },
-				temperature: 0.7
+				temperature: temperature
 			});
 
 			const toolCall = response.choices[0].message.tool_calls?.[0];
@@ -157,6 +162,7 @@ export class LLMPlayer extends Player {
 
 	async chooseCardToLose(gameState: GameState): Promise<{card: CharacterType, discussion?: string}> {
 		const prompt = PromptBuilder.buildCardLossPrompt(gameState, this.id, this.personality);
+		const temperature = this.model.startsWith('gpt-5') ? 1.0 : 0.7;
 
 		try {
 			const response = await this.openai.chat.completions.create({
@@ -164,7 +170,7 @@ export class LLMPlayer extends Player {
 				messages: [{ role: 'user', content: prompt }],
 				tools: [this.tools.chooseCardToLose],
 				tool_choice: { type: 'function', function: { name: 'choose_card_to_lose' } },
-				temperature: 0.7
+				temperature: temperature
 			});
 
 			const toolCall = response.choices[0].message.tool_calls?.[0];
@@ -192,6 +198,7 @@ export class LLMPlayer extends Player {
 
 	async chooseCardsForExchange(gameState: GameState, availableCards: CharacterType[]): Promise<{cards: CharacterType[], discussion?: string}> {
 		const prompt = PromptBuilder.buildExchangePrompt(gameState, this.id, availableCards, this.personality);
+		const temperature = this.model.startsWith('gpt-5') ? 1.0 : 0.7;
 
 		try {
 			const response = await this.openai.chat.completions.create({
@@ -199,7 +206,7 @@ export class LLMPlayer extends Player {
 				messages: [{ role: 'user', content: prompt }],
 				tools: [this.tools.chooseCardsForExchange],
 				tool_choice: { type: 'function', function: { name: 'choose_cards_for_exchange' } },
-				temperature: 0.7
+				temperature: temperature
 			});
 
 			const toolCall = response.choices[0].message.tool_calls?.[0];
