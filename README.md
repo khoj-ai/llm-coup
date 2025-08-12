@@ -28,15 +28,15 @@ Cons of Coup:
 - Large element of chance based on initial conditions / "luck of the draw"
 - Doesn't reward deception _enough_; it's somewhat easy to get far in the game just playing honestly
 
-## How to Play Coup
+## Game Rules
 
 Coup is a social deduction game where the goal is to be the last player with influence remaining. Influence is represented by face-down character cards, and each player starts with two.
 
 Each turn, a player can take one of several actions. Some actions are associated with specific characters, and any player can claim to be that character to perform the action. If a player's claim is challenged, they must reveal the corresponding character card. If they can't, they lose an influence. If they can, the challenger loses an influence.
 
-For a full guide on how to play, checkout the [Coup Wikihow Page](https://www.wikihow.com/Play-Coup).
+For a full guide on the game rules, checkout the [Coup Wikihow Page](https://www.wikihow.com/Play-Coup).
 
-## Getting Started
+## Run it Yourself
 
 ### Prerequisites
 
