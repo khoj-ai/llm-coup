@@ -48,9 +48,16 @@ def run_analysis(df, output_dir, analysis_type):
 
     # 2. Average Elimination Round
     logging.info("Calculating Average Elimination Round...")
-    elimination_stats = df[~df['winner']].groupby('model')['elimination_round'].mean().reset_index(name='average_elimination_round')
+    # Include winners by using the game duration as their "elimination round"
+    df_with_winner_rounds = df.copy()
+    df_with_winner_rounds['effective_elimination_round'] = np.where(
+        df_with_winner_rounds['winner'], 
+        df_with_winner_rounds.groupby('game_id')['elimination_round'].transform('max') + 1,
+        df_with_winner_rounds['elimination_round'] + 1
+    )
+    elimination_stats = df_with_winner_rounds.groupby('model')['effective_elimination_round'].mean().reset_index(name='average_elimination_round')
     fig = px.bar(elimination_stats, x='model', y='average_elimination_round', title=f"Average Elimination Round ({analysis_type})",
-                 hover_name='model', hover_data={'model': False, 'average_elimination_round': ':.2f'})
+                hover_name='model', hover_data={'model': False, 'average_elimination_round': ':.2f'})
     fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Average Elimination Round: %{y}<br>' + descriptions['average_elimination_round'])
     fig.write_html(os.path.join(output_dir, "average_elimination_round_by_model.html"))
 
