@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: default
 title: Blink Twice: Measuring Strategic Deception Amongst LLMs
 date: 2025-8-13
 author: "Saba Imran"
