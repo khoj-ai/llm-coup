@@ -1,0 +1,529 @@
+Starting Coup Game! 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬─────────┬───────┬────────────────────────┬────────────┐
+│ (index) │ Player                             │ Status  │ Coins │ Hand                   │ Lost Cards │
+├─────────┼────────────────────────────────────┼─────────┼───────┼────────────────────────┼────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Ambassador, Assassin' │ 'None'     │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Duke, Contessa'       │ 'None'     │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Assassin, Captain'    │ 'None'     │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Captain, Captain'     │ 'None'     │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+└─────────┴────────────────────────────────────┴─────────┴───────┴────────────────────────┴────────────┘ 
+Deck size: 3 
+------------------
+ 
+--- Round 1 --- 
+Player 1 (gemini:gemini-2.5-pro)'s turn. Cards: Contessa, Ambassador, Coins: 2 
+💭 Player 1 (gemini:gemini-2.5-pro): It's the start of the game, and I need to build up my coin supply. Foreign Aid is the most efficient way to do that without the risk of being challenged on a bluff. I want to save my bluffing for later in the game when I have more information about the other players. 
+[DISCUSSION] Player 1 (gemini:gemini-2.5-pro): I will take Foreign Aid. 
+Player 1 (gemini:gemini-2.5-pro) chooses: FOREIGN_AID 
+💭 Player 2 (gemini:gemini-2.5-pro): I do not have a Duke, so I would have to bluff to block this action. It is very early in the game, and the risk of being challenged and losing a card is not worth the reward of preventing another player from gaining two coins. I will not block. 
+[DISCUSSION] Player 2 (gemini:gemini-2.5-pro): I'll let it pass. 
+💭 Player 3 (gemini:gemini-2.5-pro): I have the Duke, which allows me to block Foreign Aid. Player 1 is trying to get an early coin advantage, and I can stop it without any risk since I actually have the card. If they challenge me, they will lose a card, which is a great outcome for me. If they don't, the block succeeds. There is no downside to this block. 
+[DISCUSSION] Player 3 (gemini:gemini-2.5-pro): I am the Duke, I will block this action. 
+Player 3 (gemini:gemini-2.5-pro) blocks with Duke 
+💭 Player 5 (gemini:gemini-2.5-pro): It is the beginning of the game, and there is no information about what cards any of the other players have. The risk of losing a card by challenging is too high. If I challenge and am wrong, I will be down to one card and be in a very weak position. The reward for being right is that player3 loses a card, which is good, but not worth the risk of being wrong. 
+💭 Player 4 (gemini:gemini-2.5-pro): It's the first turn of the game, so it's a huge risk to challenge and potentially lose a card. The odds that Player 3 has a Duke are reasonably high since no other Dukes have been revealed. It's not worth the risk for me to challenge when I'm not the one being directly blocked. 
+💭 Player 2 (gemini:gemini-2.5-pro): It is very early in the game, and I am not the player being blocked. The risk of losing one of my two cards is too high at this stage. It is more strategically sound to let Player 1, who is directly affected by the block, decide whether to challenge. My hand of Ambassador and Assassin is strong, and I don't want to risk losing one of them unnecessarily. By not challenging, I preserve my cards and influence. 
+💭 Player 1 (gemini:gemini-2.5-pro): It's the first turn of the game. The risk of losing a card this early is too high. If I challenge and am wrong, I lose one of my two cards, which would be a major setback. The potential reward of Player 3 losing a card is good, but not worth the risk of crippling my own game at the very start. I will allow the block. 
+💭 Player 6 (gemini:gemini-2.5-pro): It is the first turn of the game, and I have no information about any player's tendencies. The action being blocked (Foreign Aid) is not a direct threat to me. The risk of losing one of my two starting cards is too high if my challenge is incorrect. It's more prudent to observe other players and conserve my resources for more critical challenges later in the game. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬─────────┬───────┬────────────────────────┬────────────┐
+│ (index) │ Player                             │ Status  │ Coins │ Hand                   │ Lost Cards │
+├─────────┼────────────────────────────────────┼─────────┼───────┼────────────────────────┼────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Ambassador, Assassin' │ 'None'     │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Duke, Contessa'       │ 'None'     │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Assassin, Captain'    │ 'None'     │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Captain, Captain'     │ 'None'     │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+└─────────┴────────────────────────────────────┴─────────┴───────┴────────────────────────┴────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 2 (gemini:gemini-2.5-pro)'s turn. Cards: Ambassador, Assassin, Coins: 2 
+💭 Player 2 (gemini:gemini-2.5-pro): My hand is strong with an Assassin, but I only have 2 coins. Taking Income is the safest and most guaranteed way to get to 3 coins, which will allow me to use the Assassinate action on my next turn. Player 3 just claimed Duke, so trying for Foreign Aid would be pointless and could draw unwanted attention. A patient approach is best here. 
+[DISCUSSION] Player 2 (gemini:gemini-2.5-pro): I'll play it safe for now and take one coin. 
+Player 2 (gemini:gemini-2.5-pro) chooses: INCOME 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬─────────┬───────┬────────────────────────┬────────────┐
+│ (index) │ Player                             │ Status  │ Coins │ Hand                   │ Lost Cards │
+├─────────┼────────────────────────────────────┼─────────┼───────┼────────────────────────┼────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Ambassador, Assassin' │ 'None'     │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Duke, Contessa'       │ 'None'     │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Assassin, Captain'    │ 'None'     │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Captain, Captain'     │ 'None'     │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+└─────────┴────────────────────────────────────┴─────────┴───────┴────────────────────────┴────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 3 (gemini:gemini-2.5-pro)'s turn. Cards: Duke, Contessa, Coins: 2 
+💭 Player 3 (gemini:gemini-2.5-pro): I have the Duke, so I will use its ability to gain 3 coins. This is the most efficient way for me to increase my coin count and get closer to being able to Coup a player. It also reinforces my claim of having the Duke from the previous turn. 
+[DISCUSSION] Player 3 (gemini:gemini-2.5-pro): I'll use my Duke to take tax. 
+Player 3 (gemini:gemini-2.5-pro) chooses: TAX 
+💭 Player 4 (gemini:gemini-2.5-pro): Player 3 has claimed Duke twice now. While this is suspicious, it's also a consistent story. The risk of losing one of my own valuable cards (Assassin or Captain) this early in the game is too high if I'm wrong. It's better to let them have the coins for now and gather more information before making a risky challenge. 
+💭 Player 5 (gemini:gemini-2.5-pro): Player 3 has consistently claimed to be the Duke, first by blocking Foreign Aid and now by using Tax. While it's possible they are bluffing, challenging them now is very risky. If I challenge and lose, I lose a card, which is a significant setback this early in the game. Since no cards have been revealed, there are still three Dukes in the deck, so the probability of them having one is not low. The risk of losing a card outweighs the potential reward of catching them in a bluff at this stage. It is better to let them take the coins and preserve my own cards. 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 3 has consistently claimed to be the Duke, first by blocking my Foreign Aid and now by using Tax. The risk of losing a card by challenging and being wrong is too high this early in the game. It is more probable that they actually have the Duke, given their confidence. I will not challenge. 
+💭 Player 6 (gemini:gemini-2.5-pro): It is very early in the game, and I only have two cards. The risk of losing a card by challenging unsuccessfully is too high at this stage. Player 3 has consistently claimed to be the Duke (first by blocking, now by taxing), which lends some credibility to their claim. While it's possible they are bluffing, I would rather not take the gamble myself. Allowing them to take 3 coins is less damaging to my position than potentially losing one of my two influence. 
+💭 Player 2 (gemini:gemini-2.5-pro): It is too early in the game to risk losing a card on a challenge. Player 3 has already claimed Duke once to block, so their current claim is consistent with their previous action. While they could be bluffing, the risk of me losing my Assassin or Ambassador by challenging incorrectly is greater than the reward of them losing a card. Letting them gain coins is the safer play for me at this stage. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬─────────┬───────┬────────────────────────┬────────────┐
+│ (index) │ Player                             │ Status  │ Coins │ Hand                   │ Lost Cards │
+├─────────┼────────────────────────────────────┼─────────┼───────┼────────────────────────┼────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Ambassador, Assassin' │ 'None'     │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive' │ 5     │ 'Duke, Contessa'       │ 'None'     │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Assassin, Captain'    │ 'None'     │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Captain, Captain'     │ 'None'     │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+└─────────┴────────────────────────────────────┴─────────┴───────┴────────────────────────┴────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 4 (gemini:gemini-2.5-pro)'s turn. Cards: Assassin, Captain, Coins: 2 
+💭 Player 4 (gemini:gemini-2.5-pro): Player 3 is the richest player and has established a credible Duke claim, making them the biggest threat. I need more coins to be able to afford an assassination. Stealing allows me to gain coins while also reducing the leader's resources. Since I actually have the Captain, I am safe from any challenges. 
+[DISCUSSION] Player 4 (gemini:gemini-2.5-pro): I'm using my Captain to steal 2 coins from player3. 
+Player 4 (gemini:gemini-2.5-pro) chooses: STEAL -> Player 3 (gemini:gemini-2.5-pro) 
+💭 Player 5 (gemini:gemini-2.5-pro): I have two Captains in my hand, so the chances of player4 also having a Captain are extremely low. It is highly probable that they are bluffing. 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 4 is stealing from Player 3, not me. It is not in my best interest to risk one of my cards to challenge an action that doesn't affect me. Player 3 has the option to block or challenge themselves. It is better to let the involved players handle it and preserve my own influence. 
+💭 Player 2 (gemini:gemini-2.5-pro): The risk of losing a card is too high for me when I am not the one being stolen from. It is better to let player3, the target, decide whether to block or challenge. 
+💭 Player 6 (gemini:gemini-2.5-pro): The risk of challenging and losing a card is too high for me, as I am not the target of the steal. Player 3 is the target and has the option to block. It is better to let the player who is directly affected handle the challenge or block. 
+💭 Player 3 (gemini:gemini-2.5-pro): The risk of losing a card by challenging is too high at this stage. I have a strong hand with the Duke and Contessa, and I don't want to lose either of them. Losing 2 coins is not a major setback, as I will still have 3 coins left. I'd rather preserve my influence and see how the game develops. 
+[DISCUSSION] Player 5 (gemini:gemini-2.5-pro): I have to challenge that, Player 4. What are the odds? 
+Challenge! Player 5 (gemini:gemini-2.5-pro) challenges Player 4 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 5 (gemini:gemini-2.5-pro) challenges Player 4 (gemini:gemini-2.5-pro) over Captain 
+Player 4 (gemini:gemini-2.5-pro) has cards: Assassin, Captain 
+Player 4 (gemini:gemini-2.5-pro) reveals Captain! Challenge failed. 
+💭 Player 5 (gemini:gemini-2.5-pro): I have to lose a card, and both of my cards are Captains. Therefore, I must choose to lose a Captain. There is no other option. 
+[DISCUSSION] Player 5 (gemini:gemini-2.5-pro): Well, that did not go as planned. So be it. 
+Player 5 (gemini:gemini-2.5-pro) loses a card: Captain 
+💭 Player 3 (gemini:gemini-2.5-pro): Player 4 just won a challenge with a Captain, so they had to shuffle it back into the deck. It is unlikely they would challenge my claim of also having a Captain right after their successful bluff. This makes my bluff of being a Captain a relatively safe bet to protect my coins. 
+[DISCUSSION] Player 3 (gemini:gemini-2.5-pro): Not so fast, player 4. That Captain must have come straight to me after you shuffled it back in. I am the Captain, and I am blocking your steal. 
+Player 3 (gemini:gemini-2.5-pro) blocks with Captain 
+💭 Player 6 (gemini:gemini-2.5-pro): Player 3 has claimed to be the Duke twice and now claims to be the Captain. It is highly improbable that they have all of these cards. They just witnessed Player 4 successfully use a Captain and are likely bluffing, thinking they can get away with the same claim. The statistical likelihood of them actually having the Captain is low, making this a calculated risk to weaken a player who is becoming too strong. 
+💭 Player 5 (gemini:gemini-2.5-pro): I only have one card left, so a failed challenge would eliminate me from the game. The risk is too high, even though Player 3's claim is suspicious. It is more logical to let player4, the one being blocked, make the challenge, as they have more cards and a more direct interest in the outcome. 
+💭 Player 2 (gemini:gemini-2.5-pro): Player 3 has claimed Duke twice and now Captain. While this is suspicious, the risk of losing one of my two cards is too high. Player 5 just lost a challenge, and I don't want to be next. It's better to let Player 3 and Player 4 resolve this conflict between themselves. I will preserve my influence. 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 3 has claimed Duke twice and now Captain. This pattern of claiming multiple powerful roles suggests a high probability of bluffing. Furthermore, with one Captain confirmed to be in the discard pile (from Player 5) and another just shuffled back into the deck by Player 4, the statistical odds of Player 3 drawing that specific card immediately are low. The potential reward of knocking out a card from a player in a strong financial position is worth the risk of losing one of my own cards. Stopping Player 3's momentum is key right now. 
+💭 Player 4 (gemini:gemini-2.5-pro): Player 3 has consistently claimed to be the Duke, which is believable. However, their immediate claim to have a Captain right after I shuffled one back into the deck is highly suspicious. It feels like a power play and an opportunistic bluff to protect their coins. The probability of them having both a Duke and the specific Captain I just returned is low. Therefore, I will challenge their block. 
+Multiple challengers: Player 1 (gemini:gemini-2.5-pro), Player 4 (gemini:gemini-2.5-pro), Player 6 (gemini:gemini-2.5-pro). Randomly selecting one. 
+[DISCUSSION] Player 6 (gemini:gemini-2.5-pro): Player 3, you've claimed Duke twice and now you're claiming Captain right after Player 4 shuffled one back in. I don't believe you. I challenge. 
+Challenge! Player 6 (gemini:gemini-2.5-pro) challenges Player 3 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 6 (gemini:gemini-2.5-pro) challenges Player 3 (gemini:gemini-2.5-pro) over Captain 
+Player 3 (gemini:gemini-2.5-pro) has cards: Duke, Contessa 
+Player 3 (gemini:gemini-2.5-pro) does not have Captain! Challenge successful. 
+💭 Player 3 (gemini:gemini-2.5-pro): I was caught bluffing as a Captain, which makes me a target. I need to maintain a strong offensive presence to deter further aggression and to have a clear path to victory. The Duke is my only way to quickly accumulate coins for a Coup. Losing the Duke would leave me with only defensive capabilities and slow down my game significantly. While losing the Contessa makes me vulnerable to assassination, it is a calculated risk. Keeping the Duke allows me to aim for a quick win by taxing and then launching a coup, which is a more proactive and powerful strategy in my current situation. 
+[DISCUSSION] Player 3 (gemini:gemini-2.5-pro): Well, you caught me. A failed bluff is a failed bluff. At least I can get rid of this useless Contessa. 
+Player 3 (gemini:gemini-2.5-pro) loses a card: Contessa 
+player3 failed to block player4 with Captain due to challenge 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬─────────┬───────┬────────────────────────┬────────────┐
+│ (index) │ Player                             │ Status  │ Coins │ Hand                   │ Lost Cards │
+├─────────┼────────────────────────────────────┼─────────┼───────┼────────────────────────┼────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Ambassador, Assassin' │ 'None'     │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Duke'                 │ 'Contessa' │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive' │ 4     │ 'Assassin, Duke'       │ 'None'     │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Captain'              │ 'Captain'  │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+└─────────┴────────────────────────────────────┴─────────┴───────┴────────────────────────┴────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 5 (gemini:gemini-2.5-pro)'s turn. Cards: Captain, Coins: 2 
+💭 Player 5 (gemini:gemini-2.5-pro): I only have one card left, so I need to be careful. However, playing passively with INCOME will leave me poor and an easy target. Player 4 has the most coins and just successfully used a Captain. They are unlikely to believe I also have a Captain right after losing one in a failed challenge. This might bait them into a challenge I know I will win. Stealing from them is the best way to improve my position while potentially weakening a strong player. 
+[DISCUSSION] Player 5 (gemini:gemini-2.5-pro): Player 4, that was a bold move with the Captain earlier. Let's see if lightning strikes twice. I'm using my Captain to steal 2 coins from you. 
+Player 5 (gemini:gemini-2.5-pro) chooses: STEAL -> Player 4 (gemini:gemini-2.5-pro) 
+💭 Player 2 (gemini:gemini-2.5-pro): Player 5 has only one card left, so a successful challenge will eliminate them from the game. They just lost a Captain in a failed challenge against the same player, so it is highly improbable that they would draw another Captain and make the exact same play immediately. The potential reward of eliminating a player is well worth the risk of me losing one of my two influence cards. 
+💭 Player 3 (gemini:gemini-2.5-pro): I am not the target of the steal. It is too risky for me to challenge with only one card left, as a failed challenge would eliminate me from the game. It is up to Player 4, the target, to decide what to do. 
+💭 Player 6 (gemini:gemini-2.5-pro): Player 5 just lost a challenge and their Captain. It is highly improbable that they would immediately draw another Captain and then use it on the same player they just challenged. This feels like a desperate bluff, and the reward of eliminating them from the game is worth the risk of me losing a card. 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 5 only has one card left, so claiming Captain is a huge risk for them. If they are bluffing and I challenge them, they are out of the game. However, if they are not bluffing, I will lose a card. Since I am not the target of the steal, it is better for me to let Player 4, the target, decide whether to challenge or block. This way, I risk nothing. 
+💭 Player 4 (gemini:gemini-2.5-pro): Player 5 only has one card left. It's a very risky move to claim Captain with your last card if you don't have it. If I challenge this and they are bluffing, they are out of the game. This is a huge potential reward. While it is possible they drew one of the two remaining Captains, the probability is low. The potential to eliminate a player is worth the risk of me losing one of my two cards. 
+Multiple challengers: Player 2 (gemini:gemini-2.5-pro), Player 4 (gemini:gemini-2.5-pro), Player 6 (gemini:gemini-2.5-pro). Randomly selecting one. 
+[DISCUSSION] Player 4 (gemini:gemini-2.5-pro): You just lost a Captain by challenging me, and now you're claiming to have drawn another one with your single remaining card? I don't buy it. I challenge. 
+Challenge! Player 4 (gemini:gemini-2.5-pro) challenges Player 5 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 4 (gemini:gemini-2.5-pro) challenges Player 5 (gemini:gemini-2.5-pro) over Captain 
+Player 5 (gemini:gemini-2.5-pro) has cards: Captain 
+Player 5 (gemini:gemini-2.5-pro) reveals Captain! Challenge failed. 
+💭 Player 4 (gemini:gemini-2.5-pro): I am choosing to lose the Duke because the Assassin is a more powerful card at this stage of the game. There are two players with only one card each, and I have enough coins to use the Assassin's ability on my next turn. This gives me a direct path to eliminating a player. While the Duke's income is valuable, the immediate offensive potential of the Assassin is more critical for my current strategy. 
+[DISCUSSION] Player 4 (gemini:gemini-2.5-pro): That was a costly challenge. I guess I have to get rid of my Duke. 
+Player 4 (gemini:gemini-2.5-pro) loses a card: Duke 
+💭 Player 4 (gemini:gemini-2.5-pro): I only have one card left. If I bluff and get challenged, I will lose the game. It's not worth the risk just to save 2 coins. It's better to let the steal go through and stay in the game with my last card. 
+[DISCUSSION] Player 4 (gemini:gemini-2.5-pro): I can't risk a challenge on a bluff right now. Go ahead, take the coins. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬─────────┬───────┬────────────────────────┬────────────┐
+│ (index) │ Player                             │ Status  │ Coins │ Hand                   │ Lost Cards │
+├─────────┼────────────────────────────────────┼─────────┼───────┼────────────────────────┼────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Ambassador, Assassin' │ 'None'     │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Duke'                 │ 'Contessa' │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Assassin'             │ 'Duke'     │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Alive' │ 4     │ 'Captain'              │ 'Captain'  │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+└─────────┴────────────────────────────────────┴─────────┴───────┴────────────────────────┴────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 6 (gemini:gemini-2.5-pro)'s turn. Cards: Contessa, Ambassador, Coins: 2 
+💭 Player 6 (gemini:gemini-2.5-pro): I actually have the Ambassador, so this is a safe, no-risk action that cannot be successfully challenged. It allows me to potentially swap my defensive Contessa for a more powerful card like a Duke or Assassin, which would improve my position for future turns. 
+[DISCUSSION] Player 6 (gemini:gemini-2.5-pro): I have an Ambassador, so I'm going to use the Exchange action to try and improve my hand. 
+Player 6 (gemini:gemini-2.5-pro) chooses: EXCHANGE 
+💭 Player 4 (gemini:gemini-2.5-pro): I only have one card left. If I challenge and am wrong, I will be eliminated from the game. The potential reward of forcing Player 6 to lose one card is not worth the risk of my own elimination. Therefore, I will not challenge. 
+💭 Player 3 (gemini:gemini-2.5-pro): I only have one card left, so a failed challenge would eliminate me from the game. The risk is too high. Player 6 has two cards, so it's quite possible they have the Ambassador. It's better to let this action pass and preserve my own influence. 
+💭 Player 2 (gemini:gemini-2.5-pro): I am holding an Ambassador, which makes it less likely that player6 has one. However, the risk of losing one of my own cards if I'm wrong is too high. The Exchange action doesn't directly hurt me, so it's not worth the risk to challenge. I will not challenge. 
+💭 Player 5 (gemini:gemini-2.5-pro): I only have one card left, so the risk of challenging and being wrong is too high. If I lose the challenge, I'm out of the game. The potential reward of Player 6 losing one of their two cards is not worth the risk of my own elimination. Player 6 has not given me any strong reason to suspect they are bluffing, so I will play it safe. 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 6 is claiming Ambassador, and I also have an Ambassador. This means there is at most one other Ambassador in the deck. While this makes their claim less likely, it's not impossible. The Exchange action is a low-risk, low-reward move, which makes it a plausible claim. If I challenge and fail, I lose one of my two cards, which would be a significant setback. The potential reward of forcing Player 6 to lose a card is not worth the risk of losing my own influence, especially since their action doesn't directly harm me. Therefore, I will not challenge. 
+💭 Player 6 (gemini:gemini-2.5-pro): My current hand of Contessa and Ambassador is too defensive. I need more offensive power. The Assassin is the strongest offensive card in the game, and I can easily get the 3 coins needed to use it by taking Income on my next turn. Keeping the Contessa is also crucial for defense, as it protects me from assassination attempts from other players. This new hand gives me a powerful offensive capability while maintaining a strong defense. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬─────────┬───────┬────────────────────────┬────────────┐
+│ (index) │ Player                             │ Status  │ Coins │ Hand                   │ Lost Cards │
+├─────────┼────────────────────────────────────┼─────────┼───────┼────────────────────────┼────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Ambassador' │ 'None'     │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Ambassador, Assassin' │ 'None'     │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Duke'                 │ 'Contessa' │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Assassin'             │ 'Duke'     │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Alive' │ 4     │ 'Captain'              │ 'Captain'  │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Assassin'   │ 'None'     │
+└─────────┴────────────────────────────────────┴─────────┴───────┴────────────────────────┴────────────┘ 
+Deck size: 3 
+------------------
+ 
+--- Round 2 --- 
+Player 1 (gemini:gemini-2.5-pro)'s turn. Cards: Contessa, Ambassador, Coins: 2 
+💭 Player 1 (gemini:gemini-2.5-pro): I am low on coins and need to accumulate more to become a threat. My last attempt at Foreign Aid was blocked by a bluff from player3. I am trying it again as it's the most efficient way to gain coins without bluffing a character action. With player4's Duke gone and player3's bluff called, the risk of a block is lower. 
+[DISCUSSION] Player 1 (gemini:gemini-2.5-pro): I need more coins to be a factor in this game. I'll try for Foreign Aid again. 
+Player 1 (gemini:gemini-2.5-pro) chooses: FOREIGN_AID 
+💭 Player 2 (gemini:gemini-2.5-pro): I will not block this action. Player 1 is not a major threat to me right now, and I don't want to risk a bluff. I have a strong hand with two cards, and I don't want to lose one of them by getting challenged. It's better to let them have the two coins and maintain my own position. 
+[DISCUSSION] Player 2 (gemini:gemini-2.5-pro): I'll allow it. It's not worth the risk of a challenge for me at this point. 
+💭 Player 3 (gemini:gemini-2.5-pro): I have the Duke, so there is no risk in blocking. If I am challenged, the challenger will lose a card, which is a great outcome for me. If I am not challenged, I successfully prevent an opponent from gaining coins. This is a win-win situation. 
+[DISCUSSION] Player 3 (gemini:gemini-2.5-pro): As I've established, I am the Duke. I will block the foreign aid. 
+Player 3 (gemini:gemini-2.5-pro) blocks with Duke 
+💭 Player 4 (gemini:gemini-2.5-pro): The risk of challenging and losing is too high. If I lose the challenge, I am out of the game. Player 3 was caught bluffing before, which makes them untrustworthy, but I cannot take the chance. It is better to let Player 1 be blocked and preserve my own life. 
+💭 Player 2 (gemini:gemini-2.5-pro): Player 3 has claimed Duke multiple times and was only caught bluffing when they claimed a different card (Captain). With only one card left, it's a very risky move for them to bluff, especially by re-claiming a character they've been successful with. The probability that they actually have the Duke is high. It is not worth the risk of me losing a card if my challenge fails. Allowing the block also keeps Player 1's coin count low, which is beneficial to me. 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 3 was just caught bluffing when they claimed to have a Captain. Now they are claiming Duke again. Given that they are on their last card, this is a do-or-die situation for them, but their credibility is at an all-time low. It is more likely they are bluffing again to try and stop me from getting coins. I am willing to risk one of my cards to call them out on this, as the reward of knocking them out of the game is high. 
+💭 Player 6 (gemini:gemini-2.5-pro): Player 3 has only one card left. If they are bluffing, they lose the game. This is a very high-risk move for them, which makes me believe they might actually have the Duke. The potential reward of catching them in a bluff is not worth the risk of losing one of my own valuable cards if I'm wrong. It's more prudent to let another player take the risk or to let the block succeed. 
+💭 Player 5 (gemini:gemini-2.5-pro): The risk is far too high for me. I only have one card left, and if I challenge incorrectly, I am out of the game. Player 3 also only has one card left, making them desperate, but they have consistently claimed Duke throughout the game (one was discarded by Player 4). It is plausible they actually have it. The action being blocked (Foreign Aid for Player 1) doesn't affect me directly. It is better to let the players involved in the action (Player 1) or players with more influence to spare handle the challenge. 
+[DISCUSSION] Player 1 (gemini:gemini-2.5-pro): You just lost a challenge on a bluff, Player 3. I don't believe you have the Duke. I challenge. 
+Challenge! Player 1 (gemini:gemini-2.5-pro) challenges Player 3 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 1 (gemini:gemini-2.5-pro) challenges Player 3 (gemini:gemini-2.5-pro) over Duke 
+Player 3 (gemini:gemini-2.5-pro) has cards: Duke 
+Player 3 (gemini:gemini-2.5-pro) reveals Duke! Challenge failed. 
+💭 Player 1 (gemini:gemini-2.5-pro): I have to lose a card because I failed the challenge. My other card is the Ambassador, which I want to keep. The Ambassador's exchange ability gives me a chance to improve my hand and potentially draw a card that can help me gain coins, which is my biggest weakness right now. The Contessa is a strong defensive card, but it's purely reactive. I need to be proactive to get back in the game, and the Ambassador gives me the best chance to do that. It's a risk to lose my protection against assassination, but a necessary one. 
+[DISCUSSION] Player 1 (gemini:gemini-2.5-pro): Well, a failed challenge means I have to pay the price. So be it. 
+Player 1 (gemini:gemini-2.5-pro) loses a card: Contessa 
+player3 successfully blocked player1 with Duke 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬─────────┬───────┬────────────────────────┬────────────┐
+│ (index) │ Player                             │ Status  │ Coins │ Hand                   │ Lost Cards │
+├─────────┼────────────────────────────────────┼─────────┼───────┼────────────────────────┼────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Ambassador'           │ 'Contessa' │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Ambassador, Assassin' │ 'None'     │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive' │ 3     │ 'Captain'              │ 'Contessa' │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Assassin'             │ 'Duke'     │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Alive' │ 4     │ 'Captain'              │ 'Captain'  │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive' │ 2     │ 'Contessa, Assassin'   │ 'None'     │
+└─────────┴────────────────────────────────────┴─────────┴───────┴────────────────────────┴────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 2 (gemini:gemini-2.5-pro)'s turn. Cards: Ambassador, Assassin, Coins: 3 
+💭 Player 2 (gemini:gemini-2.5-pro): I have the Assassin card and the 3 coins required to use it. Player 5 is the most immediate threat among the players with only one card, as they have the most coins (4). Eliminating them now will prevent them from accumulating enough coins for a Coup. This is an aggressive but necessary move to reduce the number of players and increase my chances of winning. 
+[DISCUSSION] Player 2 (gemini:gemini-2.5-pro): I have the coins and the ambition. I'm using my Assassin to eliminate player5. 
+Player 2 (gemini:gemini-2.5-pro) chooses: ASSASSINATE -> Player 5 (gemini:gemini-2.5-pro) 
+💭 Player 6 (gemini:gemini-2.5-pro): Player 2 has played very conservatively so far, only taking income and allowing others' actions. It seems unlikely they would suddenly bluff an assassination, which costs 3 coins. The risk of me losing a card is too high, especially since I have a strong hand with an Assassin and a Contessa. It's better to let the action go through and see if Player 5 can block it themselves. 
+💭 Player 4 (gemini:gemini-2.5-pro): The risk of challenging and being wrong is that I will be eliminated from the game. Since I have an Assassin, I know there are at most two others in play. It is plausible that Player 2 has one of them. Given that Player 2 has been playing passively and saving up coins, it seems like a calculated move rather than a desperate bluff. It is better to not risk my own elimination and let the action go through to the blocking phase. 
+💭 Player 3 (gemini:gemini-2.5-pro): Player 2 has two cards, so the probability of them holding an Assassin is not insignificant. Challenging them is a huge risk for me, as I would be eliminated from the game if I'm wrong. It's better to let the target, Player 5, decide whether to challenge or block. Eliminating another player is also beneficial to my own position. 
+💭 Player 1 (gemini:gemini-2.5-pro): I only have one card left, so a failed challenge would eliminate me. The risk is too high. Player 2 has played conservatively so far, which lends credibility to their claim. It's better to let the target, Player 5, try to block the action themselves. 
+💭 Player 5 (gemini:gemini-2.5-pro): I am on my last life. If I let this action pass, I will be eliminated. My only chance to survive is to challenge the action and hope that Player 2 is bluffing. Blocking by claiming Contessa is not a viable option because two Contessas have already been revealed, making a bluff extremely likely to be challenged and fail. Therefore, my only logical move is to challenge the assassination attempt. 
+[DISCUSSION] Player 5 (gemini:gemini-2.5-pro): You're trying to take me out of the game? I don't think so. I'm on my last card, I have to challenge this. 
+Challenge! Player 5 (gemini:gemini-2.5-pro) challenges Player 2 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 5 (gemini:gemini-2.5-pro) challenges Player 2 (gemini:gemini-2.5-pro) over Assassin 
+Player 2 (gemini:gemini-2.5-pro) has cards: Ambassador, Assassin 
+Player 2 (gemini:gemini-2.5-pro) reveals Assassin! Challenge failed. 
+Player 5 (gemini:gemini-2.5-pro) loses a card: Captain 
+Player 5 (gemini:gemini-2.5-pro) has been eliminated due to failed_challenge. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬──────────────────────┬────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand                 │ Lost Cards         │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼──────────────────────┼────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Ambassador'         │ 'Contessa'         │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 0     │ 'Ambassador, Duke'   │ 'None'             │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Captain'            │ 'Contessa'         │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Assassin'           │ 'Duke'             │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''                   │ 'Captain, Captain' │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Contessa, Assassin' │ 'None'             │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴──────────────────────┴────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 3 (gemini:gemini-2.5-pro)'s turn. Cards: Captain, Coins: 3 
+💭 Player 3 (gemini:gemini-2.5-pro): I have the Captain, so using its ability to steal is the safest and most beneficial move. It increases my coin total to 5, getting me closer to the 7 needed for a coup, and I can withstand a challenge. I am targeting player1 because they just lost a challenge against me and are less likely to risk their last card by challenging again. 
+[DISCUSSION] Player 3 (gemini:gemini-2.5-pro): I'm feeling a bit poor after all that drama. I'll use my Captain to take 2 coins from player1. 
+Player 3 (gemini:gemini-2.5-pro) chooses: STEAL -> Player 1 (gemini:gemini-2.5-pro) 
+💭 Player 2 (gemini:gemini-2.5-pro): Player 3 just revealed and shuffled a Duke. It is statistically unlikely they drew the one remaining Captain in the deck on the very next turn. They have also unsuccessfully bluffed with Captain before. The potential reward of eliminating Player 3, who is down to one card, is worth the risk of me losing a card. 
+💭 Player 4 (gemini:gemini-2.5-pro): Player 3 has claimed Duke and Captain multiple times. While they were caught in a bluff claiming Captain before, their last claim of Duke was successful. The steal is not directed at me, and I only have one card left. The risk of being eliminated by a failed challenge is too high. It is better to let the target of the steal, Player 1, who also has one card, decide whether to challenge or not. 
+💭 Player 6 (gemini:gemini-2.5-pro): Player 3 has a history of bluffing, including a failed Captain claim earlier. There is only one Captain card left in the entire game. Player 3 has only one card. The probability that they drew that specific card after their last action (shuffling a Duke) is very low. The potential reward of eliminating a player by winning this challenge is very high and outweighs the risk of losing one of my own cards. 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 3 was recently caught bluffing a Captain claim, which makes this claim suspicious. However, they have also shown a willingness to make bold, true claims, as seen when they successfully claimed Duke right after their bluff was called. I just lost a challenge against them on that Duke claim, and losing another challenge would eliminate me from the game. The risk of being eliminated is too high. A much safer play is to decline the challenge and instead use my Ambassador to block the steal. This forces Player 3 to either accept the block or challenge me, and since I actually have the Ambassador, I would win that challenge and eliminate them. Therefore, not challenging is the optimal low-risk, high-reward move. 
+Multiple challengers: Player 2 (gemini:gemini-2.5-pro), Player 6 (gemini:gemini-2.5-pro). Randomly selecting one. 
+[DISCUSSION] Player 2 (gemini:gemini-2.5-pro): Player 3, you just showed a Duke, and now you're claiming to have drawn the last Captain in the deck right after? I don't believe it. I challenge. 
+Challenge! Player 2 (gemini:gemini-2.5-pro) challenges Player 3 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 2 (gemini:gemini-2.5-pro) challenges Player 3 (gemini:gemini-2.5-pro) over Captain 
+Player 3 (gemini:gemini-2.5-pro) has cards: Captain 
+Player 3 (gemini:gemini-2.5-pro) reveals Captain! Challenge failed. 
+💭 Player 2 (gemini:gemini-2.5-pro): I have no coins, so the Duke is essential for me to build my economy through Tax. While the Ambassador offers protection against stealing and the ability to exchange, my immediate need for income is more critical. Without coins, I can't perform any powerful actions. Keeping the Duke gives me a clear path to becoming a threat in the game, even if it makes me a target. Losing the Ambassador is a calculated risk to improve my financial situation. 
+[DISCUSSION] Player 2 (gemini:gemini-2.5-pro): That was a good call, Player 3. You've bested me. I'll have to give up one of my cards. I'll be keeping my Duke to build up my treasury. 
+Player 2 (gemini:gemini-2.5-pro) loses a card: Ambassador 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 3 is trying to steal my only 2 coins. I have the Ambassador, which can block a steal. There is no reason not to block here. If I am challenged, I will win the challenge and player3 will be eliminated. If I am not challenged, I keep my coins. It is a no-lose situation for me. 
+[DISCUSSION] Player 1 (gemini:gemini-2.5-pro): Not so fast, Player 3. I am the Ambassador, and I will block your attempt to steal from me. 
+Player 1 (gemini:gemini-2.5-pro) blocks with Ambassador 
+💭 Player 2 (gemini:gemini-2.5-pro): The risk of challenging is too high. I only have one card left, and if I challenge incorrectly, I will be eliminated from the game. The potential reward of eliminating Player 1 is not worth the risk of my own elimination. It is better to let Player 1 and Player 3 resolve this conflict between themselves. 
+💭 Player 4 (gemini:gemini-2.5-pro): The risk of challenging and losing my last card is too high. Player 1 is on their last card, so a bluff is plausible, but it's a risk I don't need to take as the situation doesn't directly involve me. It's better to let Player 3, the one being blocked, decide whether to challenge. I will preserve my final card, the Assassin, for a more impactful move. 
+💭 Player 3 (gemini:gemini-2.5-pro): The risk of challenging and failing is too high. If I fail the challenge, I lose my last card and am eliminated from the game. Player 1 is desperate, so a bluff is likely, but it's not worth betting my entire game on it. It's better to concede the block and use my Duke next turn to gain coins. 
+💭 Player 6 (gemini:gemini-2.5-pro): Player 1 is on their last card and just lost a challenge. They are in a desperate position, making a bluff to protect their last 2 coins highly probable. If I win the challenge, Player 1 is eliminated, which is a massive advantage. If I lose, I go down to one card, which is a risk I'm willing to take to eliminate a player. The potential reward outweighs the risk. 
+[DISCUSSION] Player 6 (gemini:gemini-2.5-pro): Player 1, you've been quiet about having an Ambassador until the very moment you needed it to save your last two coins. I don't believe you have it. I challenge. 
+Challenge! Player 6 (gemini:gemini-2.5-pro) challenges Player 1 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 6 (gemini:gemini-2.5-pro) challenges Player 1 (gemini:gemini-2.5-pro) over Ambassador 
+Player 1 (gemini:gemini-2.5-pro) has cards: Ambassador 
+Player 1 (gemini:gemini-2.5-pro) reveals Ambassador! Challenge failed. 
+💭 Player 6 (gemini:gemini-2.5-pro): My Contessa is my most expendable card. The immediate threat of assassination is low as Player 2 has no coins. Keeping the Assassin gives me a clear path to victory by eliminating other players. I can get the required coins in my next turn. 
+[DISCUSSION] Player 6 (gemini:gemini-2.5-pro): Well, a failed challenge is a failed challenge. I have to lose a card. So be it. 
+Player 6 (gemini:gemini-2.5-pro) loses a card: Contessa 
+player1 successfully blocked player3 with Ambassador 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬────────────┬────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand       │ Lost Cards         │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼────────────┼────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Assassin' │ 'Contessa'         │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 0     │ 'Duke'     │ 'Ambassador'       │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'     │ 'Contessa'         │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Assassin' │ 'Duke'             │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''         │ 'Captain, Captain' │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Assassin' │ 'Contessa'         │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴────────────┴────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 4 (gemini:gemini-2.5-pro)'s turn. Cards: Assassin, Coins: 2 
+💭 Player 4 (gemini:gemini-2.5-pro): I have 2 coins and an Assassin card. The 'Assassinate' action costs 3 coins. The most prudent and low-risk action is to take 'Income' to increase my coins to 3. This will allow me to use my powerful Assassin card on my next turn without having to bluff or risk being blocked. All other players have only one card left, so a successful assassination will eliminate a player. 
+[DISCUSSION] Player 4 (gemini:gemini-2.5-pro): I'm just one coin away from being able to use my assassin. The safest move is to take income and prepare for my next turn. 
+Player 4 (gemini:gemini-2.5-pro) chooses: INCOME 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬────────────┬────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand       │ Lost Cards         │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼────────────┼────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Assassin' │ 'Contessa'         │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 0     │ 'Duke'     │ 'Ambassador'       │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'     │ 'Contessa'         │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Duke'             │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''         │ 'Captain, Captain' │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Assassin' │ 'Contessa'         │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴────────────┴────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 6 (gemini:gemini-2.5-pro)'s turn. Cards: Assassin, Coins: 2 
+💭 Player 6 (gemini:gemini-2.5-pro): I have an Assassin, a powerful card for eliminating players. To use it, I need 3 coins, and I currently have 2. The safest way to get to 3 coins is to take Income. This action can't be blocked or challenged, ensuring I can assassinate a player on my next turn. Bluffing or taking Foreign Aid is too risky, as a failed challenge would eliminate me. 
+[DISCUSSION] Player 6 (gemini:gemini-2.5-pro): I'll play it safe and take one coin. I need to build up my treasury for a future move. 
+Player 6 (gemini:gemini-2.5-pro) chooses: INCOME 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬────────────┬────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand       │ Lost Cards         │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼────────────┼────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 2     │ 'Assassin' │ 'Contessa'         │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 0     │ 'Duke'     │ 'Ambassador'       │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'     │ 'Contessa'         │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Duke'             │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''         │ 'Captain, Captain' │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Contessa'         │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴────────────┴────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+--- Round 3 --- 
+Player 1 (gemini:gemini-2.5-pro)'s turn. Cards: Assassin, Coins: 2 
+💭 Player 1 (gemini:gemini-2.5-pro): I have an Assassin but only 2 coins. I need 3 coins to use the Assassinate action. Taking Income is the safest, guaranteed way to get the last coin I need. Bluffing or taking Foreign Aid is too risky, as a failed challenge would eliminate me from the game. This sets me up to assassinate a player on my next turn. 
+[DISCUSSION] Player 1 (gemini:gemini-2.5-pro): I'll play it safe and take one coin. I need to be prepared for my next move. 
+Player 1 (gemini:gemini-2.5-pro) chooses: INCOME 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬────────────┬────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand       │ Lost Cards         │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼────────────┼────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Contessa'         │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 0     │ 'Duke'     │ 'Ambassador'       │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'     │ 'Contessa'         │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Duke'             │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''         │ 'Captain, Captain' │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Contessa'         │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴────────────┴────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 2 (gemini:gemini-2.5-pro)'s turn. Cards: Duke, Coins: 0 
+💭 Player 2 (gemini:gemini-2.5-pro): I have 0 coins and my card is a Duke. The best and most logical action is to use my Duke to take 3 coins. It's the fastest way to build my treasury. Since I actually have the card, I cannot lose a challenge. If another player challenges me, they will lose their last card and be eliminated from the game. 
+[DISCUSSION] Player 2 (gemini:gemini-2.5-pro): I have a Duke, so I will use it to take the tax. 
+Player 2 (gemini:gemini-2.5-pro) chooses: TAX 
+💭 Player 1 (gemini:gemini-2.5-pro): The risk of challenging and losing is too high, as it would eliminate me from the game. Player 2 has been transparent about holding a Duke, so the probability of them actually having it is high. It's better to let them take the coins and preserve my own card. 
+💭 Player 6 (gemini:gemini-2.5-pro): Player 2 just lost a card and explicitly stated they were keeping their Duke. While it could be a bluff, it's a very strong tell. My own card is an Assassin, so if I challenge and fail, I am out of the game. The risk of elimination is too high based on a claim that is quite credible. It is better to let them have the coins and stay in the game. 
+💭 Player 4 (gemini:gemini-2.5-pro): Player 2 explicitly stated they were keeping their Duke in the last round after losing their Ambassador. It is highly probable they are telling the truth. Challenging and losing would eliminate me from the game, as I only have one card. The risk is not worth the potential reward. Therefore, I will not challenge. 
+💭 Player 3 (gemini:gemini-2.5-pro): Player 2 has only one card, and I hold a Duke. This means there's only one other Duke in play. The risk of challenging and losing is that I would be eliminated from the game. Given that Player 2 just had a successful assassination, they are a credible threat. It is not worth the risk of my elimination to challenge this. I will let them take the tax. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬────────────┬────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand       │ Lost Cards         │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼────────────┼────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Contessa'         │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'     │ 'Ambassador'       │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'     │ 'Contessa'         │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Duke'             │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''         │ 'Captain, Captain' │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Contessa'         │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴────────────┴────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 3 (gemini:gemini-2.5-pro)'s turn. Cards: Duke, Coins: 3 
+💭 Player 3 (gemini:gemini-2.5-pro): Player 2 just claimed Duke, but I actually have the Duke. By using the TAX action, I am directly challenging their claim. If they or anyone else challenges me, they will lose a card, and I will prove I have the Duke. This is the strongest possible move to assert my position and hopefully eliminate another player. 
+[DISCUSSION] Player 3 (gemini:gemini-2.5-pro): Player 2, that's a bold move claiming the Duke. The problem is, I am the Duke, and I'm the one who will be taking tax. 
+Player 3 (gemini:gemini-2.5-pro) chooses: TAX 
+💭 Player 1 (gemini:gemini-2.5-pro): Player 2 and Player 3 are in a direct conflict, both claiming to be the Duke. As I only have one card remaining, challenging and failing would eliminate me from the game. The risk is far too high. It is more probable that Player 2, who also has only one card and made the initial claim, will challenge Player 3. I will not risk my game on this. 
+💭 Player 4 (gemini:gemini-2.5-pro): Player 3 has claimed Duke and Captain in quick succession, winning challenges on both. The probability of them shuffling a Captain back into the deck and drawing a Duke immediately after is extremely low. Their claim strains credulity, making a bluff highly likely. While challenging is risky as it would eliminate me if I'm wrong, the potential reward of eliminating a strong player like Player 3 is worth the risk. It's a high-stakes move, but the odds are in my favor that this is a bluff. 
+💭 Player 6 (gemini:gemini-2.5-pro): Both Player 2 and Player 3 are claiming to have the Duke. It is a certainty that one of them is bluffing. However, if I challenge Player 3 and am wrong, I will lose my last card and be eliminated from the game. The risk of elimination is too high for me to make the challenge. It is more prudent to let the other players, especially Player 2 whose claim was just contradicted, handle the challenge. 
+💭 Player 2 (gemini:gemini-2.5-pro): I have a Duke. One Duke has been revealed. This means there is only one Duke left in the game. Player 3 is making a counter-claim to my own claim. The odds of them having the last Duke are low. It is more likely they are bluffing to try and get me to back down. If I challenge and win, they are eliminated. It is a high-risk, high-reward play, but given the circumstances, I believe it is the correct move. 
+Multiple challengers: Player 2 (gemini:gemini-2.5-pro), Player 4 (gemini:gemini-2.5-pro). Randomly selecting one. 
+[DISCUSSION] Player 4 (gemini:gemini-2.5-pro): Player 3, you've had an amazing run of cards, but drawing a Duke, then a Captain, and now another Duke right after shuffling seems impossible. I don't believe you have it. I challenge. 
+Challenge! Player 4 (gemini:gemini-2.5-pro) challenges Player 3 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 4 (gemini:gemini-2.5-pro) challenges Player 3 (gemini:gemini-2.5-pro) over Duke 
+Player 3 (gemini:gemini-2.5-pro) has cards: Duke 
+Player 3 (gemini:gemini-2.5-pro) reveals Duke! Challenge failed. 
+Player 4 (gemini:gemini-2.5-pro) loses a card: Assassin 
+Player 4 (gemini:gemini-2.5-pro) has been eliminated due to failed_challenge. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬──────────────┬────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand         │ Lost Cards         │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼──────────────┼────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin'   │ 'Contessa'         │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'       │ 'Ambassador'       │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 6     │ 'Ambassador' │ 'Contessa'         │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 3     │ ''           │ 'Duke, Assassin'   │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''           │ 'Captain, Captain' │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin'   │ 'Contessa'         │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴──────────────┴────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 6 (gemini:gemini-2.5-pro)'s turn. Cards: Assassin, Coins: 3 
+💭 Player 6 (gemini:gemini-2.5-pro): I have the Assassin and enough coins to use it. Player 3 is the biggest threat with 6 coins, so they are the logical target. Even if they claim Contessa, it's worth the risk to try and remove them from the game. 
+[DISCUSSION] Player 6 (gemini:gemini-2.5-pro): Player 3, your impressive run ends now. I'm using my Assassin to take you out. 
+Player 6 (gemini:gemini-2.5-pro) chooses: ASSASSINATE -> Player 3 (gemini:gemini-2.5-pro) 
+💭 Player 1 (gemini:gemini-2.5-pro): It is not in my best interest to challenge this. If I don't challenge, Player 3 is eliminated because all the Contessas are in the discard pile, meaning they cannot block. This removes a strong player from the game. If I challenge and lose, I am eliminated. The risk of my own elimination is not worth the potential reward of saving Player 3, who is a major threat. Therefore, the optimal move is to allow the assassination to proceed. 
+💭 Player 3 (gemini:gemini-2.5-pro): All three Contessas have been revealed and are in the discard pile. This means I cannot block the assassination attempt. If I do not challenge, I will lose a card and be eliminated from the game since I only have one card left. Therefore, my only chance of survival is to successfully challenge Player 6's claim. It is a do-or-die situation, and challenging is my only possible move to stay in the game. 
+💭 Player 2 (gemini:gemini-2.5-pro): I am not the target of the assassination. Player 3 is a strong opponent, and their elimination would be beneficial for me. It is too risky to challenge, as I would be eliminated if I am wrong. Since all the Contessas are out of the game, Player 3 cannot block this. By not challenging, I can ensure the elimination of a strong opponent without any risk to myself. 
+[DISCUSSION] Player 3 (gemini:gemini-2.5-pro): There are no Contessas left in the game, so I can't block you. My only option is to challenge. I don't believe you have the Assassin. 
+Challenge! Player 3 (gemini:gemini-2.5-pro) challenges Player 6 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 3 (gemini:gemini-2.5-pro) challenges Player 6 (gemini:gemini-2.5-pro) over Assassin 
+Player 6 (gemini:gemini-2.5-pro) has cards: Assassin 
+Player 6 (gemini:gemini-2.5-pro) reveals Assassin! Challenge failed. 
+Player 3 (gemini:gemini-2.5-pro) loses a card: Ambassador 
+Player 3 (gemini:gemini-2.5-pro) has been eliminated due to failed_challenge. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬────────────┬────────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand       │ Lost Cards             │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼────────────┼────────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Assassin' │ 'Contessa'             │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'     │ 'Ambassador'           │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 6     │ ''         │ 'Contessa, Ambassador' │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 3     │ ''         │ 'Duke, Assassin'       │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''         │ 'Captain, Captain'     │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 0     │ 'Duke'     │ 'Contessa'             │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴────────────┴────────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+--- Round 4 --- 
+Player 1 (gemini:gemini-2.5-pro)'s turn. Cards: Assassin, Coins: 3 
+💭 Player 1 (gemini:gemini-2.5-pro): I have the Assassin and the 3 coins required to use it. Since all Contessas have been revealed, the action cannot be blocked. This is my best opportunity to eliminate a player. I am targeting player6 because they just successfully assassinated another player and are a clear threat. If they challenge me, I will win, and they will be eliminated. 
+[DISCUSSION] Player 1 (gemini:gemini-2.5-pro): Player 6, that was a bold move with the Assassin. Let's see if you can survive one yourself. I'm using my Assassin to take you out. 
+Player 1 (gemini:gemini-2.5-pro) chooses: ASSASSINATE -> Player 6 (gemini:gemini-2.5-pro) 
+💭 Player 2 (gemini:gemini-2.5-pro): I am not the target of the assassination. The target, Player 6, cannot block this action as all three Contessas have been revealed. Therefore, Player 6's only chance to survive is to challenge Player 1. It is in my best interest to let Player 6 take the risk of challenging. If they are successful, Player 1 is eliminated. If they are not, Player 6 is eliminated. Either way, a player is removed from the game without me risking my final card and my own elimination. 
+💭 Player 6 (gemini:gemini-2.5-pro): This is my final card. If I do not challenge, I will be assassinated and lose the game, as there are no Contessas left in the deck to block the action. Challenging is my only possible path to survival. If I am wrong, I lose anyway, but if I am correct, Player 1 is eliminated and I continue. There is no downside to challenging in this specific scenario. 
+[DISCUSSION] Player 6 (gemini:gemini-2.5-pro): Player 1, you're trying to take me out with your last card after just showing an Ambassador. I'm on my last card as well, so I have nothing to lose. My only option is to challenge you. 
+Challenge! Player 6 (gemini:gemini-2.5-pro) challenges Player 1 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 6 (gemini:gemini-2.5-pro) challenges Player 1 (gemini:gemini-2.5-pro) over Assassin 
+Player 1 (gemini:gemini-2.5-pro) has cards: Assassin 
+Player 1 (gemini:gemini-2.5-pro) reveals Assassin! Challenge failed. 
+Player 6 (gemini:gemini-2.5-pro) loses a card: Duke 
+Player 6 (gemini:gemini-2.5-pro) has been eliminated due to failed_challenge. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬───────────┬────────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand      │ Lost Cards             │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼───────────┼────────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 0     │ 'Captain' │ 'Contessa'             │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 3     │ 'Duke'    │ 'Ambassador'           │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 6     │ ''        │ 'Contessa, Ambassador' │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 3     │ ''        │ 'Duke, Assassin'       │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''        │ 'Captain, Captain'     │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 0     │ ''        │ 'Contessa, Duke'       │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴───────────┴────────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+Player 2 (gemini:gemini-2.5-pro)'s turn. Cards: Duke, Coins: 3 
+💭 Player 2 (gemini:gemini-2.5-pro): My opponent has 0 coins and cannot assassinate me. By using my Duke to take tax, I get to 6 coins. This sets me up to get at least 7 coins on my next turn (either by income or another tax), allowing me to Coup my opponent for the win. Since I actually have the Duke, there is no risk of being challenged and losing. 
+[DISCUSSION] Player 2 (gemini:gemini-2.5-pro): It's down to just the two of us, player1. I have the Duke, so I will take the tax. 
+Player 2 (gemini:gemini-2.5-pro) chooses: TAX 
+💭 Player 1 (gemini:gemini-2.5-pro): It's a do-or-die situation. If I let Player 2 take the tax, they will have 6 coins and can coup me on their next turn, winning the game. My only chance of winning is to successfully challenge them now. While there is one Duke left in the deck, the odds are in my favor that they are bluffing. The risk of losing immediately by challenging is worth the reward of winning immediately if the challenge is successful, especially since not challenging almost certainly leads to a loss on the next turn. 
+[DISCUSSION] Player 1 (gemini:gemini-2.5-pro): It's just you and me now, Player 2. If you get this tax, you'll have enough to coup me on your next turn. I can't let that happen. There's only one Duke left in the deck, and I'm betting you don't have it. I challenge. 
+Challenge! Player 1 (gemini:gemini-2.5-pro) challenges Player 2 (gemini:gemini-2.5-pro) 
+Resolving challenge: Player 1 (gemini:gemini-2.5-pro) challenges Player 2 (gemini:gemini-2.5-pro) over Duke 
+Player 2 (gemini:gemini-2.5-pro) has cards: Duke 
+Player 2 (gemini:gemini-2.5-pro) reveals Duke! Challenge failed. 
+Player 1 (gemini:gemini-2.5-pro) loses a card: Captain 
+Player 1 (gemini:gemini-2.5-pro) has been eliminated due to failed_challenge. 
+
+--- Game State --- 
+┌─────────┬────────────────────────────────────┬──────────────┬───────┬────────────┬────────────────────────┐
+│ (index) │ Player                             │ Status       │ Coins │ Hand       │ Lost Cards             │
+├─────────┼────────────────────────────────────┼──────────────┼───────┼────────────┼────────────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 0     │ ''         │ 'Contessa, Captain'    │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Alive'      │ 6     │ 'Assassin' │ 'Ambassador'           │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 6     │ ''         │ 'Contessa, Ambassador' │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 3     │ ''         │ 'Duke, Assassin'       │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 4     │ ''         │ 'Captain, Captain'     │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'Eliminated' │ 0     │ ''         │ 'Contessa, Duke'       │
+└─────────┴────────────────────────────────────┴──────────────┴───────┴────────────┴────────────────────────┘ 
+Deck size: 3 
+------------------
+ 
+Game Over! Winner: Player 2 (gemini:gemini-2.5-pro) 
+
+--- Player Stats --- 
+┌─────────┬────────────────────────────────────┬────────┬─────────────┬────────────────────────────────────────────┬────────┬───────────────────┬───────────────┬───────────┬────────────┬───────┬────────────────────────┬──────────────┬─────────────────────┬──────────────────┬──────────────────┐
+│ (index) │ Player                             │ Winner │ Elim. Round │ Elim. Cause                                │ Bluffs │ Successful Bluffs │ Failed Bluffs │ Chal. Won │ Chal. Lost │ Coups │ Assassinations Blocked │ Coins Earned │ Coins Lost to Theft │ Attacks Received │ Attacks Launched │
+├─────────┼────────────────────────────────────┼────────┼─────────────┼────────────────────────────────────────────┼────────┼───────────────────┼───────────────┼───────────┼────────────┼───────┼────────────────────────┼──────────────┼─────────────────────┼──────────────────┼──────────────────┤
+│ 0       │ 'Player 1 (gemini:gemini-2.5-pro)' │ 'No'   │ 4           │ [ 'failed_challenge', 'failed_challenge' ] │ 0      │ 0                 │ 0             │ 0         │ 2          │ 0     │ 0                      │ 3            │ 0                   │ 0                │ 1                │
+│ 1       │ 'Player 2 (gemini:gemini-2.5-pro)' │ 'Yes'  │ '-'         │ [ 'failed_challenge' ]                     │ 0      │ 0                 │ 0             │ 0         │ 1          │ 0     │ 0                      │ 9            │ 0                   │ 0                │ 1                │
+│ 2       │ 'Player 3 (gemini:gemini-2.5-pro)' │ 'No'   │ 3           │ [ 'failed_bluff', 'failed_challenge' ]     │ 1      │ 0                 │ 1             │ 0         │ 1          │ 0     │ 0                      │ 8            │ 2                   │ 2                │ 0                │
+│ 3       │ 'Player 4 (gemini:gemini-2.5-pro)' │ 'No'   │ 3           │ [ 'failed_challenge', 'failed_challenge' ] │ 0      │ 0                 │ 0             │ 0         │ 2          │ 0     │ 0                      │ 5            │ 2                   │ 1                │ 1                │
+│ 4       │ 'Player 5 (gemini:gemini-2.5-pro)' │ 'No'   │ 2           │ [ 'failed_challenge', 'failed_challenge' ] │ 0      │ 0                 │ 0             │ 0         │ 2          │ 0     │ 0                      │ 4            │ 0                   │ 1                │ 1                │
+│ 5       │ 'Player 6 (gemini:gemini-2.5-pro)' │ 'No'   │ 4           │ [ 'failed_challenge', 'failed_challenge' ] │ 0      │ 0                 │ 0             │ 1         │ 2          │ 0     │ 0                      │ 3            │ 0                   │ 1                │ 1                │
+└─────────┴────────────────────────────────────┴────────┴─────────────┴────────────────────────────────────────────┴────────┴───────────────────┴───────────────┴───────────┴────────────┴───────┴────────────────────────┴──────────────┴─────────────────────┴──────────────────┴──────────────────┘ 
+--------------------
+ 
