@@ -1,5 +1,7 @@
 # LLM Coup
 
+![llm coup cover image](./docs/spiderman-llm-coup.png)
+
 This project is a simulation environment for evaluating the capabilities of Large Language Models (LLMs) in the context of deception and multi-level strategy games. The game of Coup is used as the testing ground for these evaluations.
 
 ## Motivation
