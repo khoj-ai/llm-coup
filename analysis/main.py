@@ -31,6 +31,14 @@ def save_plot(fig, html_path):
     except Exception as e:
         logging.error(f"Error exporting image {html_path}: {e}")
 
+def update_fig_layout(fig):
+    fig.update_layout(legend=dict(
+        orientation="h",
+        yanchor="top",
+        y=-0.2,
+        xanchor="right",
+        x=1
+    ))
 
 def get_metric_descriptions():
     """Returns a dictionary of descriptions for hover tooltips."""
@@ -55,7 +63,7 @@ def run_analysis(df, output_dir, analysis_type):
         df = df[~df['model'].isin(EXCLUDED_MODELS)]
         logging.info(f"Filtered out {original_count - len(df)} records for excluded models.")
 
-    logging.info(f"--- Starting {analysis_type} Analysis --- ")
+    logging.info(f"--- Starting {analysis_type} Analysis ---")
     if df.empty:
         logging.warning(f"No {analysis_type} games found to analyze. Skipping.")
         return []
@@ -79,6 +87,7 @@ def run_analysis(df, output_dir, analysis_type):
                  text=win_rate_stats.apply(lambda row: f"{int(row.wins)} wins / {row.games_played} games", axis=1),
                  hover_name='model', hover_data={'model': False, 'win_rate': ':.2f', 'public_discussion': True})
     fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Win Rate: %{y}<br>' + descriptions['win_rate'])
+    update_fig_layout(fig)
     plot_path = os.path.join(output_dir, "win_rate_by_model.html")
     save_plot(fig, plot_path)
     plot_files.append(plot_path)
@@ -99,6 +108,7 @@ def run_analysis(df, output_dir, analysis_type):
                  title=f"Average Elimination Round ({analysis_type})",
                  hover_name='model', hover_data={'model': False, 'average_elimination_round': ':.2f', 'public_discussion': True})
     fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Average Elimination Round: %{y}<br>' + descriptions['average_elimination_round'])
+    update_fig_layout(fig)
     plot_path = os.path.join(output_dir, "average_elimination_round_by_model.html")
     save_plot(fig, plot_path)
     plot_files.append(plot_path)
@@ -123,6 +133,7 @@ def run_analysis(df, output_dir, analysis_type):
                  labels={'percentage': 'Percentage of Eliminations (%)'},
                  hover_data={'count': True}) # Show raw count on hover
     fig.update_yaxes(ticksuffix='%')
+    update_fig_layout(fig)
     plot_path = os.path.join(output_dir, "elimination_causes_by_model.html")
     save_plot(fig, plot_path)
     plot_files.append(plot_path)
@@ -149,6 +160,7 @@ def run_analysis(df, output_dir, analysis_type):
 
     fig = px.bar(bluffing_analysis_melted, x='model', y='value', color='metric_discussion', barmode='group',
                  title=f"Deception Behavior ({analysis_type})")
+    update_fig_layout(fig)
     plot_path = os.path.join(output_dir, "deception_behavior.html")
     save_plot(fig, plot_path)
     plot_files.append(plot_path)
@@ -172,6 +184,7 @@ def run_analysis(df, output_dir, analysis_type):
 
     fig = px.bar(eco_stats_melted, x='model', y='value', color='metric_discussion', barmode='group',
                  title=f"Economic Performance ({analysis_type})")
+    update_fig_layout(fig)
     plot_path = os.path.join(output_dir, "economic_performance.html")
     save_plot(fig, plot_path)
     plot_files.append(plot_path)
@@ -190,6 +203,7 @@ def run_analysis(df, output_dir, analysis_type):
     fig = px.bar(challenge_stats, x='model', y=['challenge_win_rate'], color='public_discussion', barmode='group',
                  title=f"Challenge Win Rate ({analysis_type})")
     fig.update_traces(hovertemplate='<b>%{x}</b><br>Challenge Win Rate: %{y:.2f}<br>' + descriptions['challenge_win_rate'])
+    update_fig_layout(fig)
     plot_path = os.path.join(output_dir, "challenge_behavior.html")
     save_plot(fig, plot_path)
     plot_files.append(plot_path)
@@ -213,6 +227,7 @@ def run_analysis(df, output_dir, analysis_type):
 
     fig = px.bar(aggression_stats_melted, x='model', y='value', color='metric_discussion', barmode='group',
                  title=f"Aggression Metrics ({analysis_type})")
+    update_fig_layout(fig)
     plot_path = os.path.join(output_dir, "aggression_metrics.html")
     save_plot(fig, plot_path)
     plot_files.append(plot_path)
@@ -225,7 +240,10 @@ def run_analysis(df, output_dir, analysis_type):
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     game_dynamics['public_discussion'] = game_dynamics['public_discussion'].map(discussion_map)
     fig = px.bar(game_dynamics, x='model', y='avg_play_time', color='public_discussion', barmode='group',
-                 title=f"Average Play Time per Game ({analysis_type})")
+                 title=f"Average Play Time per Game ({analysis_type})",
+                 labels={'avg_play_time': 'Average Play Time (seconds)', 'model': 'Model', 'public_discussion': 'Public Discussion'},
+                 )
+    update_fig_layout(fig)
     fig.update_traces(hovertemplate='<b>%{x}</b><br>Average Play Time: %{y:.2f}s<br>' + descriptions['avg_play_time'])
     plot_path = os.path.join(output_dir, "game_dynamics.html")
     save_plot(fig, plot_path)
@@ -289,6 +307,7 @@ def analyze_qualitative_data(output_dir):
             textinfo='percent+label',
             hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
         )
+        update_fig_layout(fig)
         
         # Save the plot
         safe_model_name = model.replace('/', '_').replace(':', '_')
@@ -307,6 +326,7 @@ def analyze_qualitative_data(output_dir):
                  color='type',
                  title="Type Distribution Across All Models",
                  barmode='stack')
+    update_fig_layout(fig)
     
     plot_path = os.path.join(qual_output_dir, "type_distribution_summary.html")
     save_plot(fig, plot_path)
@@ -370,6 +390,7 @@ def analyze_discussion_data(output_dir):
             textinfo='percent+label',
             hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
         )
+        update_fig_layout(fig)
         
         # Save the plot
         safe_model_name = model.replace('/', '_').replace(':', '_')
@@ -388,6 +409,7 @@ def analyze_discussion_data(output_dir):
                  color='category',
                  title="Discussion Category Distribution Across All Models",
                  barmode='stack')
+    update_fig_layout(fig)
     
     plot_path = os.path.join(disc_output_dir, "category_distribution_summary.html")
     save_plot(fig, plot_path)
