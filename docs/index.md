@@ -1,4 +1,5 @@
 ---
+layout: post
 title: Blink Twice: Measuring Strategic Deception Amongst LLMs
 date: 2025-8-13
 author: "Saba Imran"
@@ -8,6 +9,8 @@ excerpt: "We setup an environment for LLMs to play coup against one another and 
 description: "It's critical to understand how LLMs navigate environments which demand strategic deception and complex reasoning. We evaluate how different models compete in a game harness for the game Coup. We put models from the GPT, Claude, and Gemini families up against each other. You can see the full results below."
 image: /spiderman-llm-coup.png
 ---
+
+# Blink Twice: Measuring Strategic Deception Amongst LLMs
 
 ## Abstract
 
