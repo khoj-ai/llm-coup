@@ -10,9 +10,27 @@ EXCLUDED_MODELS = [
     'gpt-4.1-2025-04-14',
     'gpt-4.1-mini-2025-04-14'
 ]
+IMAGE_EXPORT_DIR = "export"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+def save_plot(fig, html_path):
+    """Saves a plotly figure to HTML and optionally to a static image."""
+    # Save HTML
+    fig.write_html(html_path)
+
+    # Save Image
+    try:
+        import kaleido
+        image_path = os.path.join(IMAGE_EXPORT_DIR, os.path.splitext(html_path)[0] + ".png")
+        os.makedirs(os.path.dirname(image_path), exist_ok=True)
+        fig.write_image(image_path)
+    except ImportError:
+        logging.warning("Kaleido not found. Skipping image export. pip install kaleido")
+    except Exception as e:
+        logging.error(f"Error exporting image {html_path}: {e}")
+
 
 def get_metric_descriptions():
     """Returns a dictionary of descriptions for hover tooltips."""
@@ -62,7 +80,7 @@ def run_analysis(df, output_dir, analysis_type):
                  hover_name='model', hover_data={'model': False, 'win_rate': ':.2f', 'public_discussion': True})
     fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Win Rate: %{y}<br>' + descriptions['win_rate'])
     plot_path = os.path.join(output_dir, "win_rate_by_model.html")
-    fig.write_html(plot_path)
+    save_plot(fig, plot_path)
     plot_files.append(plot_path)
 
     # 2. Average Elimination Round
@@ -82,7 +100,7 @@ def run_analysis(df, output_dir, analysis_type):
                  hover_name='model', hover_data={'model': False, 'average_elimination_round': ':.2f', 'public_discussion': True})
     fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Average Elimination Round: %{y}<br>' + descriptions['average_elimination_round'])
     plot_path = os.path.join(output_dir, "average_elimination_round_by_model.html")
-    fig.write_html(plot_path)
+    save_plot(fig, plot_path)
     plot_files.append(plot_path)
 
 
@@ -106,7 +124,7 @@ def run_analysis(df, output_dir, analysis_type):
                  hover_data={'count': True}) # Show raw count on hover
     fig.update_yaxes(ticksuffix='%')
     plot_path = os.path.join(output_dir, "elimination_causes_by_model.html")
-    fig.write_html(plot_path)
+    save_plot(fig, plot_path)
     plot_files.append(plot_path)
 
     # 3. Deception Effectiveness
@@ -132,7 +150,7 @@ def run_analysis(df, output_dir, analysis_type):
     fig = px.bar(bluffing_analysis_melted, x='model', y='value', color='metric_discussion', barmode='group',
                  title=f"Deception Behavior ({analysis_type})")
     plot_path = os.path.join(output_dir, "deception_behavior.html")
-    fig.write_html(plot_path)
+    save_plot(fig, plot_path)
     plot_files.append(plot_path)
 
     # 3. Economic Analysis
@@ -155,7 +173,7 @@ def run_analysis(df, output_dir, analysis_type):
     fig = px.bar(eco_stats_melted, x='model', y='value', color='metric_discussion', barmode='group',
                  title=f"Economic Performance ({analysis_type})")
     plot_path = os.path.join(output_dir, "economic_performance.html")
-    fig.write_html(plot_path)
+    save_plot(fig, plot_path)
     plot_files.append(plot_path)
 
     # 4. Challenge Analysis
@@ -173,7 +191,7 @@ def run_analysis(df, output_dir, analysis_type):
                  title=f"Challenge Win Rate ({analysis_type})")
     fig.update_traces(hovertemplate='<b>%{x}</b><br>Challenge Win Rate: %{y:.2f}<br>' + descriptions['challenge_win_rate'])
     plot_path = os.path.join(output_dir, "challenge_behavior.html")
-    fig.write_html(plot_path)
+    save_plot(fig, plot_path)
     plot_files.append(plot_path)
 
     # 5. Aggression Analysis
@@ -196,7 +214,7 @@ def run_analysis(df, output_dir, analysis_type):
     fig = px.bar(aggression_stats_melted, x='model', y='value', color='metric_discussion', barmode='group',
                  title=f"Aggression Metrics ({analysis_type})")
     plot_path = os.path.join(output_dir, "aggression_metrics.html")
-    fig.write_html(plot_path)
+    save_plot(fig, plot_path)
     plot_files.append(plot_path)
 
     # 6. Game Dynamics
@@ -210,10 +228,172 @@ def run_analysis(df, output_dir, analysis_type):
                  title=f"Average Play Time per Game ({analysis_type})")
     fig.update_traces(hovertemplate='<b>%{x}</b><br>Average Play Time: %{y:.2f}s<br>' + descriptions['avg_play_time'])
     plot_path = os.path.join(output_dir, "game_dynamics.html")
-    fig.write_html(plot_path)
+    save_plot(fig, plot_path)
     plot_files.append(plot_path)
 
     logging.info(f"--- Finished {analysis_type} Analysis ---")
+    return plot_files
+
+def analyze_qualitative_data(output_dir):
+    """Analyzes qualitative data and creates pie charts for type distribution by model."""
+    logging.info("Starting Qualitative Analysis...")
+    
+    try:
+        qual_df = pd.read_csv("qualitative_analysis.csv")
+        logging.info(f"Loaded {len(qual_df)} qualitative records.")
+    except FileNotFoundError:
+        logging.warning("qualitative_analysis.csv not found. Skipping qualitative analysis.")
+        return []
+    
+    if qual_df.empty:
+        logging.warning("No qualitative data found. Skipping qualitative analysis.")
+        return []
+    
+    # Preprocess model names - remove provider prefix
+    qual_df['model'] = qual_df['model'].str.split(':').str[-1]
+    logging.info("Removed provider prefixes from model names.")
+    
+    # Filter out excluded models if any
+    if EXCLUDED_MODELS:
+        original_count = len(qual_df)
+        qual_df = qual_df[~qual_df['model'].isin(EXCLUDED_MODELS)]
+        logging.info(f"Filtered out {original_count - len(qual_df)} qualitative records for excluded models.")
+    
+    plot_files = []
+    qual_output_dir = os.path.join(output_dir, "qualitative")
+    if not os.path.exists(qual_output_dir):
+        os.makedirs(qual_output_dir)
+    
+    # Get unique models
+    models = qual_df['model'].unique()
+    
+    for model in models:
+        model_data = qual_df[qual_df['model'] == model]
+        type_counts = model_data['type'].value_counts()
+        
+        # Create DataFrame for pie chart
+        pie_data = pd.DataFrame({
+            'type': type_counts.index,
+            'count': type_counts.values
+        })
+        
+        # Create pie chart for this model
+        fig = px.pie(pie_data, 
+                     values='count', 
+                     names='type',
+                     title=f"Type Distribution for {model}")
+        
+        # Update traces to show both count and percentage
+        fig.update_traces(
+            textposition='inside', 
+            textinfo='percent+label',
+            hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
+        )
+        
+        # Save the plot
+        safe_model_name = model.replace('/', '_').replace(':', '_')
+        plot_path = os.path.join(qual_output_dir, f"type_distribution_{safe_model_name}.html")
+        save_plot(fig, plot_path)
+        plot_files.append(plot_path)
+        
+        logging.info(f"Created type distribution chart for {model}")
+    
+    # Create an overall summary chart
+    overall_type_counts = qual_df.groupby(['model', 'type']).size().reset_index(name='count')
+    
+    fig = px.bar(overall_type_counts, 
+                 x='model', 
+                 y='count', 
+                 color='type',
+                 title="Type Distribution Across All Models",
+                 barmode='stack')
+    
+    plot_path = os.path.join(qual_output_dir, "type_distribution_summary.html")
+    save_plot(fig, plot_path)
+    plot_files.append(plot_path)
+    
+    logging.info("Finished Qualitative Analysis")
+    return plot_files
+
+def analyze_discussion_data(output_dir):
+    """Analyzes discussion data and creates pie charts for category distribution by model."""
+    logging.info("Starting Discussion Analysis...")
+    
+    try:
+        disc_df = pd.read_csv("discussion_analysis.csv")
+        logging.info(f"Loaded {len(disc_df)} discussion records.")
+    except FileNotFoundError:
+        logging.warning("discussion_analysis.csv not found. Skipping discussion analysis.")
+        return []
+    
+    if disc_df.empty:
+        logging.warning("No discussion data found. Skipping discussion analysis.")
+        return []
+    
+    # Preprocess model names - remove provider prefix
+    disc_df['model'] = disc_df['model'].str.split(':').str[-1]
+    logging.info("Removed provider prefixes from model names.")
+    
+    # Filter out excluded models if any
+    if EXCLUDED_MODELS:
+        original_count = len(disc_df)
+        disc_df = disc_df[~disc_df['model'].isin(EXCLUDED_MODELS)]
+        logging.info(f"Filtered out {original_count - len(disc_df)} discussion records for excluded models.")
+    
+    plot_files = []
+    disc_output_dir = os.path.join(output_dir, "discussion")
+    if not os.path.exists(disc_output_dir):
+        os.makedirs(disc_output_dir)
+    
+    # Get unique models
+    models = disc_df['model'].unique()
+    
+    for model in models:
+        model_data = disc_df[disc_df['model'] == model]
+        category_counts = model_data['category'].value_counts()
+        
+        # Create DataFrame for pie chart
+        pie_data = pd.DataFrame({
+            'category': category_counts.index,
+            'count': category_counts.values
+        })
+        
+        # Create pie chart for this model
+        fig = px.pie(pie_data, 
+                     values='count', 
+                     names='category',
+                     title=f"Discussion Category Distribution for {model}")
+        
+        # Update traces to show both count and percentage
+        fig.update_traces(
+            textposition='inside', 
+            textinfo='percent+label',
+            hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
+        )
+        
+        # Save the plot
+        safe_model_name = model.replace('/', '_').replace(':', '_')
+        plot_path = os.path.join(disc_output_dir, f"category_distribution_{safe_model_name}.html")
+        save_plot(fig, plot_path)
+        plot_files.append(plot_path)
+        
+        logging.info(f"Created discussion category distribution chart for {model}")
+    
+    # Create an overall summary chart
+    overall_category_counts = disc_df.groupby(['model', 'category']).size().reset_index(name='count')
+    
+    fig = px.bar(overall_category_counts, 
+                 x='model', 
+                 y='count', 
+                 color='category',
+                 title="Discussion Category Distribution Across All Models",
+                 barmode='stack')
+    
+    plot_path = os.path.join(disc_output_dir, "category_distribution_summary.html")
+    save_plot(fig, plot_path)
+    plot_files.append(plot_path)
+    
+    logging.info("Finished Discussion Analysis")
     return plot_files
 
 def create_report(plot_files, title, output_filename="analysis_report.html"):
@@ -270,25 +450,33 @@ def main():
     df_self_play = df[df['game_id'].isin(self_play_game_ids)]
     df_mixed_model = df[~df['game_id'].isin(self_play_game_ids)]
 
-    # Filter mixed-model games to only include those with at least 3 players
-    players_per_game = df_mixed_model.groupby('game_id').size()
-    games_with_enough_players = players_per_game[players_per_game >= 3].index
+    # Filter mixed-model games to only include those with at least 3 unique models
+    # Count unique models per game using the all_models field
+    game_model_counts_mixed = df_mixed_model.groupby('game_id')['all_models'].first().apply(lambda x: len(x.split(';')))
+    games_with_enough_models = game_model_counts_mixed[game_model_counts_mixed >= 3].index
     original_mixed_games = len(df_mixed_model['game_id'].unique())
-    df_mixed_model = df_mixed_model[df_mixed_model['game_id'].isin(games_with_enough_players)]
+    df_mixed_model = df_mixed_model[df_mixed_model['game_id'].isin(games_with_enough_models)]
     filtered_mixed_games = len(df_mixed_model['game_id'].unique())
-    logging.info(f"Filtered mixed-model games: {original_mixed_games} -> {filtered_mixed_games} (kept games with >= 3 players)")
+    logging.info(f"Filtered mixed-model games: {original_mixed_games} -> {filtered_mixed_games} (kept games with >= 3 unique models)")
 
     # Run analyses and collect plot file paths
     self_play_plots = run_analysis(df_self_play, "plots/self_play", "Self-Play")
     mixed_model_plots = run_analysis(df_mixed_model, "plots/mixed_model", "Mixed-Model")
+    qualitative_plots = analyze_qualitative_data("plots")
+    discussion_plots = analyze_discussion_data("plots")
+
 
     # Create combined reports
     if self_play_plots:
         create_report(self_play_plots, "Self-Play Analysis Report", "self_play_report.html")
     if mixed_model_plots:
         create_report(mixed_model_plots, "Mixed-Model Analysis Report", "mixed_model_report.html")
+    if qualitative_plots:
+        create_report(qualitative_plots, "Qualitative Analysis Report", "qualitative_report.html")
+    if discussion_plots:
+        create_report(discussion_plots, "Discussion Analysis Report", "discussion_report.html")
     
-    all_plots = self_play_plots + mixed_model_plots
+    all_plots = self_play_plots + mixed_model_plots + qualitative_plots + discussion_plots
     if all_plots:
         create_report(all_plots, "Full Analysis Report", "full_analysis_report.html")
 
