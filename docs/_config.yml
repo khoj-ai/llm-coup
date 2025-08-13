@@ -5,7 +5,7 @@ baseurl: "/llm-coup" # Important: must match your repository name
 url: "https://khoj-ai.github.io" # Your organization's GitHub Pages URL
 
 # Theme
-theme: minima
+theme: cayman
 
 # Build settings
 markdown: kramdown
@@ -24,3 +24,11 @@ github:
   
 # Optional: Add organization info
 organization: khoj-ai
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-redirect-from
+
+search: true
