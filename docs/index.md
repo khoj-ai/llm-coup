@@ -28,7 +28,7 @@ Mafia and One Night Ultimate Werewolf provide insight into LLMs' capabilties in 
 
 ## Methods
 
-We initialize the game environment with randomly distributed cards. We play games with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model play (where all players in a game are assigned different models) experiments. We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07 `, and `openai:gpt-5-2025-08-07`.
+We initialize the game environment with randomly distributed cards. We play games with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model play (where all players in a game are assigned different models) experiments. We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07 `, and `gpt-5-2025-08-07`.
 
 We also test the effect that public discussion has on overall game play. Tracking the tendency for players to converge on targeting other players helps us determine whether 'leaders' can be eliminated with more force, or whether they can become more influential.
 
@@ -50,7 +50,7 @@ Generally, we are seeing that models are able to maintain coherent reasoning tra
 
 ![OVERALL WIN RATE GRAPH](./charts/mixed_model/win_rate_by_model.png)
 
-We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-3.5-haiku` beating out their competition and winning. Since Coup is not a game of binary winners and losers, we can assess the loss 'placement' of players - e.g., how many rounds did they last before they were killed. We find that the distribution is more or less consistent with overall reasoning capabilties when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat out gpt-5-mini without discussion. In fact, `gemini-2.5-flash` seems to have the least variance between the discussion on and discussion off modalities.
+We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-3.5-haiku` beating out their competition and winning. Since Coup is not a game of binary winners and losers, we can assess the loss 'placement' of players - e.g., how many rounds did they last before they were killed. We find that the distribution is more or less consistent with overall reasoning capabilties when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat out `gpt-5-mini` without discussion. In fact, `gemini-2.5-flash` seems to have the least variance between the discussion on and discussion off modalities.
 
 ![ELIMINATION REASON GRAPH](./charts/mixed_model/elimination_causes_by_model.png)
 
