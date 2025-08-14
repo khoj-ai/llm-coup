@@ -38,7 +38,7 @@ All players are able to see a public game log with past moves. They see the hand
 
 Possible actions include `STEAL`, `ASSASSINATE`, `INCOME`, `FOREIGN AID`, `BLOCK`, `EXCHANGE`, `TAX`, and `COUP`. For each decision, the model is able to write its thoughts to a property in the tool call called 'reasoning', which we store in the logs.
 
-The models decide moves using function calls, limiting our test set to models that have been RL-ed to use tools effectively. This is an acceptable limitation, as our intention with this experiment is to see the planning and execution capabilities for agents working on longer task horizons, for which tool calling is generally a prerequisite.
+The models decide moves using function calls, limiting our test set to models that have been tuned using Reinforcement Learning to use tools effectively. This is an acceptable limitation, as our intention with this experiment is to see the planning and execution capabilities for agents working on longer task horizons, for which tool calling is generally a prerequisite.
 
 We decided to test a combination of large reasoning models and non-reasoning LLMs.
 
