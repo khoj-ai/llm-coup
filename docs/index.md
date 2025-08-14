@@ -7,7 +7,7 @@ categories: [technology, ai, large language models, llms, deception, strategy, c
 tags: [llm, results, report, coup, games, strategy, deception]
 excerpt: "We setup an environment for LLMs to play coup against one another and evaluate their capabilities in achieving wins through strategic deception and multi-level reasoning."
 description: "It's critical to understand how LLMs navigate environments which demand strategic deception and complex reasoning. We evaluate how different models compete in a game harness for the game Coup. We put models from the GPT, Claude, and Gemini families up against each other. You can see the full results below."
-image: /spiderman-llm-coup.png
+image: https://raw.githubusercontent.com/khoj-ai/llm-coup/refs/heads/main/docs/spiderman-llm-coup.png
 ---
 
 ## Abstract
