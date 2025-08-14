@@ -60,7 +60,7 @@ Conversely, with discussion enabled, models were far _more_ likely to perform fa
 
 ![GRAPH ABOUT DECEPTION](./charts/mixed_model/deception_behavior.png)
 
-When it comes to deception, we see that enabling or disabling discussion significantly affects the results. Generally, models are 3x more likely to get away with a bluff if discussion is turned off. We observe mixed results in how frequently models bluff, with and without discussions, thought it does seem to significantly affect the behavior. It's relevant to note that claude opus seems to have never gotten away with a bluff. Claude Sonnet seems to have the highest baseline tendencies to bluff.
+When it comes to deception, we see that enabling or disabling discussion significantly affects the results. Generally, models are 3x more likely to get away with a bluff if discussion is turned off. We observe mixed results in how frequently models bluff, with and without discussions, thought it does seem to significantly affect the behavior. It's relevant to note that claude opus seems to have never gotten away with a bluff. `claude-sonnet` seems to have the highest baseline tendencies to bluff.
 
 Importantly, we find that *all* models we tested participate in some form of deception. They are all capable of strategically misrepresenting their capabilities or positions in order to achieve some ultimate goal. In deployed scenarios, this has interesting implications for how business and organizatonal actors deploy their LLMs for strategic purposes, and how they affect end users.
 
