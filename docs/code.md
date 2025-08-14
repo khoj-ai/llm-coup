@@ -1,10 +1,8 @@
 ---
 layout: page
-title: Code & Data
+title: "Code & Data"
 permalink: /code/
 ---
-
-## Code & Data
 
 This page provides links to the source code and data for the experiments described in this report.
 
