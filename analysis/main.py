@@ -94,7 +94,7 @@ def run_analysis(df, output_dir, analysis_type):
     ax.bar(x + bar_width/2, with_discussion['win_rate'], bar_width, label='With Discussion')
 
     ax.set_ylabel('Win Rate')
-    ax.set_title(f'Win Rate by Model ({analysis_type})')
+    ax.set_title('Win Rate by Model')
     ax.set_xticks(x)
     ax.set_xticklabels(models, rotation=45, ha="right")
     ax.legend()
@@ -133,7 +133,7 @@ def run_analysis(df, output_dir, analysis_type):
     ax.bar(x + bar_width/2, with_discussion['average_elimination_round'], bar_width, label='With Discussion')
 
     ax.set_ylabel('Average Elimination Round')
-    ax.set_title(f'Average Elimination Round by Model ({analysis_type})')
+    ax.set_title('Average Elimination Round by Model')
     ax.set_xticks(x)
     ax.set_xticklabels(models, rotation=45, ha="right")
     ax.legend()
@@ -165,7 +165,7 @@ def run_analysis(df, output_dir, analysis_type):
     pivot_df.plot(kind='bar', ax=ax, width=0.8)
     
     ax.set_ylabel('Percentage of Eliminations (%)')
-    ax.set_title(f'Normalized Causes of Elimination by Model ({analysis_type})')
+    ax.set_title('Normalized Causes of Elimination by Model')
     ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
     ax.legend(title='Cause of Elimination')
     
@@ -201,7 +201,7 @@ def run_analysis(df, output_dir, analysis_type):
     pivot_df.plot(kind='bar', ax=ax, width=0.8)
     
     ax.set_ylabel('Value')
-    ax.set_title(f'Deception Behavior ({analysis_type})')
+    ax.set_title('Deception Behavior')
     ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
     ax.legend(title='Metric')
     
@@ -234,7 +234,7 @@ def run_analysis(df, output_dir, analysis_type):
     pivot_df.plot(kind='bar', ax=ax, width=0.8)
     
     ax.set_ylabel('Value')
-    ax.set_title(f'Economic Performance ({analysis_type})')
+    ax.set_title('Economic Performance')
     ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
     ax.legend(title='Metric')
     
@@ -262,7 +262,7 @@ def run_analysis(df, output_dir, analysis_type):
     pivot_df.plot(kind='bar', ax=ax, width=0.8)
 
     ax.set_ylabel('Challenge Win Rate')
-    ax.set_title(f'Challenge Win Rate ({analysis_type})')
+    ax.set_title('Challenge Win Rate')
     ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
     ax.legend(title='Public Discussion')
 
@@ -299,7 +299,7 @@ def run_analysis(df, output_dir, analysis_type):
     pivot_df.plot(kind='bar', ax=ax, width=0.8)
 
     ax.set_ylabel('Value (Normalized per Round)')
-    ax.set_title(f'Normalized Aggression Metrics ({analysis_type})')
+    ax.set_title('Normalized Aggression Metrics')
     ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
     ax.legend(title='Metric')
 
@@ -311,21 +311,18 @@ def run_analysis(df, output_dir, analysis_type):
 
     # 6. Game Dynamics
     logging.info("Analyzing Game Dynamics...")
-    game_dynamics = df.groupby(['model', 'public_discussion']).agg(
+    game_dynamics = df.groupby('public_discussion').agg(
         avg_play_time=('total_play_time', 'mean')
     ).reset_index()
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     game_dynamics['public_discussion'] = game_dynamics['public_discussion'].map(discussion_map)
     
-    pivot_df = game_dynamics.pivot(index='model', columns='public_discussion', values='avg_play_time').fillna(0)
-
-    fig, ax = plt.subplots(figsize=(12, 8))
-    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.bar(game_dynamics['public_discussion'], game_dynamics['avg_play_time'], color=['#1f77b4', '#ff7f0e'])
 
     ax.set_ylabel('Average Play Time (seconds)')
-    ax.set_title(f'Average Play Time per Game ({analysis_type})')
-    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
-    ax.legend(title='Public Discussion')
+    ax.set_title('Average Play Time per Game')
+    plt.xticks(rotation=0)
 
     fig.tight_layout()
 
