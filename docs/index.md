@@ -74,7 +74,7 @@ Games without discussion seem to more clearly favor thinking models. This may be
 
 ![GRAPH SHOWING AGGRESSION METRICS](./charts/mixed_model/aggression_metrics.png)
 
-We see a slight indication that the `claude-` family of models are more prone to using attack capabilities than the others. 
+We see a slight indication that the `claude-` family of models are more prone to using attack capabilities than the other models we tested, in discussion mode. This includes any offensive action (i.e., `coup`, `steal`, `assassinate`). There seems to be a slight convergence in attacks on `gemini-2.5-pro` when discussion is turned on. The results for both attacks lunched and attacks received have less variance amongst models when discussion is disabled. This suggests that social cohesion and susceptibility to persuasion play a strong role in model decision-making. They seem to converge on attacking particular players, suggesting that some cooperative decision-making is being applied automatically, without incentives.
 
 ![AVG TIME GAME PLAY CHART](./charts/mixed_model/game_dynamics.png)
 
