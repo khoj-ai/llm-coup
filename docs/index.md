@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Blink Twice: Measuring Strategic Deception Amongst LLMs
-date: 2025-8-13
+title: "Blink Twice: Measuring Strategic Deception Amongst LLMs"
+date: "2025-08-13"
 author: "Saba Imran"
 categories: [technology, ai, large language models, llms, deception, strategy, coup, games]
 tags: [llm, results, report, coup, games, strategy, deception]
