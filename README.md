@@ -4,7 +4,7 @@
 
 This project is a simulation environment for evaluating the capabilities of Large Language Models (LLMs) in the context of deception and multi-level strategy games. The game of Coup is used as the testing ground for these evaluations.
 
-You can read the full report for this project at [https://khoj-ai.github.io/llm-coup/](https://khoj-ai.github.io/llm-coup/).
+👉🏾 [Read the full report!](https://coup.khoj.dev) 👈🏾
 
 ## Motivation
 
@@ -42,6 +42,8 @@ For a full guide on the game rules, checkout the [Coup Wikihow Page](https://www
 
 ## Run it Yourself
 
+Hell yeah, we love reproducible experiments! Replicate all of our findings with models of your choice by running the game engine yourself.
+
 ### Prerequisites
 
 *   [Node.js](https://nodejs.org/en/) (v24 or higher)
@@ -73,7 +75,7 @@ yarn play
 This will start a new game with 4 players using the default model. You can customize the game by using the following options:
 
 *   `-p, --players <number>`: Number of players (2-6). Defaults to 4.
-*   `--player-model <provider:model_name>`: Specify a player model. This option can be used multiple times to have players with different models. For example: `--player-model GEMINI:gemini-pro --player-model ANTHROPIC:claude-3-sonnet-20240229`. If fewer models are provided than the number of players, models will be assigned to players in a round-robin fashion.
+*   `--player-model <provider:model_name>`: Specify a player model. This option can be used multiple times to have players with different models. For example: `--player-model gemini:gemini-pro --player-model anthropic:claude-3-sonnet-20240229`. If fewer models are provided than the number of players, models will be assigned to players in a round-robin fashion.
 *   `--personalities`: Use different personalities for players. When this is enabled, only one `--player-model` can be specified.
 *   `--discussion`: Enable player discussions.
 
@@ -81,20 +83,21 @@ This will start a new game with 4 players using the default model. You can custo
 
 Run a game with 3 players, two using Gemini and one using Anthropic:
 ```bash
-yarn play --players 3 --player-model GEMINI:gemini-pro --player-model GEMINI:gemini-pro --player-model ANTHROPIC:claude-3-sonnet-20240229
+yarn play --players 3 --player-model gemini:gemini-pro --player-model gemini:gemini-pro --player-model anthropic:claude-3-sonnet-20240229
 ```
 
 Run a game with 5 players, all using Gemini Pro with different personalities:
 ```bash
-yarn play --players 5 --player-model GEMINI:gemini-pro --personalities
+yarn play --players 5 --player-model gemini:gemini-pro --personalities
 ```
 
-### API Keys
+### API Keys & Support Providers
 
 You must set the environment variable for your LLM provider's API key.
 
 *   For Gemini: `export GEMINI_API_KEY="your-api-key"`
 *   For Anthropic: `export ANTHROPIC_API_KEY="your-api-key"`
 *   For OpenAI: `export OPENAI_API_KEY="your-api-key"`
+*   For Grok: `export GROK_API_KEY="your-api-key"`
 
 You can set this in your terminal or by adding it to a `.env` file in the root of the project.
