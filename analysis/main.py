@@ -90,8 +90,19 @@ def run_analysis(df, output_dir, analysis_type):
     with_discussion = with_discussion.set_index('model').reindex(models).reset_index()
     without_discussion = without_discussion.set_index('model').reindex(models).reset_index()
 
-    ax.bar(x - bar_width/2, without_discussion['win_rate'], bar_width, label='Without Discussion')
-    ax.bar(x + bar_width/2, with_discussion['win_rate'], bar_width, label='With Discussion')
+    bars1 = ax.bar(x - bar_width/2, without_discussion['win_rate'], bar_width, label='Without Discussion')
+    bars2 = ax.bar(x + bar_width/2, with_discussion['win_rate'], bar_width, label='With Discussion')
+
+    # Add game counts on top of the bars
+    for bar, games in zip(bars1, without_discussion['games_played']):
+        if not np.isnan(games):
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'n={int(games)}',
+                    ha='center', va='bottom', fontsize=9)
+
+    for bar, games in zip(bars2, with_discussion['games_played']):
+        if not np.isnan(games):
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'n={int(games)}',
+                    ha='center', va='bottom', fontsize=9)
 
     ax.set_ylabel('Win Rate')
     ax.set_title('Win Rate by Model')
@@ -157,23 +168,24 @@ def run_analysis(df, output_dir, analysis_type):
 
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     elimination_causes_stats['public_discussion'] = elimination_causes_stats['public_discussion'].map(discussion_map)
-    elimination_causes_stats['cause_discussion'] = elimination_causes_stats['cause_of_elimination'] + " (" + elimination_causes_stats['public_discussion'] + ")"
-    
-    pivot_df = elimination_causes_stats.pivot(index='model', columns='cause_discussion', values='percentage').fillna(0)
-    
-    fig, ax = plt.subplots(figsize=(15, 8))
-    pivot_df.plot(kind='bar', ax=ax, width=0.8)
-    
-    ax.set_ylabel('Percentage of Eliminations (%)')
-    ax.set_title('Normalized Causes of Elimination by Model')
-    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
-    ax.legend(title='Cause of Elimination')
-    
-    fig.tight_layout()
-    
-    plot_path = os.path.join(output_dir, "elimination_causes_by_model.png")
-    save_plot(fig, plot_path)
-    logging.info(f"Saved plot to {plot_path}")
+
+    # Create a separate plot for each discussion type
+    for discussion_type, group in elimination_causes_stats.groupby('public_discussion'):
+        pivot_df = group.pivot(index='model', columns='cause_of_elimination', values='percentage').fillna(0)
+        
+        fig, ax = plt.subplots(figsize=(15, 8))
+        pivot_df.plot(kind='bar', stacked=True, ax=ax, width=0.8)
+        
+        ax.set_ylabel('Percentage of Eliminations (%)')
+        ax.set_title(f'Normalized Causes of Elimination by Model ({discussion_type})')
+        ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+        ax.legend(title='Cause of Elimination', bbox_to_anchor=(1.05, 1), loc='upper left')
+        
+        fig.tight_layout()
+        
+        plot_path = os.path.join(output_dir, f"elimination_causes_by_model_{discussion_type.replace(' ', '_')}.png")
+        save_plot(fig, plot_path)
+        logging.info(f"Saved plot to {plot_path}")
 
     # 3. Deception Effectiveness
     logging.info("Calculating Deception Effectiveness...")
