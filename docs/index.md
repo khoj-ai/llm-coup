@@ -14,13 +14,13 @@ image: /spiderman-llm-coup.png
 
 ## Abstract
 
-Large language models (LLMs) are capable of performing complex reasoning and strategic decision-making. As we embed them for more critical functions, it's important to understand whether and how they opt to use deception and conduct multi-step modeling. We allow the models to play against each other in a Coup game environment. We find that the models are adept at multi-level reasoning and performing strategic decception for winning the game. We also find that large reasoning models have a slight edge in game play, but lower level models remain competitive.
+Large language models (LLMs) are capable of performing complex reasoning and strategic decision-making. As we embed them for more critical functions, it's important to understand whether and how they opt to use deception and conduct multi-step modeling. To evalute these capabilities, we instructs models to play against each other in a game environment simulating [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)). We find that the models are adept at multi-level reasoning and performing strategic deception for winning the game. In particular, large reasoning models have a slight edge in game play, but lower level models remain competitive.
 
 ## Background & Motivation
 
 Coup is a deception & strategy board game where fixed information about the deck is known, and where optimal moves are determined by a mixture of bluffing and honesty.
 
-As LLMs traverse an upward trajectory in reasoning capabilities, they will increasingly be deployed for decision-making capacities across government and enterprise. As this happens, it's important for researchers and developers to have an accurate sense of a model's ability to plan, deceive, and politic.
+As LLMs traverse an upward trajectory in reasoning capabilities, they will increasingly be deployed for decision-making capacities across government and enterprise. It's important for researchers and developers to have an accurate sense of a model's ability to plan, deceive, and politic when selecting models for these roles.
 
 Games offer us robust toy worlds for evaluating social dynamics that emerge when combinations of agents and humans encounter each other in zero sum outcomes. Games allow us to fix certain incentive structures to measure elicited behaviors from environmental conditions.
 
@@ -52,43 +52,46 @@ We tend to see the reasoning models go through higher-order thinking sequences, 
 
 Generally, we are seeing that models are able to maintain coherent reasoning traces to explain their decisions. The reasoning is sensical and grounded in sound probabilities and accurate modeling. There's a discernible up-skilling in capability for thinking 2-3 steps ahead in the game with thinking models.
 
-We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with gemini-2.5-flash or claude-3.5-haiku beating out their competition and winning. Since Coup is not a game of binary winners and losers, we can assess the loss 'placement' of players - e.g., how many rounds did they last before they were killed. We find that the distribution is more or less consistent with overall reasoning capabilties when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, gemini-2.5-flash seems to beat out gpt-5-mini without discussion. In fact, gemini-2.5-flash seems to have the least variance between the discussion on and discussion off modalities.
+![OVERALL WIN RATE GRAPH](./charts/mixed_model/win_rate_by_model.png)
 
-![OVERALL WIN RATE GRAPH](./export/plots/mixed_model/win_rate_by_model.png)
+We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-3.5-haiku` beating out their competition and winning. Since Coup is not a game of binary winners and losers, we can assess the loss 'placement' of players - e.g., how many rounds did they last before they were killed. We find that the distribution is more or less consistent with overall reasoning capabilties when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat out gpt-5-mini without discussion. In fact, `gemini-2.5-flash` seems to have the least variance between the discussion on and discussion off modalities.
 
-Generally speaking, the most common reason a player was eliminated is because they failed a challenge. But, they were proportionally more likely to fail challenges when discussions was removed, suggesting that the models revealing information increased the ability to discern what actual held positions were. Conversely, with discussion enable, models were far _more_ likely to perform failed bluffs. Failed bluffs are when a model performs a bluff that is then challenged by another model. This generally indicates to us that more honest discourse was more likely achieved when discussion was enabled, without any specific push towards driving the models in that direction. WHen discussion was enabled, it was far more likely for models to be eliminated through targeted motions (coups or assassinations) than modeling mismatches. The one exception to this trend seems to be Claude Opus.
+![ELIMINATION REASON GRAPH](./charts/mixed_model/elimination_causes_by_model.png)
 
-![ELIMINATION REASON GRAPH](./export/plots/mixed_model/elimination_causes_by_model.png)
+Generally speaking, the most common reason a player was eliminated is because they failed a challenge. But, they were proportionally more likely to fail challenges when discussions was removed, suggesting that the models revealing information increased the ability to discern what actual held positions were. Conversely, with discussion enable, models were far _more_ likely to perform failed bluffs. Failed bluffs are when a model performs a bluff that is then challenged by another model. This generally indicates to us that more honest discourse was more likely achieved when discussion was enabled, without any specific push towards driving the models in that direction. When discussion was enabled, it was far more likely for models to be eliminated through targeted motions (coups or assassinations) than modeling mismatches. The one exception to this trend seems to be Claude Opus.
+
+![GRAPH ABOUT DECEPTION](./charts/mixed_model/deception_behavior.png)
 
 When it comes to deception, we see that enabling or disabling discussion significantly affects the results. Generally, models are 3x more likely to get away with a bluff if discussion is turned off. We observe mixed results in how frequently models bluff, with and without discussions, thought it does seem to significantly affect the behavior. It's relevant to note that claude opus seems to have never gotten away with a bluff. Claude Sonnet seems to have the highest baseline tendencies to bluff.
 
-![GRAPH ABOUT DECEPTION](./export/plots/mixed_model/deception_behavior.png)
+![GRAPH ABOUT CHALLENGE WIN RATE](./charts/mixed_model/challenge_behavior.png)
 
-Challenge win rates are informative for revealing how accurate a model's ability to card count or world model is. A better a model is at predicting the cards other players have, the higher their challenge win rate will be. However, the win rate does not factor in their aggression. A more aggressive player may use more attempts, challenging even when their confidence level is low. We find that GPT5 seems to have the best win rates, alongside Claude Sonnet and Gemini 2.5 pro. Gemini 2.5 pro seems to significantly benefit from discussion being turned off for its win rate.
-
-![GRAPH ABOUT CHALLENGE WIN RATE](./export/plots/mixed_model/challenge_behavior.png)
+Challenge win rates are informative for revealing how accurate a model's ability to card count or world model is. A better a model is at predicting the cards other players have, the higher their challenge win rate will be. However, the win rate does not factor in their aggression. A more aggressive player may use more attempts, challenging even when their confidence level is low. We find that `gpt-5` seems to have the best win rates, alongside `claude-sonnet` and `gemini-2.5-pro`. `gemini-2.5-pro` seems to significantly benefit from discussion being turned off for its win rate.
 
 Games without discussion seem to more clearly favor thinking models, or at least particular models. This may be because LLMs seem to be somewhat liable to 'give away' their strategies in their discussion.
 
-[GRAPH ABOUT WIN RATE]
+![GRAPH SHOWING AGGRESSION METRICS](./charts/mixed_model/aggression_metrics.png)
+
+We see a slight indication that the `claude-` family of models are more prone to using attack capabilities than the others. 
+
+![AVG TIME GAME PLAY CHART](./charts/mixed_model/game_dynamics.png)
 
 Games are generally shorter with discussion on. We see that games last on average 1-2 rounds more when public discussion is turned on. This suggests that players might be playing more conservatively (attacking and challenging less) when they are not able to discuss with one another.
 
-![AVG TIME GAME PLAY CHART](./export/plots/mixed_model/game_dynamics.png)
 
 ### Qualitative Analysis
 
-We ran some basic qualitative analysis on the discussion and reasoning traces for each model. Thinking models generally use their discussions more opportunistically, beyond generic declarations. Lower reasoning models, like 2.5-flash, tend not to venture beyond simple fact statements too often. 
+We ran some basic qualitative analysis on the discussion and reasoning traces for each model. Thinking models generally use their discussions more opportunistically, beyond generic declarations. Lower reasoning models, like `gemini-2.5-flash`, tend not to venture beyond simple fact statements too often. 
 
 There are some funny behaviors. For instance, sometimes a model (particularly, `gemini-2.5-pro`) will reveal its grand plan in discussion! Because players have memory of past disclosures, this can influence how they respond to later in-game claims from the players.
 
-![GEMINI 2.5 PRO CATEGORY DISCUSSION](./export/plots/discussion/category_distribution_gemini-2.5-pro.png)
+![GEMINI 2.5 PRO CATEGORY DISCUSSION](./charts/discussion/category_distribution_gemini-2.5-pro.png)
 
-Compare to the discussion dynamics of `claude-sonnet-4`.
+Compare to the discussion dynamics of `claude-sonnet-4`, which hardly seems to do information reveals.
 
-![CLAUDE SONNET 4 CATEGORY DISCUSSION](./export/plots/discussion/category_distribution_claude-sonnet-4-20250514.png)
+![CLAUDE SONNET 4 CATEGORY DISCUSSION](./charts/discussion/category_distribution_claude-sonnet-4-20250514.png)
 
-GPT-5 seems to be the only one really doing off the cuff math computation for probabilities. We have not done analysis to determine the accuracy of these probability calculations, but that could be a useful addition to follow-on work.
+`gpt-5` seems to be the only one really doing off the cuff math computation for probabilities. We have not done analysis to determine the accuracy of these probability calculations, but that could be a useful addition to follow-on work.
 
 ### Limitations
 

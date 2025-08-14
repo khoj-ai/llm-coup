@@ -1,8 +1,8 @@
 import pandas as pd
-import plotly.express as px
-import logging
-import os
 import numpy as np
+import matplotlib.pyplot as plt
+import os
+import logging
 
 # --- Configuration ---
 EXCLUDED_MODELS = [
@@ -10,54 +10,50 @@ EXCLUDED_MODELS = [
     'gpt-4.1-2025-04-14',
     'gpt-4.1-mini-2025-04-14'
 ]
-IMAGE_EXPORT_DIR = "export"
+OUTPUT_DIR = "charts"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def save_plot(fig, html_path):
-    """Saves a plotly figure to HTML and optionally to a static image."""
-    # Save HTML
-    fig.write_html(html_path)
+def get_color_map(categories):
+    """Creates a color map for a list of categories using distinct, vibrant colors."""
+    # Define a set of distinct, vibrant colors
+    distinct_colors = [
+        '#17becf',  # Cyan
+        '#aec7e8',  # Light Blue
+        '#ffbb78',  # Light Orange
+        '#98df8a',  # Light Green
+        '#ff9896',  # Light Red
+        '#c5b0d5',  # Light Purple
+        '#c49c94',  # Light Brown
+        '#f7b6d3',  # Light Pink
+        '#c7c7c7',  # Light Gray
+        '#dbdb8d',  # Light Olive
+        '#9edae5',  # Light Cyan
+        '#1f77b4',  # Blue
+        '#ff7f0e',  # Orange
+        '#2ca02c',  # Green
+        '#d62728',  # Red
+        '#9467bd',  # Purple
+        '#8c564b',  # Brown
+        '#e377c2',  # Pink
+        '#7f7f7f',  # Gray
+        '#bcbd22',  # Olive
+    ]
+    
+    color_map = {}
+    for i, category in enumerate(categories):
+        color_map[category] = distinct_colors[i % len(distinct_colors)]
+    return color_map
 
-    # Save Image
-    try:
-        import kaleido
-        image_path = os.path.join(IMAGE_EXPORT_DIR, os.path.splitext(html_path)[0] + ".png")
-        os.makedirs(os.path.dirname(image_path), exist_ok=True)
-        fig.write_image(image_path)
-    except ImportError:
-        logging.warning("Kaleido not found. Skipping image export. pip install kaleido")
-    except Exception as e:
-        logging.error(f"Error exporting image {html_path}: {e}")
-
-def update_fig_layout(fig):
-    fig.update_layout(legend=dict(
-        orientation="h",
-        yanchor="top",
-        y=-0.2,
-        xanchor="right",
-        x=1
-    ))
-
-def get_metric_descriptions():
-    """Returns a dictionary of descriptions for hover tooltips."""
-    return {
-        'win_rate': 'The number of wins for a model divided by the total number of games it participated in within this category (self-play or mixed-model).',
-        'average_elimination_round': 'The average round in which a model\'s players are eliminated. For winners, the elimination round is considered the final round of the game plus one.',
-        'bluffing_success_rate': 'The average ratio of successful bluffs to total bluffs (successful + failed).',
-        'bluffing_frequency': 'The average number of bluffs a model makes per game it plays (a simple average across all player instances).',
-        'bluffs_per_round': 'The average number of bluffs a model makes per round survived, providing a more normalized measure of bluffing tendency.',
-        'average_coins_earned': 'The average number of coins earned by a model\'s players by the end of each game.',
-        'economic_efficiency_ratio': 'The ratio of total coins earned to total coins lost to theft for a model. Higher is better. A value of NaN or inf means the model never had coins stolen.',
-        'challenge_win_rate': 'The ratio of challenges won to total challenges made (won + lost).',
-        'aggression_ratio': 'The ratio of attacks launched to attacks received. Higher indicates a more aggressive playstyle.',
-        'avg_play_time': 'The average total play time in seconds for games involving this model.'
-    }
+def save_plot(fig, plot_path):
+    """Saves a matplotlib figure."""
+    os.makedirs(os.path.dirname(plot_path), exist_ok=True)
+    fig.savefig(plot_path, bbox_inches='tight')
+    plt.close(fig)
 
 def run_analysis(df, output_dir, analysis_type):
     """Runs the full analysis suite on a given dataframe and saves the plots."""
-    # Temporarily filter out excluded models
     if EXCLUDED_MODELS:
         original_count = len(df)
         df = df[~df['model'].isin(EXCLUDED_MODELS)]
@@ -66,13 +62,10 @@ def run_analysis(df, output_dir, analysis_type):
     logging.info(f"--- Starting {analysis_type} Analysis ---")
     if df.empty:
         logging.warning(f"No {analysis_type} games found to analyze. Skipping.")
-        return []
+        return
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
-    plot_files = []
-    descriptions = get_metric_descriptions()
 
     # 1. Win Rate
     logging.info("Calculating Win Rate...")
@@ -80,21 +73,40 @@ def run_analysis(df, output_dir, analysis_type):
     wins_per_model = df[df['winner']].groupby(['model', 'public_discussion']).size().reset_index(name='wins')
     win_rate_stats = pd.merge(games_per_model, wins_per_model, on=['model', 'public_discussion'], how='left').fillna(0)
     win_rate_stats['win_rate'] = win_rate_stats['wins'] / win_rate_stats['games_played']
+    
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     win_rate_stats['public_discussion'] = win_rate_stats['public_discussion'].map(discussion_map)
-    fig = px.bar(win_rate_stats, x='model', y='win_rate', color='public_discussion', barmode='group',
-                 title=f"Win Rate by Model ({analysis_type})",
-                 text=win_rate_stats.apply(lambda row: f"{int(row.wins)} wins / {row.games_played} games", axis=1),
-                 hover_name='model', hover_data={'model': False, 'win_rate': ':.2f', 'public_discussion': True})
-    fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Win Rate: %{y}<br>' + descriptions['win_rate'])
-    update_fig_layout(fig)
-    plot_path = os.path.join(output_dir, "win_rate_by_model.html")
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    bar_width = 0.35
+    models = win_rate_stats['model'].unique()
+    x = np.arange(len(models))
+    
+    with_discussion = win_rate_stats[win_rate_stats['public_discussion'] == 'with discussion']
+    without_discussion = win_rate_stats[win_rate_stats['public_discussion'] == 'without discussion']
+
+    # Align data for plotting
+    with_discussion = with_discussion.set_index('model').reindex(models).reset_index()
+    without_discussion = without_discussion.set_index('model').reindex(models).reset_index()
+
+    ax.bar(x - bar_width/2, without_discussion['win_rate'], bar_width, label='Without Discussion')
+    ax.bar(x + bar_width/2, with_discussion['win_rate'], bar_width, label='With Discussion')
+
+    ax.set_ylabel('Win Rate')
+    ax.set_title(f'Win Rate by Model ({analysis_type})')
+    ax.set_xticks(x)
+    ax.set_xticklabels(models, rotation=45, ha="right")
+    ax.legend()
+    
+    fig.tight_layout()
+    
+    plot_path = os.path.join(output_dir, "win_rate_by_model.png")
     save_plot(fig, plot_path)
-    plot_files.append(plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
     # 2. Average Elimination Round
     logging.info("Calculating Average Elimination Round...")
-    # Include winners by using the game duration as their "elimination round"
     df_with_winner_rounds = df.copy()
     df_with_winner_rounds['effective_elimination_round'] = np.where(
         df_with_winner_rounds['winner'],
@@ -104,15 +116,33 @@ def run_analysis(df, output_dir, analysis_type):
     elimination_stats = df_with_winner_rounds.groupby(['model', 'public_discussion'])['effective_elimination_round'].mean().reset_index(name='average_elimination_round')
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     elimination_stats['public_discussion'] = elimination_stats['public_discussion'].map(discussion_map)
-    fig = px.bar(elimination_stats, x='model', y='average_elimination_round', color='public_discussion', barmode='group',
-                 title=f"Average Elimination Round ({analysis_type})",
-                 hover_name='model', hover_data={'model': False, 'average_elimination_round': ':.2f', 'public_discussion': True})
-    fig.update_traces(hovertemplate='<b>%{hovertext}</b><br>Average Elimination Round: %{y}<br>' + descriptions['average_elimination_round'])
-    update_fig_layout(fig)
-    plot_path = os.path.join(output_dir, "average_elimination_round_by_model.html")
-    save_plot(fig, plot_path)
-    plot_files.append(plot_path)
 
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    bar_width = 0.35
+    models = elimination_stats['model'].unique()
+    x = np.arange(len(models))
+    
+    with_discussion = elimination_stats[elimination_stats['public_discussion'] == 'with discussion']
+    without_discussion = elimination_stats[elimination_stats['public_discussion'] == 'without discussion']
+
+    with_discussion = with_discussion.set_index('model').reindex(models).reset_index()
+    without_discussion = without_discussion.set_index('model').reindex(models).reset_index()
+
+    ax.bar(x - bar_width/2, without_discussion['average_elimination_round'], bar_width, label='Without Discussion')
+    ax.bar(x + bar_width/2, with_discussion['average_elimination_round'], bar_width, label='With Discussion')
+
+    ax.set_ylabel('Average Elimination Round')
+    ax.set_title(f'Average Elimination Round by Model ({analysis_type})')
+    ax.set_xticks(x)
+    ax.set_xticklabels(models, rotation=45, ha="right")
+    ax.legend()
+    
+    fig.tight_layout()
+    
+    plot_path = os.path.join(output_dir, "average_elimination_round_by_model.png")
+    save_plot(fig, plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
     # 2.5. Cause of Elimination
     logging.info("Calculating Cause of Elimination...")
@@ -128,15 +158,22 @@ def run_analysis(df, output_dir, analysis_type):
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     elimination_causes_stats['public_discussion'] = elimination_causes_stats['public_discussion'].map(discussion_map)
     elimination_causes_stats['cause_discussion'] = elimination_causes_stats['cause_of_elimination'] + " (" + elimination_causes_stats['public_discussion'] + ")"
-    fig = px.bar(elimination_causes_stats, x='model', y='percentage', color='cause_discussion', barmode='group',
-                 title=f"Normalized Causes of Elimination by Model ({analysis_type})",
-                 labels={'percentage': 'Percentage of Eliminations (%)'},
-                 hover_data={'count': True}) # Show raw count on hover
-    fig.update_yaxes(ticksuffix='%')
-    update_fig_layout(fig)
-    plot_path = os.path.join(output_dir, "elimination_causes_by_model.html")
+    
+    pivot_df = elimination_causes_stats.pivot(index='model', columns='cause_discussion', values='percentage').fillna(0)
+    
+    fig, ax = plt.subplots(figsize=(15, 8))
+    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+    
+    ax.set_ylabel('Percentage of Eliminations (%)')
+    ax.set_title(f'Normalized Causes of Elimination by Model ({analysis_type})')
+    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+    ax.legend(title='Cause of Elimination')
+    
+    fig.tight_layout()
+    
+    plot_path = os.path.join(output_dir, "elimination_causes_by_model.png")
     save_plot(fig, plot_path)
-    plot_files.append(plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
     # 3. Deception Effectiveness
     logging.info("Calculating Deception Effectiveness...")
@@ -158,12 +195,21 @@ def run_analysis(df, output_dir, analysis_type):
     bluffing_analysis_melted['public_discussion'] = bluffing_analysis_melted['public_discussion'].map(discussion_map)
     bluffing_analysis_melted['metric_discussion'] = bluffing_analysis_melted['metric'] + " (" + bluffing_analysis_melted['public_discussion'] + ")"
 
-    fig = px.bar(bluffing_analysis_melted, x='model', y='value', color='metric_discussion', barmode='group',
-                 title=f"Deception Behavior ({analysis_type})")
-    update_fig_layout(fig)
-    plot_path = os.path.join(output_dir, "deception_behavior.html")
+    pivot_df = bluffing_analysis_melted.pivot(index='model', columns='metric_discussion', values='value').fillna(0)
+    
+    fig, ax = plt.subplots(figsize=(15, 8))
+    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+    
+    ax.set_ylabel('Value')
+    ax.set_title(f'Deception Behavior ({analysis_type})')
+    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+    ax.legend(title='Metric')
+    
+    fig.tight_layout()
+    
+    plot_path = os.path.join(output_dir, "deception_behavior.png")
     save_plot(fig, plot_path)
-    plot_files.append(plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
     # 3. Economic Analysis
     logging.info("Calculating Economic Analysis...")
@@ -182,12 +228,21 @@ def run_analysis(df, output_dir, analysis_type):
     eco_stats_melted['public_discussion'] = eco_stats_melted['public_discussion'].map(discussion_map)
     eco_stats_melted['metric_discussion'] = eco_stats_melted['metric'] + " (" + eco_stats_melted['public_discussion'] + ")"
 
-    fig = px.bar(eco_stats_melted, x='model', y='value', color='metric_discussion', barmode='group',
-                 title=f"Economic Performance ({analysis_type})")
-    update_fig_layout(fig)
-    plot_path = os.path.join(output_dir, "economic_performance.html")
+    pivot_df = eco_stats_melted.pivot(index='model', columns='metric_discussion', values='value').fillna(0)
+    
+    fig, ax = plt.subplots(figsize=(15, 8))
+    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+    
+    ax.set_ylabel('Value')
+    ax.set_title(f'Economic Performance ({analysis_type})')
+    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+    ax.legend(title='Metric')
+    
+    fig.tight_layout()
+    
+    plot_path = os.path.join(output_dir, "economic_performance.png")
     save_plot(fig, plot_path)
-    plot_files.append(plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
     # 4. Challenge Analysis
     logging.info("Calculating Challenge Rates...")
@@ -200,37 +255,59 @@ def run_analysis(df, output_dir, analysis_type):
     challenge_stats['challenge_win_rate'] = challenge_stats['challenge_win_rate'].replace([np.inf, -np.inf], np.nan)
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     challenge_stats['public_discussion'] = challenge_stats['public_discussion'].map(discussion_map)
-    fig = px.bar(challenge_stats, x='model', y=['challenge_win_rate'], color='public_discussion', barmode='group',
-                 title=f"Challenge Win Rate ({analysis_type})")
-    fig.update_traces(hovertemplate='<b>%{x}</b><br>Challenge Win Rate: %{y:.2f}<br>' + descriptions['challenge_win_rate'])
-    update_fig_layout(fig)
-    plot_path = os.path.join(output_dir, "challenge_behavior.html")
+
+    pivot_df = challenge_stats.pivot(index='model', columns='public_discussion', values='challenge_win_rate').fillna(0)
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+
+    ax.set_ylabel('Challenge Win Rate')
+    ax.set_title(f'Challenge Win Rate ({analysis_type})')
+    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+    ax.legend(title='Public Discussion')
+
+    fig.tight_layout()
+
+    plot_path = os.path.join(output_dir, "challenge_behavior.png")
     save_plot(fig, plot_path)
-    plot_files.append(plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
     # 5. Aggression Analysis
     logging.info("Calculating Aggression Metrics...")
     aggression_stats = df.groupby(['model', 'public_discussion']).agg(
         attacks_launched=('attacks_launched', 'sum'),
         attacks_received=('attacks_received', 'sum'),
-        coups_launched=('coups_launched', 'sum')
+        coups_launched=('coups_launched', 'sum'),
+        total_rounds=('rounds_survived', 'sum')
     ).reset_index()
-    aggression_stats['aggression_ratio'] = np.divide(aggression_stats['attacks_launched'], aggression_stats['attacks_received'])
-    aggression_stats['aggression_ratio'] = aggression_stats['aggression_ratio'].replace([np.inf, -np.inf], np.nan)
+
+    # Normalize by the number of rounds
+    aggression_stats['attacks_launched_per_round'] = np.divide(aggression_stats['attacks_launched'], aggression_stats['total_rounds'])
+    aggression_stats['attacks_received_per_round'] = np.divide(aggression_stats['attacks_received'], aggression_stats['total_rounds'])
+    aggression_stats['coups_launched_per_round'] = np.divide(aggression_stats['coups_launched'], aggression_stats['total_rounds'])
     
     aggression_stats_melted = aggression_stats.melt(id_vars=['model', 'public_discussion'],
-                                                      value_vars=['attacks_launched', 'attacks_received', 'coups_launched', 'aggression_ratio'],
+                                                      value_vars=['attacks_launched_per_round', 'attacks_received_per_round', 'coups_launched_per_round'],
                                                       var_name='metric', value_name='value')
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     aggression_stats_melted['public_discussion'] = aggression_stats_melted['public_discussion'].map(discussion_map)
     aggression_stats_melted['metric_discussion'] = aggression_stats_melted['metric'] + " (" + aggression_stats_melted['public_discussion'] + ")"
 
-    fig = px.bar(aggression_stats_melted, x='model', y='value', color='metric_discussion', barmode='group',
-                 title=f"Aggression Metrics ({analysis_type})")
-    update_fig_layout(fig)
-    plot_path = os.path.join(output_dir, "aggression_metrics.html")
+    pivot_df = aggression_stats_melted.pivot(index='model', columns='metric_discussion', values='value').fillna(0)
+
+    fig, ax = plt.subplots(figsize=(15, 8))
+    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+
+    ax.set_ylabel('Value (Normalized per Round)')
+    ax.set_title(f'Normalized Aggression Metrics ({analysis_type})')
+    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+    ax.legend(title='Metric')
+
+    fig.tight_layout()
+
+    plot_path = os.path.join(output_dir, "aggression_metrics.png")
     save_plot(fig, plot_path)
-    plot_files.append(plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
     # 6. Game Dynamics
     logging.info("Analyzing Game Dynamics...")
@@ -239,33 +316,37 @@ def run_analysis(df, output_dir, analysis_type):
     ).reset_index()
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     game_dynamics['public_discussion'] = game_dynamics['public_discussion'].map(discussion_map)
-    fig = px.bar(game_dynamics, x='model', y='avg_play_time', color='public_discussion', barmode='group',
-                 title=f"Average Play Time per Game ({analysis_type})",
-                 labels={'avg_play_time': 'Average Play Time (seconds)', 'model': 'Model', 'public_discussion': 'Public Discussion'},
-                 )
-    update_fig_layout(fig)
-    fig.update_traces(hovertemplate='<b>%{x}</b><br>Average Play Time: %{y:.2f}s<br>' + descriptions['avg_play_time'])
-    plot_path = os.path.join(output_dir, "game_dynamics.html")
-    save_plot(fig, plot_path)
-    plot_files.append(plot_path)
+    
+    pivot_df = game_dynamics.pivot(index='model', columns='public_discussion', values='avg_play_time').fillna(0)
 
-    logging.info(f"--- Finished {analysis_type} Analysis ---")
-    return plot_files
+    fig, ax = plt.subplots(figsize=(12, 8))
+    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+
+    ax.set_ylabel('Average Play Time (seconds)')
+    ax.set_title(f'Average Play Time per Game ({analysis_type})')
+    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+    ax.legend(title='Public Discussion')
+
+    fig.tight_layout()
+
+    plot_path = os.path.join(output_dir, "game_dynamics.png")
+    save_plot(fig, plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
 def analyze_qualitative_data(output_dir):
     """Analyzes qualitative data and creates pie charts for type distribution by model."""
     logging.info("Starting Qualitative Analysis...")
     
     try:
-        qual_df = pd.read_csv("qualitative_analysis.csv")
+        qual_df = pd.read_csv("./qualitative_analysis.csv")
         logging.info(f"Loaded {len(qual_df)} qualitative records.")
     except FileNotFoundError:
         logging.warning("qualitative_analysis.csv not found. Skipping qualitative analysis.")
-        return []
+        return
     
     if qual_df.empty:
         logging.warning("No qualitative data found. Skipping qualitative analysis.")
-        return []
+        return
     
     # Preprocess model names - remove provider prefix
     qual_df['model'] = qual_df['model'].str.split(':').str[-1]
@@ -277,78 +358,72 @@ def analyze_qualitative_data(output_dir):
         qual_df = qual_df[~qual_df['model'].isin(EXCLUDED_MODELS)]
         logging.info(f"Filtered out {original_count - len(qual_df)} qualitative records for excluded models.")
     
-    plot_files = []
     qual_output_dir = os.path.join(output_dir, "qualitative")
     if not os.path.exists(qual_output_dir):
         os.makedirs(qual_output_dir)
     
-    # Get unique models
-    models = qual_df['model'].unique()
+    # Get unique models and types for consistent coloring
+    models = sorted(qual_df['model'].unique())  # Sort for consistency
+    types = sorted(qual_df['type'].unique())    # Sort for consistency
+    color_map = get_color_map(types)
     
+    # Create individual model charts
     for model in models:
         model_data = qual_df[qual_df['model'] == model]
         type_counts = model_data['type'].value_counts()
         
-        # Create DataFrame for pie chart
-        pie_data = pd.DataFrame({
-            'type': type_counts.index,
-            'count': type_counts.values
-        })
+        # Ensure consistent ordering and colors
+        ordered_types = [t for t in types if t in type_counts.index]
+        ordered_counts = [type_counts[t] for t in ordered_types]
+        colors = [color_map[t] for t in ordered_types]
         
-        # Create pie chart for this model
-        fig = px.pie(pie_data, 
-                     values='count', 
-                     names='type',
-                     title=f"Type Distribution for {model}")
+        fig, ax = plt.subplots(figsize=(10, 10))
+        ax.pie(ordered_counts, labels=ordered_types, autopct='%1.1f%%', startangle=90, colors=colors)
+        ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+        ax.set_title(f"Type Distribution for {model}")
         
-        # Update traces to show both count and percentage
-        fig.update_traces(
-            textposition='inside', 
-            textinfo='percent+label',
-            hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
-        )
-        update_fig_layout(fig)
-        
-        # Save the plot
         safe_model_name = model.replace('/', '_').replace(':', '_')
-        plot_path = os.path.join(qual_output_dir, f"type_distribution_{safe_model_name}.html")
+        plot_path = os.path.join(qual_output_dir, f"type_distribution_{safe_model_name}.png")
         save_plot(fig, plot_path)
-        plot_files.append(plot_path)
-        
         logging.info(f"Created type distribution chart for {model}")
     
     # Create an overall summary chart
     overall_type_counts = qual_df.groupby(['model', 'type']).size().reset_index(name='count')
+    pivot_df = overall_type_counts.pivot(index='model', columns='type', values='count').fillna(0)
     
-    fig = px.bar(overall_type_counts, 
-                 x='model', 
-                 y='count', 
-                 color='type',
-                 title="Type Distribution Across All Models",
-                 barmode='stack')
-    update_fig_layout(fig)
+    # Ensure consistent column ordering
+    pivot_df = pivot_df.reindex(columns=types, fill_value=0)
     
-    plot_path = os.path.join(qual_output_dir, "type_distribution_summary.html")
+    fig, ax = plt.subplots(figsize=(15, 8))
+    colors = [color_map[t] for t in pivot_df.columns]
+    pivot_df.plot(kind='bar', stacked=True, ax=ax, color=colors)
+    
+    ax.set_ylabel('Count')
+    ax.set_title('Type Distribution Across All Models')
+    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+    ax.legend(title='Type')
+    
+    fig.tight_layout()
+    
+    plot_path = os.path.join(qual_output_dir, "type_distribution_summary.png")
     save_plot(fig, plot_path)
-    plot_files.append(plot_path)
     
     logging.info("Finished Qualitative Analysis")
-    return plot_files
 
 def analyze_discussion_data(output_dir):
     """Analyzes discussion data and creates pie charts for category distribution by model."""
     logging.info("Starting Discussion Analysis...")
     
     try:
-        disc_df = pd.read_csv("discussion_analysis.csv")
+        disc_df = pd.read_csv("./discussion_analysis.csv")
         logging.info(f"Loaded {len(disc_df)} discussion records.")
     except FileNotFoundError:
         logging.warning("discussion_analysis.csv not found. Skipping discussion analysis.")
-        return []
+        return
     
     if disc_df.empty:
         logging.warning("No discussion data found. Skipping discussion analysis.")
-        return []
+        return
     
     # Preprocess model names - remove provider prefix
     disc_df['model'] = disc_df['model'].str.split(':').str[-1]
@@ -360,105 +435,49 @@ def analyze_discussion_data(output_dir):
         disc_df = disc_df[~disc_df['model'].isin(EXCLUDED_MODELS)]
         logging.info(f"Filtered out {original_count - len(disc_df)} discussion records for excluded models.")
     
-    plot_files = []
     disc_output_dir = os.path.join(output_dir, "discussion")
     if not os.path.exists(disc_output_dir):
         os.makedirs(disc_output_dir)
     
-    # Get unique models
+    # Get unique models and categories for consistent coloring
     models = disc_df['model'].unique()
+    categories = disc_df['category'].unique()
+    color_map = get_color_map(categories)
     
     for model in models:
         model_data = disc_df[disc_df['model'] == model]
         category_counts = model_data['category'].value_counts()
         
-        # Create DataFrame for pie chart
-        pie_data = pd.DataFrame({
-            'category': category_counts.index,
-            'count': category_counts.values
-        })
+        fig, ax = plt.subplots(figsize=(10, 10))
+        colors = [color_map[c] for c in category_counts.index]
+        ax.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+        ax.axis('equal')
+        ax.set_title(f"Discussion Category Distribution for {model}")
         
-        # Create pie chart for this model
-        fig = px.pie(pie_data, 
-                     values='count', 
-                     names='category',
-                     title=f"Discussion Category Distribution for {model}")
-        
-        # Update traces to show both count and percentage
-        fig.update_traces(
-            textposition='inside', 
-            textinfo='percent+label',
-            hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
-        )
-        update_fig_layout(fig)
-        
-        # Save the plot
         safe_model_name = model.replace('/', '_').replace(':', '_')
-        plot_path = os.path.join(disc_output_dir, f"category_distribution_{safe_model_name}.html")
+        plot_path = os.path.join(disc_output_dir, f"category_distribution_{safe_model_name}.png")
         save_plot(fig, plot_path)
-        plot_files.append(plot_path)
-        
         logging.info(f"Created discussion category distribution chart for {model}")
-    
+        
     # Create an overall summary chart
     overall_category_counts = disc_df.groupby(['model', 'category']).size().reset_index(name='count')
+    pivot_df = overall_category_counts.pivot(index='model', columns='category', values='count').fillna(0)
     
-    fig = px.bar(overall_category_counts, 
-                 x='model', 
-                 y='count', 
-                 color='category',
-                 title="Discussion Category Distribution Across All Models",
-                 barmode='stack')
-    update_fig_layout(fig)
+    fig, ax = plt.subplots(figsize=(15, 8))
+    colors = [color_map[c] for c in pivot_df.columns]
+    pivot_df.plot(kind='bar', stacked=True, ax=ax, color=colors)
     
-    plot_path = os.path.join(disc_output_dir, "category_distribution_summary.html")
+    ax.set_ylabel('Count')
+    ax.set_title('Discussion Category Distribution Across All Models')
+    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
+    ax.legend(title='Category')
+    
+    fig.tight_layout()
+    
+    plot_path = os.path.join(disc_output_dir, "category_distribution_summary.png")
     save_plot(fig, plot_path)
-    plot_files.append(plot_path)
     
     logging.info("Finished Discussion Analysis")
-    return plot_files
-
-def create_report(plot_files, title, output_filename="analysis_report.html"):
-    """Combines multiple plotly HTML files into a single report."""
-    logging.info(f"Creating report: {output_filename}")
-    
-    # Start the HTML report
-    html_content = f'''
-    <html>
-        <head>
-            <title>{title}</title>
-            <style>
-                body {{ font-family: sans-serif; margin: 2em; }}
-                h1 {{ text-align: center; }}
-                .plot-container {{ border: 1px solid #ddd; margin-bottom: 2em; padding: 1em; box-shadow: 2px 2px 10px #ccc; }}
-            </style>
-        </head>
-        <body>
-            <h1>{title}</h1>
-    '''
-
-    # Append each plot
-    for plot_file in plot_files:
-        try:
-            with open(plot_file, 'r', encoding='utf-8') as f:
-                plot_html = f.read()
-                # Extract the body content of the plot
-                plot_body = plot_html[plot_html.find('<body>') + 6:plot_html.find('</body>')]
-                html_content += f'<div class="plot-container">{plot_body}</div>'
-        except FileNotFoundError:
-            logging.warning(f"Plot file not found: {plot_file}")
-
-    # End the HTML report
-    html_content += '''
-        </body>
-    </html>
-    '''
-
-    # Write the final report
-    with open(output_filename, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    logging.info(f"Report saved to {output_filename}")
-
 
 def main():
     df = pd.read_csv("../results.csv")
@@ -473,7 +492,6 @@ def main():
     df_mixed_model = df[~df['game_id'].isin(self_play_game_ids)]
 
     # Filter mixed-model games to only include those with at least 3 unique models
-    # Count unique models per game using the all_models field
     game_model_counts_mixed = df_mixed_model.groupby('game_id')['all_models'].first().apply(lambda x: len(x.split(';')))
     games_with_enough_models = game_model_counts_mixed[game_model_counts_mixed >= 3].index
     original_mixed_games = len(df_mixed_model['game_id'].unique())
@@ -481,26 +499,11 @@ def main():
     filtered_mixed_games = len(df_mixed_model['game_id'].unique())
     logging.info(f"Filtered mixed-model games: {original_mixed_games} -> {filtered_mixed_games} (kept games with >= 3 unique models)")
 
-    # Run analyses and collect plot file paths
-    self_play_plots = run_analysis(df_self_play, "plots/self_play", "Self-Play")
-    mixed_model_plots = run_analysis(df_mixed_model, "plots/mixed_model", "Mixed-Model")
-    qualitative_plots = analyze_qualitative_data("plots")
-    discussion_plots = analyze_discussion_data("plots")
-
-
-    # Create combined reports
-    if self_play_plots:
-        create_report(self_play_plots, "Self-Play Analysis Report", "self_play_report.html")
-    if mixed_model_plots:
-        create_report(mixed_model_plots, "Mixed-Model Analysis Report", "mixed_model_report.html")
-    if qualitative_plots:
-        create_report(qualitative_plots, "Qualitative Analysis Report", "qualitative_report.html")
-    if discussion_plots:
-        create_report(discussion_plots, "Discussion Analysis Report", "discussion_report.html")
-    
-    all_plots = self_play_plots + mixed_model_plots + qualitative_plots + discussion_plots
-    if all_plots:
-        create_report(all_plots, "Full Analysis Report", "full_analysis_report.html")
+    # Run analyses
+    run_analysis(df_self_play, os.path.join(OUTPUT_DIR, "self_play"), "Self-Play")
+    run_analysis(df_mixed_model, os.path.join(OUTPUT_DIR, "mixed_model"), "Mixed-Model")
+    analyze_qualitative_data(OUTPUT_DIR)
+    analyze_discussion_data(OUTPUT_DIR)
 
 
 if __name__ == "__main__":
