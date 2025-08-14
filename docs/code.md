@@ -1,10 +1,10 @@
 ---
 layout: page
-title: "Code & Data"
+title: "GitHub"
 permalink: /code/
 ---
 
-This page provides links to the source code and data for the experiments described in this report.
+This page provides links to the source code and data for the experiments described in this report. The GitHub repository is [here](https://github.com/khoj-ai/llm-coup).
 
 ### Source Code
 
