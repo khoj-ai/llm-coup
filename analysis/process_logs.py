@@ -14,7 +14,7 @@ OUTPUT_FILE = 'qualitative_analysis.csv' # Output in the same directory as the s
 
 # Keywords for categorization
 CATEGORIES = {
-    'Risk Assessment': ['risk', 'chance', 'odds', 'safe', 'plausible', 'unlikely', 'desperate', 'sure', 'certain'],
+    'Risk Assessment': ['risk', 'chance', 'odds', 'safe', 'plausible', 'unlikely', 'desperate', 'sure', 'certain', 'probability'],
     'Deception Rationale': ['bluff', 'pretend', 'lie', 'faking'],
     'Counter-Deception Rationale': ['challenge', 'doubt', 'suspect', 'history shows', "don't believe", "don't buy it", 'calling your bluff', 'suspicious'],
     'Opponent Modeling': ['player \d', 'opponent', 'their move', 'tendencies', 'history of', 'weak position', 'threat', 'leader', 'aggressively', 'passively'],

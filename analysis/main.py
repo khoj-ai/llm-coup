@@ -24,9 +24,9 @@ def get_color_map(categories):
         '#ffbb78',  # Light Orange
         '#98df8a',  # Light Green
         '#ff9896',  # Light Red
-        '#c5b0d5',  # Light Purple
         '#c49c94',  # Light Brown
         '#f7b6d3',  # Light Pink
+        '#c5b0d5',  # Light Purple
         '#c7c7c7',  # Light Gray
         '#dbdb8d',  # Light Olive
         '#9edae5',  # Light Cyan
@@ -74,41 +74,47 @@ def run_analysis(df, output_dir, analysis_type):
     win_rate_stats = pd.merge(games_per_model, wins_per_model, on=['model', 'public_discussion'], how='left').fillna(0)
     win_rate_stats['win_rate'] = win_rate_stats['wins'] / win_rate_stats['games_played']
     
-    discussion_map = {True: 'with discussion', False: 'without discussion'}
-    win_rate_stats['public_discussion'] = win_rate_stats['public_discussion'].map(discussion_map)
+    discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
+    win_rate_stats['discussion'] = win_rate_stats['public_discussion'].map(discussion_map)
+
+    models = sorted(win_rate_stats['model'].unique())
+    color_map = get_color_map(models)
+    
+    discussion_types = ['With Discussion', 'Without Discussion']
+    x_tick_labels = discussion_types
 
     fig, ax = plt.subplots(figsize=(12, 8))
     
-    bar_width = 0.35
-    models = win_rate_stats['model'].unique()
-    x = np.arange(len(models))
-    
-    with_discussion = win_rate_stats[win_rate_stats['public_discussion'] == 'with discussion']
-    without_discussion = win_rate_stats[win_rate_stats['public_discussion'] == 'without discussion']
+    bar_width = 0.8 / len(models)
+    x_pos = 0
+    x_ticks = []
 
-    # Align data for plotting
-    with_discussion = with_discussion.set_index('model').reindex(models).reset_index()
-    without_discussion = without_discussion.set_index('model').reindex(models).reset_index()
+    for discussion in discussion_types:
+        group_data = win_rate_stats[win_rate_stats['discussion'] == discussion]
+        group_data = group_data.sort_values('win_rate', ascending=True)
+        
+        bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+        
+        bars = ax.bar(bar_positions, group_data['win_rate'], width=bar_width, color=[color_map[m] for m in group_data['model']])
 
-    bars1 = ax.bar(x - bar_width/2, without_discussion['win_rate'], bar_width, label='Without Discussion')
-    bars2 = ax.bar(x + bar_width/2, with_discussion['win_rate'], bar_width, label='With Discussion')
+        # Add game counts on top of the bars
+        for bar, games in zip(bars, group_data['games_played']):
+            if not np.isnan(games):
+                ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'n={int(games)}',
+                        ha='center', va='bottom', fontsize=9)
 
-    # Add game counts on top of the bars
-    for bar, games in zip(bars1, without_discussion['games_played']):
-        if not np.isnan(games):
-            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'n={int(games)}',
-                    ha='center', va='bottom', fontsize=9)
-
-    for bar, games in zip(bars2, with_discussion['games_played']):
-        if not np.isnan(games):
-            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'n={int(games)}',
-                    ha='center', va='bottom', fontsize=9)
+        group_center = x_pos + (len(models) - 1) * bar_width / 2
+        x_ticks.append(group_center)
+        
+        x_pos += len(models) * bar_width + 0.4
 
     ax.set_ylabel('Win Rate')
     ax.set_title('Win Rate by Model')
-    ax.set_xticks(x)
-    ax.set_xticklabels(models, rotation=45, ha="right")
-    ax.legend()
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_tick_labels, rotation=0, ha="center")
+    
+    legend_handles = [plt.Rectangle((0,0),1,1, color=color_map[model]) for model in models]
+    ax.legend(legend_handles, models, title='Model', loc='best')
     
     fig.tight_layout()
     
@@ -125,29 +131,42 @@ def run_analysis(df, output_dir, analysis_type):
         df_with_winner_rounds['elimination_round'] + 1
     )
     elimination_stats = df_with_winner_rounds.groupby(['model', 'public_discussion'])['effective_elimination_round'].mean().reset_index(name='average_elimination_round')
-    discussion_map = {True: 'with discussion', False: 'without discussion'}
-    elimination_stats['public_discussion'] = elimination_stats['public_discussion'].map(discussion_map)
+    
+    discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
+    elimination_stats['discussion'] = elimination_stats['public_discussion'].map(discussion_map)
+
+    models = sorted(elimination_stats['model'].unique())
+    color_map = get_color_map(models)
+    
+    discussion_types = ['With Discussion', 'Without Discussion']
+    x_tick_labels = discussion_types
 
     fig, ax = plt.subplots(figsize=(12, 8))
     
-    bar_width = 0.35
-    models = elimination_stats['model'].unique()
-    x = np.arange(len(models))
-    
-    with_discussion = elimination_stats[elimination_stats['public_discussion'] == 'with discussion']
-    without_discussion = elimination_stats[elimination_stats['public_discussion'] == 'without discussion']
+    bar_width = 0.8 / len(models)
+    x_pos = 0
+    x_ticks = []
 
-    with_discussion = with_discussion.set_index('model').reindex(models).reset_index()
-    without_discussion = without_discussion.set_index('model').reindex(models).reset_index()
+    for discussion in discussion_types:
+        group_data = elimination_stats[elimination_stats['discussion'] == discussion]
+        group_data = group_data.sort_values('average_elimination_round', ascending=True)
+        
+        bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+        
+        ax.bar(bar_positions, group_data['average_elimination_round'], width=bar_width, color=[color_map[m] for m in group_data['model']])
 
-    ax.bar(x - bar_width/2, without_discussion['average_elimination_round'], bar_width, label='Without Discussion')
-    ax.bar(x + bar_width/2, with_discussion['average_elimination_round'], bar_width, label='With Discussion')
+        group_center = x_pos + (len(models) - 1) * bar_width / 2
+        x_ticks.append(group_center)
+        
+        x_pos += len(models) * bar_width + 0.4
 
     ax.set_ylabel('Average Elimination Round')
     ax.set_title('Average Elimination Round by Model')
-    ax.set_xticks(x)
-    ax.set_xticklabels(models, rotation=45, ha="right")
-    ax.legend()
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_tick_labels, rotation=0, ha="center")
+    
+    legend_handles = [plt.Rectangle((0,0),1,1, color=color_map[model]) for model in models]
+    ax.legend(legend_handles, models, title='Model', loc='best')
     
     fig.tight_layout()
     
@@ -166,26 +185,67 @@ def run_analysis(df, output_dir, analysis_type):
     total_eliminations = elimination_causes_stats.groupby(['model', 'public_discussion'])['count'].transform('sum')
     elimination_causes_stats['percentage'] = (elimination_causes_stats['count'] / total_eliminations) * 100
 
-    discussion_map = {True: 'with discussion', False: 'without discussion'}
-    elimination_causes_stats['public_discussion'] = elimination_causes_stats['public_discussion'].map(discussion_map)
+    discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
+    elimination_causes_stats['discussion'] = elimination_causes_stats['public_discussion'].map(discussion_map)
 
-    # Create a separate plot for each discussion type
-    for discussion_type, group in elimination_causes_stats.groupby('public_discussion'):
-        pivot_df = group.pivot(index='model', columns='cause_of_elimination', values='percentage').fillna(0)
-        
-        fig, ax = plt.subplots(figsize=(15, 8))
-        pivot_df.plot(kind='bar', stacked=True, ax=ax, width=0.8)
-        
-        ax.set_ylabel('Percentage of Eliminations (%)')
-        ax.set_title(f'Normalized Causes of Elimination by Model ({discussion_type})')
-        ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
-        ax.legend(title='Cause of Elimination', bbox_to_anchor=(1.05, 1), loc='upper left')
-        
-        fig.tight_layout()
-        
-        plot_path = os.path.join(output_dir, f"elimination_causes_by_model_{discussion_type.replace(' ', '_')}.png")
-        save_plot(fig, plot_path)
-        logging.info(f"Saved plot to {plot_path}")
+    # Get unique models and assign colors
+    models = sorted(elimination_causes_stats['model'].unique())
+    color_map = get_color_map(models)
+
+    # Get unique causes and discussion types for x-axis
+    causes = sorted(elimination_causes_stats['cause_of_elimination'].unique())
+    discussion_types = ['With Discussion', 'Without Discussion']
+    
+    x_tick_labels = []
+    for cause in causes:
+        for discussion in discussion_types:
+            x_tick_labels.append(f"{cause}\n({discussion})")
+
+    fig, ax = plt.subplots(figsize=(20, 10))
+    
+    bar_width = 0.8 / len(models)
+    
+    x_pos = 0
+    x_ticks = []
+
+    for cause in causes:
+        for discussion in discussion_types:
+            # Filter data for the current group
+            group_data = elimination_causes_stats[
+                (elimination_causes_stats['cause_of_elimination'] == cause) &
+                (elimination_causes_stats['discussion'] == discussion)
+            ]
+            
+            # Sort models by value for this group
+            group_data = group_data.sort_values('percentage', ascending=True)
+            
+            # Calculate bar positions for this group
+            bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+            
+            # Plot bars
+            ax.bar(bar_positions, group_data['percentage'], width=bar_width, color=[color_map[m] for m in group_data['model']])
+            
+            # Store center of group for x-tick
+            group_center = x_pos + (len(models) - 1) * bar_width / 2
+            x_ticks.append(group_center)
+            
+            # Move to the next group position
+            x_pos += len(models) * bar_width + 0.4 # Add gap between groups
+
+    ax.set_ylabel('Percentage of Eliminations (%)')
+    ax.set_title('Normalized Causes of Elimination by Model')
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_tick_labels, rotation=45, ha="right")
+    
+    # Create custom legend
+    legend_handles = [plt.Rectangle((0,0),1,1, color=color_map[model]) for model in models]
+    ax.legend(legend_handles, models, title='Model', loc='best')
+    
+    fig.tight_layout()
+    
+    plot_path = os.path.join(output_dir, "elimination_causes_by_model.png")
+    save_plot(fig, plot_path)
+    logging.info(f"Saved plot to {plot_path}")
 
     # 3. Deception Effectiveness
     logging.info("Calculating Deception Effectiveness...")
@@ -198,24 +258,75 @@ def run_analysis(df, output_dir, analysis_type):
         bluffing_success_rate=('bluffing_success_rate', 'mean'),
         bluffing_frequency=('num_bluffs', 'mean'),
         bluffs_per_round=('bluffs_per_round', 'mean')
-    ).reset_index()
-    
-    bluffing_analysis_melted = bluffing_analysis.melt(id_vars=['model', 'public_discussion'],
-                                                      value_vars=['bluffing_success_rate', 'bluffing_frequency', 'bluffs_per_round'],
-                                                      var_name='metric', value_name='value')
-    discussion_map = {True: 'with discussion', False: 'without discussion'}
-    bluffing_analysis_melted['public_discussion'] = bluffing_analysis_melted['public_discussion'].map(discussion_map)
-    bluffing_analysis_melted['metric_discussion'] = bluffing_analysis_melted['metric'] + " (" + bluffing_analysis_melted['public_discussion'] + ")"
+    ).reset_index().fillna(0)
 
-    pivot_df = bluffing_analysis_melted.pivot(index='model', columns='metric_discussion', values='value').fillna(0)
+    metrics = ['bluffing_success_rate', 'bluffing_frequency', 'bluffs_per_round']
+    discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
+    bluffing_analysis['discussion'] = bluffing_analysis['public_discussion'].map(discussion_map)
+
+    # Create a combined metric for plotting
+    bluffing_analysis_melted = bluffing_analysis.melt(
+        id_vars=['model', 'discussion'],
+        value_vars=metrics,
+        var_name='metric',
+        value_name='value'
+    )
     
-    fig, ax = plt.subplots(figsize=(15, 8))
-    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+    # Get unique models and assign colors
+    models = sorted(bluffing_analysis_melted['model'].unique())
+    color_map = get_color_map(models)
+
+    # Create a list of combined metrics for the x-axis
+    metric_labels = {
+        'bluffing_success_rate': 'Bluffing Success Rate',
+        'bluffing_frequency': 'Bluffing Frequency',
+        'bluffs_per_round': 'Bluffs per Round'
+    }
+    discussion_types = ['With Discussion', 'Without Discussion']
     
+    x_tick_labels = []
+    for metric in metrics:
+        for discussion in discussion_types:
+            x_tick_labels.append(f"{metric_labels[metric]}\n({discussion})")
+
+    fig, ax = plt.subplots(figsize=(20, 10))
+    
+    bar_width = 0.8 / len(models)
+    
+    x_pos = 0
+    x_ticks = []
+
+    for metric in metrics:
+        for discussion in discussion_types:
+            # Filter data for the current metric and discussion type
+            group_data = bluffing_analysis_melted[
+                (bluffing_analysis_melted['metric'] == metric) &
+                (bluffing_analysis_melted['discussion'] == discussion)
+            ]
+            
+            # Sort models by value for this group
+            group_data = group_data.sort_values('value', ascending=True)
+            
+            # Calculate bar positions for this group
+            bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+            
+            # Plot bars
+            ax.bar(bar_positions, group_data['value'], width=bar_width, color=[color_map[m] for m in group_data['model']])
+            
+            # Store center of group for x-tick
+            x_ticks.append(x_pos + (len(group_data) - 1) * bar_width / 2)
+            
+            # Move to the next group position
+            x_pos += len(models) * bar_width + 0.4 # Add gap between groups
+
     ax.set_ylabel('Value')
     ax.set_title('Deception Behavior')
-    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
-    ax.legend(title='Metric')
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_tick_labels, rotation=45, ha="right")
+    
+    # Create custom legend
+    legend_handles = [plt.Rectangle((0,0),1,1, color=color_map[model]) for model in models]
+    ax.legend(legend_handles, models, title='Model', loc='best')
     
     fig.tight_layout()
     
@@ -264,20 +375,44 @@ def run_analysis(df, output_dir, analysis_type):
     ).reset_index()
     challenge_stats['total_challenges'] = challenge_stats['challenges_won'] + challenge_stats['challenges_lost']
     challenge_stats['challenge_win_rate'] = np.divide(challenge_stats['challenges_won'], challenge_stats['total_challenges'])
-    challenge_stats['challenge_win_rate'] = challenge_stats['challenge_win_rate'].replace([np.inf, -np.inf], np.nan)
-    discussion_map = {True: 'with discussion', False: 'without discussion'}
-    challenge_stats['public_discussion'] = challenge_stats['public_discussion'].map(discussion_map)
+    challenge_stats['challenge_win_rate'] = challenge_stats['challenge_win_rate'].replace([np.inf, -np.inf], np.nan).fillna(0)
+    
+    discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
+    challenge_stats['discussion'] = challenge_stats['public_discussion'].map(discussion_map)
 
-    pivot_df = challenge_stats.pivot(index='model', columns='public_discussion', values='challenge_win_rate').fillna(0)
+    models = sorted(challenge_stats['model'].unique())
+    color_map = get_color_map(models)
+    
+    discussion_types = ['With Discussion', 'Without Discussion']
+    x_tick_labels = discussion_types
 
     fig, ax = plt.subplots(figsize=(12, 8))
-    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+    
+    bar_width = 0.8 / len(models)
+    x_pos = 0
+    x_ticks = []
+
+    for discussion in discussion_types:
+        group_data = challenge_stats[challenge_stats['discussion'] == discussion]
+        group_data = group_data.sort_values('challenge_win_rate', ascending=True)
+        
+        bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+        
+        ax.bar(bar_positions, group_data['challenge_win_rate'], width=bar_width, color=[color_map[m] for m in group_data['model']])
+
+        group_center = x_pos + (len(models) - 1) * bar_width / 2
+        x_ticks.append(group_center)
+        
+        x_pos += len(models) * bar_width + 0.4
 
     ax.set_ylabel('Challenge Win Rate')
-    ax.set_title('Challenge Win Rate')
-    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
-    ax.legend(title='Public Discussion')
-
+    ax.set_title('Challenge Win Rate by Model')
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_tick_labels, rotation=0, ha="center")
+    
+    legend_handles = [plt.Rectangle((0,0),1,1, color=color_map[model]) for model in models]
+    ax.legend(legend_handles, models, title='Model', loc='best')
+    
     fig.tight_layout()
 
     plot_path = os.path.join(output_dir, "challenge_behavior.png")
@@ -298,23 +433,61 @@ def run_analysis(df, output_dir, analysis_type):
     aggression_stats['attacks_received_per_round'] = np.divide(aggression_stats['attacks_received'], aggression_stats['total_rounds'])
     aggression_stats['coups_launched_per_round'] = np.divide(aggression_stats['coups_launched'], aggression_stats['total_rounds'])
     
+    metrics = ['attacks_launched_per_round', 'attacks_received_per_round', 'coups_launched_per_round']
+    
     aggression_stats_melted = aggression_stats.melt(id_vars=['model', 'public_discussion'],
-                                                      value_vars=['attacks_launched_per_round', 'attacks_received_per_round', 'coups_launched_per_round'],
-                                                      var_name='metric', value_name='value')
-    discussion_map = {True: 'with discussion', False: 'without discussion'}
-    aggression_stats_melted['public_discussion'] = aggression_stats_melted['public_discussion'].map(discussion_map)
-    aggression_stats_melted['metric_discussion'] = aggression_stats_melted['metric'] + " (" + aggression_stats_melted['public_discussion'] + ")"
+                                                      value_vars=metrics,
+                                                      var_name='metric', value_name='value').fillna(0)
 
-    pivot_df = aggression_stats_melted.pivot(index='model', columns='metric_discussion', values='value').fillna(0)
+    discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
+    aggression_stats_melted['discussion'] = aggression_stats_melted['public_discussion'].map(discussion_map)
 
-    fig, ax = plt.subplots(figsize=(15, 8))
-    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+    models = sorted(aggression_stats_melted['model'].unique())
+    color_map = get_color_map(models)
+
+    metric_labels = {
+        'attacks_launched_per_round': 'Attacks Launched per Round',
+        'attacks_received_per_round': 'Attacks Received per Round',
+        'coups_launched_per_round': 'Coups Launched per Round'
+    }
+    discussion_types = ['With Discussion', 'Without Discussion']
+    
+    x_tick_labels = []
+    for metric in metrics:
+        for discussion in discussion_types:
+            x_tick_labels.append(f"{metric_labels[metric]}\n({discussion})")
+
+    fig, ax = plt.subplots(figsize=(20, 10))
+    
+    bar_width = 0.8 / len(models)
+    x_pos = 0
+    x_ticks = []
+
+    for metric in metrics:
+        for discussion in discussion_types:
+            group_data = aggression_stats_melted[
+                (aggression_stats_melted['metric'] == metric) &
+                (aggression_stats_melted['discussion'] == discussion)
+            ]
+            group_data = group_data.sort_values('value', ascending=True)
+            
+            bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+            
+            ax.bar(bar_positions, group_data['value'], width=bar_width, color=[color_map[m] for m in group_data['model']])
+            
+            group_center = x_pos + (len(models) - 1) * bar_width / 2
+            x_ticks.append(group_center)
+            
+            x_pos += len(models) * bar_width + 0.4
 
     ax.set_ylabel('Value (Normalized per Round)')
     ax.set_title('Normalized Aggression Metrics')
-    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
-    ax.legend(title='Metric')
-
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_tick_labels, rotation=45, ha="right")
+    
+    legend_handles = [plt.Rectangle((0,0),1,1, color=color_map[model]) for model in models]
+    ax.legend(legend_handles, models, title='Model', loc='best')
+    
     fig.tight_layout()
 
     plot_path = os.path.join(output_dir, "aggression_metrics.png")
