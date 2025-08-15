@@ -4,7 +4,7 @@ title: "GitHub"
 permalink: /code/
 ---
 
-This page provides links to the source code and data for the experiments described in this report. The GitHub repository is [here](https://github.com/khoj-ai/llm-coup).
+[Click here for the GitHub with all the code](https://github.com/khoj-ai/llm-coup).
 
 ### Source Code
 
