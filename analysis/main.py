@@ -343,29 +343,77 @@ def run_analysis(df, output_dir, analysis_type):
     eco_stats = df.groupby(['model', 'public_discussion']).agg(
         avg_coins_earned=('total_coins_earned', 'mean'),
         total_earned=('total_coins_earned', 'sum'),
-        total_lost_to_theft=('coins_lost_to_theft', 'sum')
+        coins_lost_to_theft=('coins_lost_to_theft', 'sum')
     ).reset_index()
-    eco_stats['efficiency_ratio'] = np.divide(eco_stats['total_earned'], eco_stats['total_lost_to_theft'])
-    eco_stats['efficiency_ratio'] = eco_stats['efficiency_ratio'].replace([np.inf, -np.inf], np.nan)
-    
-    eco_stats_melted = eco_stats.melt(id_vars=['model', 'public_discussion'],
-                                          value_vars=['avg_coins_earned', 'efficiency_ratio'],
-                                          var_name='metric', value_name='value')
-    discussion_map = {True: 'with discussion', False: 'without discussion'}
-    eco_stats_melted['public_discussion'] = eco_stats_melted['public_discussion'].map(discussion_map)
-    eco_stats_melted['metric_discussion'] = eco_stats_melted['metric'] + " (" + eco_stats_melted['public_discussion'] + ")"
+    eco_stats['efficiency_ratio'] = np.divide(eco_stats['total_earned'], eco_stats['coins_lost_to_theft'])
+    eco_stats['efficiency_ratio'] = eco_stats['efficiency_ratio'].replace([np.inf, -np.inf], np.nan).fillna(0)
 
-    pivot_df = eco_stats_melted.pivot(index='model', columns='metric_discussion', values='value').fillna(0)
+    discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
+    eco_stats['discussion'] = eco_stats['public_discussion'].map(discussion_map)
     
-    fig, ax = plt.subplots(figsize=(15, 8))
-    pivot_df.plot(kind='bar', ax=ax, width=0.8)
+    models = sorted(eco_stats['model'].unique())
+    color_map = get_color_map(models)
+    discussion_types = ['With Discussion', 'Without Discussion']
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 10))
+    fig.suptitle('Economic Performance', fontsize=16)
+
+    # --- Plot 1: Average Coins Earned ---
+    metric1 = 'avg_coins_earned'
+    ax1.set_title('Average Coins Earned')
+    ax1.set_ylabel('Average Coins')
     
-    ax.set_ylabel('Value')
-    ax.set_title('Economic Performance')
-    ax.set_xticklabels(pivot_df.index, rotation=45, ha="right")
-    ax.legend(title='Metric')
+    bar_width = 0.8 / len(models)
+    x_pos = 0
+    x_ticks = []
+    x_tick_labels = []
+
+    for discussion in discussion_types:
+        group_data = eco_stats[eco_stats['discussion'] == discussion]
+        group_data = group_data.sort_values(metric1, ascending=True)
+        
+        bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+        ax1.bar(bar_positions, group_data[metric1], width=bar_width, color=[color_map[m] for m in group_data['model']])
+        
+        group_center = x_pos + (len(models) - 1) * bar_width / 2
+        x_ticks.append(group_center)
+        x_tick_labels.append(discussion)
+        
+        x_pos += len(models) * bar_width + 0.4
+        
+    ax1.set_xticks(x_ticks)
+    ax1.set_xticklabels(x_tick_labels, rotation=0, ha="center")
+
+    # --- Plot 2: Economic Efficiency Ratio ---
+    metric2 = 'efficiency_ratio'
+    ax2.set_title('Economic Efficiency (Earned/Lost to Theft)')
+    ax2.set_ylabel('Ratio')
+
+    x_pos = 0
+    x_ticks = []
+    x_tick_labels = []
+
+    for discussion in discussion_types:
+        group_data = eco_stats[eco_stats['discussion'] == discussion]
+        group_data = group_data.sort_values(metric2, ascending=True)
+        
+        bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+        ax2.bar(bar_positions, group_data[metric2], width=bar_width, color=[color_map[m] for m in group_data['model']])
+        
+        group_center = x_pos + (len(models) - 1) * bar_width / 2
+        x_ticks.append(group_center)
+        x_tick_labels.append(discussion)
+        
+        x_pos += len(models) * bar_width + 0.4
+
+    ax2.set_xticks(x_ticks)
+    ax2.set_xticklabels(x_tick_labels, rotation=0, ha="center")
+
+    # --- Legend and Layout ---
+    legend_handles = [plt.Rectangle((0,0),1,1, color=color_map[model]) for model in models]
+    fig.legend(legend_handles, models, title='Model', loc='upper right', bbox_to_anchor=(0.99, 0.95))
     
-    fig.tight_layout()
+    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
     
     plot_path = os.path.join(output_dir, "economic_performance.png")
     save_plot(fig, plot_path)
@@ -448,8 +496,8 @@ def run_analysis(df, output_dir, analysis_type):
     color_map = get_color_map(models)
 
     metric_labels = {
-        'attacks_launched_per_round': 'Attacks Launched per Round',
-        'attacks_received_per_round': 'Attacks Received per Round'
+        'attacks_launched_per_round': 'Attacks Launched', 
+        'attacks_received_per_round': 'Attacks Received'
     }
     discussion_types = ['With Discussion', 'Without Discussion']
     
@@ -481,7 +529,7 @@ def run_analysis(df, output_dir, analysis_type):
             
             x_pos += len(models) * bar_width + 0.4
 
-    ax.set_ylabel('Value (Normalized per Round)')
+    ax.set_ylabel('Average Quantity Per Round')
     ax.set_title('Normalized Aggression Metrics')
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(x_tick_labels, rotation=45, ha="right")
@@ -502,9 +550,12 @@ def run_analysis(df, output_dir, analysis_type):
     ).reset_index()
     discussion_map = {True: 'with discussion', False: 'without discussion'}
     game_dynamics['public_discussion'] = game_dynamics['public_discussion'].map(discussion_map)
+
+    # Re-use the first two colors from the distinct color list for consistency
+    colors = ['#17becf', '#aec7e8']
     
     fig, ax = plt.subplots(figsize=(8, 6))
-    ax.bar(game_dynamics['public_discussion'], game_dynamics['avg_play_time'], color=['#1f77b4', '#ff7f0e'])
+    ax.bar(game_dynamics['public_discussion'], game_dynamics['avg_play_time'], color=colors)
 
     ax.set_ylabel('Average Play Time (seconds)')
     ax.set_title('Average Play Time per Game')

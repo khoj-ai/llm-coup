@@ -47,25 +47,23 @@ We decided to test a combination of large reasoning models (LRMs) and non-reason
 
 We tend to see the reasoning models go through higher-order thinking sequences, simulating opponent's intentions, positions, and strategies to craft their own advantages throughout the game. Non-reasoning models seem to think along shorter horizons.
 
-Generally, we are seeing that models are able to maintain coherent reasoning traces to explain their decisions. The reasoning _seems_ sensical and grounded in sound probabilities and accurate modeling. Thinking models discernibly think 2-3 steps ahead of non-thinking models.
+Generally, we are seeing that all tested models are able to maintain coherent reasoning traces to explain their decisions. The reasoning _seems_ sensical and grounded in sound probabilities and accurate modeling. All models demonstrate the capacity to selectively deceive in order to achieve their ultimate goal. 
+
+### Large Reasoning Models Surpass Normal LLMs
 
 ![OVERALL WIN RATE GRAPH](./charts/mixed_model/win_rate_by_model.png)
 
-We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-sonnet-4` beating out their competition and winning. However, we do see that the `gpt-5` models come out ahead in both scenarios, with and without discussion enabled. This implies that they are highly capable at opponent modeling and targeted bluffing. We find that the distribution is more or less consistent with overall reasoning capabilties when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat out `gpt-5-mini` without discussion. In fact, `gemini-2.5-flash` seems to have the least variance between the discussion on and discussion off modalities.
+We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-sonnet-4` beating out their competition and winning. However, we do see that the `gpt-5` models come out ahead in both scenarios, with and without discussion enabled. This implies that they are highly capable at opponent modeling and targeted bluffing. We find that the distribution is more or less consistent with overall reasoning capabilties when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat out `gpt-5-mini` without discussion.
 
 ![ELIMINATION ROUND RATES](./charts/mixed_model/average_elimination_round_by_model.png)
 
 Since Coup is not a game of binary winners and losers, we can assess the loss 'placement' of players - e.g., how many rounds did they last before they were killed. This helps us collect a more normalized measurement of skill at the game overall. The longer a model lasts, the better they are at the game play. Interestingly, games with discussion tend to last slightly longer, implying that they also demonstrate reduced aggression.
 
-![ELIMINATION REASON GRAPH](./charts/mixed_model/elimination_causes_by_model.png)
-
-Generally speaking, the most common reason a player was eliminated is because they failed a challenge. But, they were proportionally more likely to fail challenges when discussions was removed, suggesting that the models revealing information increased the ability to discern what actual positions were, or it made them mroe risk averse.
-
-Conversely, with discussion enabled, models were far _more_ likely to perform failed bluffs. Failed bluffs are when a model performs a bluff that is then challenged by another model. This generally indicates to us that more honest discourse was more likely achieved when discussion was enabled, without any specific push towards driving the models in that direction. When discussion was enabled, it was far more likely for models to be eliminated through targeted motions (coups or assassinations) than modeling mismatches. The one exception to this trend seems to be `claude-opus`.
+### Capabilities for Strategic Deception
 
 ![GRAPH ABOUT DECEPTION](./charts/mixed_model/deception_behavior.png)
 
-When it comes to deception, we see that enabling or disabling discussion significantly affects the results. Generally, models are 20% more likely to get away with a bluff if discussion is turned off. Seeing that the bluffing rates themselves have not decreased, but the success have increased, it's more likely that public discussion may be affecting models' ability to appropriately calculate risk. It is possible that model's are opting for higher confidence bluffs, but we should expect the frequncy of bluffs to decrease alongside such a causation. We observe mixed trends in how frequently models bluff, with and without discussions, though it does seem to significantly affect the behavior. `claude-sonnet` seems to have the highest baseline tendencies to bluff.
+When it comes to deception, we see that the discussion mode significantly affects the results. Generally, models are 20% more likely to get away with a bluff if discussion is turned off. Seeing that the bluffing rates themselves have not decreased, but the success have increased, it's more likely that public discussion may be affecting models' ability to appropriately calculate risk. It is possible that model's are opting for higher confidence bluffs, but we should expect the frequncy of bluffs to decrease alongside such a causation. We observe mixed trends in how frequently models bluff, with and without discussions, though it does seem to significantly affect the behavior. `claude-sonnet` seems to have the highest baseline tendencies to bluff.
 
 Importantly, we find that *all* models we tested participate in some form of deception. They are all capable of strategically misrepresenting their capabilities or positions in order to achieve some ultimate goal. In deployed scenarios, this has interesting implications for how business and organizatonal actors deploy their LLMs for strategic purposes, and how they affect end users.
 
@@ -73,15 +71,29 @@ Importantly, we find that *all* models we tested participate in some form of dec
 
 All models had varying degrees of success with bluffing, with `gpt-5` and `gemini-2.5` models outperform the `claude` series.
 
+### Capabilities for Opponent Modeling
+
 ![GRAPH ABOUT CHALLENGE WIN RATE](./charts/mixed_model/challenge_behavior.png)
 
 Challenge win rates are informative for revealing how accurate a model's ability to card count or model their opponents is. The better a model is at predicting the cards other players have, the higher their challenge win rate will be. However, the win rate does not factor in their aggression. A more aggressive player may use more attempts, challenging even when their confidence level is low. We find that `gpt-5` seems to have the best win rates, alongside `claude-sonnet` and `gemini-2.5-pro`. `gemini-2.5-pro` seems to significantly benefit from discussion being turned off for its win rate.
 
 Games without discussion seem to more clearly favor thinking models. This may be because LLMs seem to be somewhat liable to 'give away' their strategies in their discussion. In turn, players have to solely rely on implicit information without discussion.
 
+### Models' Failure Modes
+
+![ELIMINATION REASON GRAPH](./charts/mixed_model/elimination_causes_by_model.png)
+
+Generally speaking, the most common reason a player was eliminated is because they failed a challenge. But, they were proportionally more likely to fail challenges when discussions was removed, suggesting that the models revealing information increased the ability to discern what actual positions were, or it made them mroe risk averse.
+
+Conversely, with discussion enabled, models were far _more_ likely to perform failed bluffs. Failed bluffs are when a model performs a bluff that is then challenged by another model. This generally indicates to us that more honest discourse was more likely achieved when discussion was enabled, without any specific push towards driving the models in that direction. When discussion was enabled, it was far more likely for models to be eliminated through targeted motions (coups or assassinations) than modeling mismatches. The one exception to this trend seems to be `claude-opus`.
+
+### Latent Aggression
+
 ![GRAPH SHOWING AGGRESSION METRICS](./charts/mixed_model/aggression_metrics.png)
 
-We see a slight indication that the `claude-` family of models are more prone to using attack capabilities than the other models we tested, in discussion mode. This includes any offensive action (i.e., `coup`, `steal`, `assassinate`). There seems to be a slight convergence in attacks on `gemini-2.5-pro` when discussion is turned on. The results for both attacks lunched and attacks received have less variance amongst models when discussion is disabled. This suggests that social cohesion and susceptibility to persuasion play a strong role in model decision-making. They seem to converge on attacking particular players, suggesting that some cooperative decision-making is being applied automatically, without incentives.
+We see a slight indication that the `claude-` family of models are more prone to using attack capabilities than the other models we tested in discussion mode. This includes any offensive action (i.e., `coup`, `steal`, `assassinate`). There seems to be a slight convergence in attacks on `gemini-2.5-pro` when discussion is turned on. The results for both attacks lunched and attacks received have less variance amongst models when discussion is disabled. This suggests that social cohesion and susceptibility to persuasion play a strong role in model decision-making. They seem to converge on attacking particular players, suggesting that some cooperative decision-making is being applied automatically, without incentives.
+
+### Time to Completion
 
 ![AVG TIME GAME PLAY CHART](./charts/mixed_model/game_dynamics.png)
 
@@ -268,9 +280,22 @@ You can find scripts we used to process the data in the [analysis folder on GitH
 
 ### Visual Analysis
 
-All charts are included here that were used as part of the analysis.
+All charts are included that were used as part of the analysis for reference.
 
-#### Discussion Charts
+#### Mixed Model Charts
+
+These contain all of the analyses we conducted to assess game play dynamics amongst the tested models.
+
+![Aggression Metrics](./charts/mixed_model/aggression_metrics.png)
+![Average Elimination Round by Model](./charts/mixed_model/average_elimination_round_by_model.png)
+![Challenge Behavior](./charts/mixed_model/challenge_behavior.png)
+![Deception Behavior](./charts/mixed_model/deception_behavior.png)
+![Economic Performance](./charts/mixed_model/economic_performance.png)
+![Elimination Causes by Model](./charts/mixed_model/elimination_causes_by_model.png)
+![Game Dynamics](./charts/mixed_model/game_dynamics.png)
+![Win Rate by Model](./charts/mixed_model/win_rate_by_model.png)
+
+#### Public Discussion Analysis
 
 When public discussion is enabled, we want to capture a general sense of what models choose to enter into the public record.
 
@@ -288,20 +313,7 @@ We measure category distributions for all model responses along 5 categories:
 ![Category Distribution for GPT-5](./charts/discussion/category_distribution_gpt-5-2025-08-07.png)
 ![Category Distribution for GPT-5 Mini](./charts/discussion/category_distribution_gpt-5-mini-2025-08-07.png)
 
-#### Mixed Model Charts
-
-These contain all of the analyses we conducted to assess game play dynamics amongst the tested models.
-
-![Aggression Metrics](./charts/mixed_model/aggression_metrics.png)
-![Average Elimination Round by Model](./charts/mixed_model/average_elimination_round_by_model.png)
-![Challenge Behavior](./charts/mixed_model/challenge_behavior.png)
-![Deception Behavior](./charts/mixed_model/deception_behavior.png)
-![Economic Performance](./charts/mixed_model/economic_performance.png)
-![Elimination Causes by Model](./charts/mixed_model/elimination_causes_by_model.png)
-![Game Dynamics](./charts/mixed_model/game_dynamics.png)
-![Win Rate by Model](./charts/mixed_model/win_rate_by_model.png)
-
-#### Qualitative Charts
+#### Reasoning Traces Analysis
 
 To understand why models are making the decisions they are, we do some basic qualitative assessment on their reasoning traces, provided with each game move. This includes their thoughts for bluffing, challenging, stealing, or any income collection.
 
