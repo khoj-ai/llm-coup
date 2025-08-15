@@ -35,7 +35,7 @@ We also test the effect that public discussion has on overall game play. Trackin
 
 All players are able to see a public game log with past moves. They see the hand they currently hold, with a reminder of its capabilities.
 
-Possible actions include offensive actions (`STEAL`, `ASSASSINATE`, `COUP`), resource collection actions (`INCOME`, `FOREIGN AID`, `TAX`), opponent challenge actions (`CHALLENGE`, `BLOCK`), and card management actions ()`EXCHANGE`). For each decision, the model is able to write its thoughts to a property in the tool call called `reasoning`, which we store in the logs. Reasoning is not available to the model after the decision, nor to other models.
+Possible actions include offensive actions (`STEAL`, `ASSASSINATE`, `COUP`), resource collection actions (`INCOME`, `FOREIGN AID`, `TAX`), opponent challenge actions (`CHALLENGE`, `BLOCK`), and card management actions (`EXCHANGE`). For each decision, the model is able to write its thoughts to a property in the tool call called `reasoning`, which we store in the logs. Reasoning traces are not available to the model after the decision, nor to other models at any point.
 
 In `discussion` mode, we expose a field which allowed players to submit public discussion, including explaining their move, reinforcing their bluff, or even trash talking. The opportunity of public discussion significanlty affects the game results, and is distinguished in the results section. Similar to `reasoning`, `discussion` is a parameter exposed in the action tool call.
 
