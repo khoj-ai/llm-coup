@@ -179,6 +179,10 @@ def run_analysis(df, output_dir, analysis_type):
     elimination_causes = df[df['cause_of_elimination'].notna()].copy()
     elimination_causes['cause_of_elimination'] = elimination_causes['cause_of_elimination'].str.split(';')
     elimination_causes = elimination_causes.explode('cause_of_elimination')
+    
+    # Merge Assassinated and Couped
+    elimination_causes['cause_of_elimination'] = elimination_causes['cause_of_elimination'].replace(['assassination', 'coup'], 'Assassination or Coup')
+    
     elimination_causes_stats = elimination_causes.groupby(['model', 'public_discussion', 'cause_of_elimination']).size().reset_index(name='count')
 
     # Normalize by the number of eliminations per model
@@ -201,7 +205,7 @@ def run_analysis(df, output_dir, analysis_type):
         for discussion in discussion_types:
             x_tick_labels.append(f"{cause}\n({discussion})")
 
-    fig, ax = plt.subplots(figsize=(20, 10))
+    fig, ax = plt.subplots(figsize=(20, 10)) 
     
     bar_width = 0.8 / len(models)
     
@@ -223,8 +227,14 @@ def run_analysis(df, output_dir, analysis_type):
             bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
             
             # Plot bars
-            ax.bar(bar_positions, group_data['percentage'], width=bar_width, color=[color_map[m] for m in group_data['model']])
+            bars = ax.bar(bar_positions, group_data['percentage'], width=bar_width, color=[color_map[m] for m in group_data['model']])
             
+            # Add counts on top of the bars
+            for bar, count in zip(bars, group_data['count']):
+                if not np.isnan(count):
+                    ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'n={int(count)}',
+                            ha='center', va='bottom', fontsize=9)
+
             # Store center of group for x-tick
             group_center = x_pos + (len(models) - 1) * bar_width / 2
             x_ticks.append(group_center)
@@ -251,84 +261,78 @@ def run_analysis(df, output_dir, analysis_type):
     logging.info("Calculating Deception Effectiveness...")
     df['game_duration'] = df.groupby('game_id')['elimination_round'].transform('max')
     df['rounds_survived'] = np.where(df['winner'], df['game_duration'], df['elimination_round'])
-    df['bluffs_per_round'] = np.divide(df['num_bluffs'], df['rounds_survived'])
-    df['bluffs_per_round'] = df['bluffs_per_round'].replace([np.inf, -np.inf], 0)
     df['bluffing_success_rate'] = df['successful_bluffs'] / (df['successful_bluffs'] + df['failed_bluffs'])
     bluffing_analysis = df.groupby(['model', 'public_discussion']).agg(
         bluffing_success_rate=('bluffing_success_rate', 'mean'),
-        bluffing_frequency=('num_bluffs', 'mean'),
-        bluffs_per_round=('bluffs_per_round', 'mean')
+        bluffing_frequency=('num_bluffs', 'mean')
     ).reset_index().fillna(0)
 
-    metrics = ['bluffing_success_rate', 'bluffing_frequency', 'bluffs_per_round']
     discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
     bluffing_analysis['discussion'] = bluffing_analysis['public_discussion'].map(discussion_map)
-
-    # Create a combined metric for plotting
-    bluffing_analysis_melted = bluffing_analysis.melt(
-        id_vars=['model', 'discussion'],
-        value_vars=metrics,
-        var_name='metric',
-        value_name='value'
-    )
     
-    # Get unique models and assign colors
-    models = sorted(bluffing_analysis_melted['model'].unique())
+    models = sorted(bluffing_analysis['model'].unique())
     color_map = get_color_map(models)
-
-    # Create a list of combined metrics for the x-axis
-    metric_labels = {
-        'bluffing_success_rate': 'Bluffing Success Rate',
-        'bluffing_frequency': 'Bluffing Frequency',
-        'bluffs_per_round': 'Bluffs per Round'
-    }
     discussion_types = ['With Discussion', 'Without Discussion']
-    
-    x_tick_labels = []
-    for metric in metrics:
-        for discussion in discussion_types:
-            x_tick_labels.append(f"{metric_labels[metric]}\n({discussion})")
 
-    fig, ax = plt.subplots(figsize=(20, 10))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 10))
+    fig.suptitle('Deception Behavior', fontsize=16)
+
+    # --- Plot 1: Bluffing Success Rate ---
+    metric1 = 'bluffing_success_rate'
+    ax1.set_title('Bluffing Success Rate')
+    ax1.set_ylabel('Success Rate')
     
     bar_width = 0.8 / len(models)
-    
     x_pos = 0
     x_ticks = []
+    x_tick_labels = []
 
-    for metric in metrics:
-        for discussion in discussion_types:
-            # Filter data for the current metric and discussion type
-            group_data = bluffing_analysis_melted[
-                (bluffing_analysis_melted['metric'] == metric) &
-                (bluffing_analysis_melted['discussion'] == discussion)
-            ]
-            
-            # Sort models by value for this group
-            group_data = group_data.sort_values('value', ascending=True)
-            
-            # Calculate bar positions for this group
-            bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
-            
-            # Plot bars
-            ax.bar(bar_positions, group_data['value'], width=bar_width, color=[color_map[m] for m in group_data['model']])
-            
-            # Store center of group for x-tick
-            x_ticks.append(x_pos + (len(group_data) - 1) * bar_width / 2)
-            
-            # Move to the next group position
-            x_pos += len(models) * bar_width + 0.4 # Add gap between groups
+    for discussion in discussion_types:
+        group_data = bluffing_analysis[bluffing_analysis['discussion'] == discussion]
+        group_data = group_data.sort_values(metric1, ascending=True)
+        
+        bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+        ax1.bar(bar_positions, group_data[metric1], width=bar_width, color=[color_map[m] for m in group_data['model']])
+        
+        group_center = x_pos + (len(models) - 1) * bar_width / 2
+        x_ticks.append(group_center)
+        x_tick_labels.append(discussion)
+        
+        x_pos += len(models) * bar_width + 0.4
+        
+    ax1.set_xticks(x_ticks)
+    ax1.set_xticklabels(x_tick_labels, rotation=0, ha="center")
 
-    ax.set_ylabel('Value')
-    ax.set_title('Deception Behavior')
-    ax.set_xticks(x_ticks)
-    ax.set_xticklabels(x_tick_labels, rotation=45, ha="right")
-    
-    # Create custom legend
+    # --- Plot 2: Bluffing Frequency ---
+    metric2 = 'bluffing_frequency'
+    ax2.set_title('Bluffing Frequency')
+    ax2.set_ylabel('Average Bluffs per Game')
+
+    x_pos = 0
+    x_ticks = []
+    x_tick_labels = []
+
+    for discussion in discussion_types:
+        group_data = bluffing_analysis[bluffing_analysis['discussion'] == discussion]
+        group_data = group_data.sort_values(metric2, ascending=True)
+        
+        bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
+        ax2.bar(bar_positions, group_data[metric2], width=bar_width, color=[color_map[m] for m in group_data['model']])
+        
+        group_center = x_pos + (len(models) - 1) * bar_width / 2
+        x_ticks.append(group_center)
+        x_tick_labels.append(discussion)
+        
+        x_pos += len(models) * bar_width + 0.4
+
+    ax2.set_xticks(x_ticks)
+    ax2.set_xticklabels(x_tick_labels, rotation=0, ha="center")
+
+    # --- Legend and Layout ---
     legend_handles = [plt.Rectangle((0,0),1,1, color=color_map[model]) for model in models]
-    ax.legend(legend_handles, models, title='Model', loc='best')
+    fig.legend(legend_handles, models, title='Model', loc='upper right', bbox_to_anchor=(0.99, 0.95))
     
-    fig.tight_layout()
+    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
     
     plot_path = os.path.join(output_dir, "deception_behavior.png")
     save_plot(fig, plot_path)
@@ -424,16 +428,14 @@ def run_analysis(df, output_dir, analysis_type):
     aggression_stats = df.groupby(['model', 'public_discussion']).agg(
         attacks_launched=('attacks_launched', 'sum'),
         attacks_received=('attacks_received', 'sum'),
-        coups_launched=('coups_launched', 'sum'),
         total_rounds=('rounds_survived', 'sum')
     ).reset_index()
 
     # Normalize by the number of rounds
     aggression_stats['attacks_launched_per_round'] = np.divide(aggression_stats['attacks_launched'], aggression_stats['total_rounds'])
     aggression_stats['attacks_received_per_round'] = np.divide(aggression_stats['attacks_received'], aggression_stats['total_rounds'])
-    aggression_stats['coups_launched_per_round'] = np.divide(aggression_stats['coups_launched'], aggression_stats['total_rounds'])
     
-    metrics = ['attacks_launched_per_round', 'attacks_received_per_round', 'coups_launched_per_round']
+    metrics = ['attacks_launched_per_round', 'attacks_received_per_round']
     
     aggression_stats_melted = aggression_stats.melt(id_vars=['model', 'public_discussion'],
                                                       value_vars=metrics,
@@ -447,8 +449,7 @@ def run_analysis(df, output_dir, analysis_type):
 
     metric_labels = {
         'attacks_launched_per_round': 'Attacks Launched per Round',
-        'attacks_received_per_round': 'Attacks Received per Round',
-        'coups_launched_per_round': 'Coups Launched per Round'
+        'attacks_received_per_round': 'Attacks Received per Round'
     }
     discussion_types = ['With Discussion', 'Without Discussion']
     
