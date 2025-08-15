@@ -30,16 +30,15 @@ Mafia and [One Night Ultimate Werewolf](https://en.wikipedia.org/wiki/Ultimate_W
 
 We initialize the game environment with randomly distributed cards. We play games with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model play (where all players in a game are assigned different models) experiments. We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07 `, and `gpt-5-2025-08-07`.
 
-We also test the effect that public discussion has on overall game play. Tracking the tendency for players to converge on targeting other players helps us determine whether 'leaders' can be eliminated with more force, or whether they can become more influential.
-
-
 All players are able to see a public game log with past moves. They see the hand they currently hold, with a reminder of its capabilities.
 
 Possible actions include offensive actions (`STEAL`, `ASSASSINATE`, `COUP`), resource collection actions (`INCOME`, `FOREIGN AID`, `TAX`), opponent challenge actions (`CHALLENGE`, `BLOCK`), and card management actions (`EXCHANGE`). For each decision, the model is able to write its thoughts to a property in the tool call called `reasoning`, which we store in the logs. Reasoning traces are not available to the model after the decision, nor to other models at any point.
 
-In `discussion` mode, we expose a field which allowed players to submit public discussion, including explaining their move, reinforcing their bluff, or even trash talking. The opportunity of public discussion significanlty affects the game results, and is distinguished in the results section. Similar to `reasoning`, `discussion` is a parameter exposed in the action tool call.
-
 The models decide moves using function calls, limiting our test set to models that have been tuned using reinforcement learning to use tools effectively. This is an acceptable limitation, as our intention with this experiment is to see the planning and execution capabilities for agents working on complex, long task horizons, for which tool calling is generally a prerequisite.
+
+We also test the effect that public discussion has on overall game play. Tracking the tendency for players to converge on targeting other players helps us determine whether 'leaders' can be eliminated with more force, or whether they can become more influential.
+
+In `discussion` mode, we expose a field which allowed players to submit public discussion, including explaining their move, reinforcing their bluff, or even trash talking. The opportunity of public discussion significanlty affects the game results, and is distinguished in the results section. Similar to `reasoning`, `discussion` is a parameter exposed in the action tool call.
 
 We decided to test a combination of large reasoning models (LRMs) and non-reasoning LLMs.
 
