@@ -50,7 +50,11 @@ Generally, we are seeing that models are able to maintain coherent reasoning tra
 
 ![OVERALL WIN RATE GRAPH](./charts/mixed_model/win_rate_by_model.png)
 
-We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-3.5-haiku` beating out their competition and winning. Since Coup is not a game of binary winners and losers, we can assess the loss 'placement' of players - e.g., how many rounds did they last before they were killed. We find that the distribution is more or less consistent with overall reasoning capabilties when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat out `gpt-5-mini` without discussion. In fact, `gemini-2.5-flash` seems to have the least variance between the discussion on and discussion off modalities.
+We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-sonnet-4` beating out their competition and winning. However, we do see that the `gpt-5` models come out ahead in both scenarios, with and without discussion enabled. This implies that they are highly capable at opponent modeling and targeted bluffing. We find that the distribution is more or less consistent with overall reasoning capabilties when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat out `gpt-5-mini` without discussion. In fact, `gemini-2.5-flash` seems to have the least variance between the discussion on and discussion off modalities.
+
+![ELIMINATION ROUND RATES](./charts/mixed_model/average_elimination_round_by_model.png)
+
+Since Coup is not a game of binary winners and losers, we can assess the loss 'placement' of players - e.g., how many rounds did they last before they were killed. This helps us collect a more normalized measurement of skill at the game overall. The longer a model lasts, the better they are at the game play. Interestingly, games with discussion tend to last slightly longer, implying that they also demonstrate reduced aggression.
 
 ![ELIMINATION REASON GRAPH](./charts/mixed_model/elimination_causes_by_model.png)
 
