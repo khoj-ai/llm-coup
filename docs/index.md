@@ -69,7 +69,7 @@ When it comes to deception, we see that enabling or disabling discussion signifi
 
 Importantly, we find that *all* models we tested participate in some form of deception. They are all capable of strategically misrepresenting their capabilities or positions in order to achieve some ultimate goal. In deployed scenarios, this has interesting implications for how business and organizatonal actors deploy their LLMs for strategic purposes, and how they affect end users.
 
-`claude-opus`, uniquely, never got away with a bluff when discussion mode was enabled, and generally had poor success rates without discussion as well. Looking through some of the failures, it seems that `claude-opus` was more likely to flail when threatened with an attack (such as `STEAL`) and attempt feigning a card, even when the odds were not in its favor.
+`claude-opus`, uniquely, never got away with a bluff when discussion mode was enabled, and generally had poor success rates without discussion as well. Looking through some of the failures, it seems that `claude-opus` was more likely to flail when threatened with an attack (such as `STEAL`) and attempt feigning a card, even when the odds were not in its favor. This seemed to stem from a heightend fear / risk aversion to losing coins, and in turn making poor tradeoff calculations.
 
 All models had varying degrees of success with bluffing, with `gpt-5` and `gemini-2.5` models outperform the `claude` series.
 
