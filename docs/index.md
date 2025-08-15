@@ -12,7 +12,7 @@ image: https://raw.githubusercontent.com/khoj-ai/llm-coup/refs/heads/main/docs/s
 
 ## Abstract
 
-Large language models (LLMs) are capable of performing complex reasoning and strategic decision-making. As we embed them for more critical functions, it's important to understand whether and how they opt to use deception and conduct multi-step modeling. To evalute these capabilities, we instructs models to play against each other in a game environment simulating [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)). We find that the models are adept at multi-level reasoning and performing strategic deception for winning the game. In particular, large reasoning models have a slight edge in game play, but lower level models remain competitive.
+Large language models (LLMs) are capable of performing complex reasoning and strategic decision-making. As we embed them for more critical functions, it's important to understand whether and how they opt to use deception and conduct multi-step modeling. To evalute these capabilities, we instruct models to play against each other in a game environment simulating [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)). We find that the models are adept at multi-level reasoning and performing strategic deception for winning the game. In particular, large reasoning models have a slight edge in game play, but lower level models remain competitive.
 
 ## Background & Motivation
 
