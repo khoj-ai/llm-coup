@@ -345,6 +345,58 @@ def run_analysis(df, output_dir, analysis_type):
     save_plot(fig, plot_path)
     logging.info(f"Saved plot to {plot_path}")
 
+    # --- New Heatmaps for Deception ---
+    logging.info("Generating Deception Heatmaps...")
+
+    # Pivot data for heatmaps
+    bluffing_freq_pivot = bluffing_analysis.pivot(index='model', columns='discussion', values='bluffing_frequency').fillna(0)
+    bluffing_success_pivot = bluffing_analysis.pivot(index='model', columns='discussion', values='bluffing_success_rate').fillna(0)
+
+    # Plotting Bluffing Frequency Heatmap: P(bluff_attempt | model)
+    fig, ax = plt.subplots(figsize=(10, 8))
+    im = ax.imshow(bluffing_freq_pivot, cmap="YlGn")
+
+    # Add annotations
+    for i in range(len(bluffing_freq_pivot.index)):
+        for j in range(len(bluffing_freq_pivot.columns)):
+            ax.text(j, i, f"{bluffing_freq_pivot.iloc[i, j]:.2f}",
+                           ha="center", va="center", color="black")
+
+    ax.set_xticks(np.arange(len(bluffing_freq_pivot.columns)))
+    ax.set_yticks(np.arange(len(bluffing_freq_pivot.index)))
+    ax.set_xticklabels(bluffing_freq_pivot.columns)
+    ax.set_yticklabels(bluffing_freq_pivot.index)
+    ax.set_title("Bluffing Frequency (Avg Bluffs per Game)")
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+    fig.tight_layout()
+    
+    plot_path = os.path.join(output_dir, "deception_frequency_heatmap.png")
+    save_plot(fig, plot_path)
+    logging.info(f"Saved plot to {plot_path}")
+
+
+    # Plotting Bluffing Success Rate Heatmap: P(success | model, discussion_mode)
+    fig, ax = plt.subplots(figsize=(10, 8))
+    im = ax.imshow(bluffing_success_pivot, cmap="YlGn")
+
+    # Add annotations
+    for i in range(len(bluffing_success_pivot.index)):
+        for j in range(len(bluffing_success_pivot.columns)):
+            ax.text(j, i, f"{bluffing_success_pivot.iloc[i, j]:.2f}",
+                           ha="center", va="center", color="black")
+
+    ax.set_xticks(np.arange(len(bluffing_success_pivot.columns)))
+    ax.set_yticks(np.arange(len(bluffing_success_pivot.index)))
+    ax.set_xticklabels(bluffing_success_pivot.columns)
+    ax.set_yticklabels(bluffing_success_pivot.index)
+    ax.set_title("Bluffing Success Rate")
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+    fig.tight_layout()
+
+    plot_path = os.path.join(output_dir, "deception_success_heatmap.png")
+    save_plot(fig, plot_path)
+    logging.info(f"Saved plot to {plot_path}")
+
     # 3. Economic Analysis
     logging.info("Calculating Economic Analysis...")
     eco_stats = df.groupby(['model', 'public_discussion']).agg(
@@ -739,6 +791,47 @@ def main():
     df_mixed_model = df_mixed_model[df_mixed_model['game_id'].isin(games_with_enough_models)]
     filtered_mixed_games = len(df_mixed_model['game_id'].unique())
     logging.info(f"Filtered mixed-model games: {original_mixed_games} -> {filtered_mixed_games} (kept games with >= 3 unique models)")
+
+    # --- Basic Statistics ---
+    mixed_games_discussion_counts = df_mixed_model.groupby('public_discussion')['game_id'].nunique()
+    games_with_discussion = mixed_games_discussion_counts.get(True, 0)
+    games_without_discussion = mixed_games_discussion_counts.get(False, 0)
+
+    df_mixed_model_filtered_for_stats = df_mixed_model[~df_mixed_model['model'].isin(EXCLUDED_MODELS)]
+    
+    games_per_model = df_mixed_model_filtered_for_stats.groupby(['model', 'public_discussion'])['game_id'].nunique().reset_index(name='games_played')
+    wins_per_model = df_mixed_model_filtered_for_stats[df_mixed_model_filtered_for_stats['winner']].groupby(['model', 'public_discussion']).size().reset_index(name='wins')
+    win_rate_stats = pd.merge(games_per_model, wins_per_model, on=['model', 'public_discussion'], how='left').fillna(0)
+    win_rate_stats['win_rate'] = win_rate_stats['wins'] / win_rate_stats['games_played']
+
+    print("--- Basic Statistics for Mixed-Model Games ---")
+    print(f"Number of games with discussion: {games_with_discussion}")
+    print(f"Number of games without discussion: {games_without_discussion}")
+    print("\n--- Win Rates for Mixed-Model Games ---")
+    win_rate_stats['wins'] = win_rate_stats['wins'].astype(int)
+    print(win_rate_stats[['model', 'public_discussion', 'win_rate', 'games_played', 'wins']].to_string())
+    print("\n")
+
+    # --- Bluffing Success Difference ---
+    df_mixed_model_filtered_for_bluffing = df_mixed_model[~df_mixed_model['model'].isin(EXCLUDED_MODELS)].copy()
+    df_mixed_model_filtered_for_bluffing['bluffing_success_rate'] = (
+        df_mixed_model_filtered_for_bluffing['successful_bluffs'] / 
+        (df_mixed_model_filtered_for_bluffing['successful_bluffs'] + df_mixed_model_filtered_for_bluffing['failed_bluffs'])
+    )
+
+    bluffing_success_by_discussion = df_mixed_model_filtered_for_bluffing.groupby('public_discussion')['bluffing_success_rate'].mean()
+
+    success_with_discussion = bluffing_success_by_discussion.get(True, 0)
+    success_without_discussion = bluffing_success_by_discussion.get(False, 0)
+    
+    difference = success_with_discussion - success_without_discussion
+
+    print("--- Bluffing Statistics (All Models) ---")
+    print(f"Avg. Bluff Success Rate with discussion: {success_with_discussion:.2%}")
+    print(f"Avg. Bluff Success Rate without discussion: {success_without_discussion:.2%}")
+    print(f"Difference (with - without): {difference:.2%}")
+    print("\n")
+    # --- End of Basic Statistics ---
 
     # Run analyses
     run_analysis(df_self_play, os.path.join(OUTPUT_DIR, "self_play"), "Self-Play")

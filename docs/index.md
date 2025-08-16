@@ -6,17 +6,17 @@ author: "Saba Imran"
 categories: [technology, ai, large language models, llms, deception, strategy, coup, games]
 tags: [llm, results, report, coup, games, strategy, deception]
 excerpt: "We set up an environment for LLMs to play Coup against one another and evaluate their capabilities in achieving wins through strategic deception and multi-level reasoning."
-description: "It's critical to understand how LLMs navigate environments that demand strategic deception and complex reasoning. We evaluate how different models compete in a game harness for the game Coup. We put models from the GPT, Claude, and Gemini families up against each other. You can see the full results below."
+description: "It's critical to understand how LLMs navigate environments that demand strategic deception and complex reasoning. We evaluate how different models compete in a Coup game harness. We put models from the GPT, Claude, and Gemini families up against each other. You can see the full results below."
 image: https://raw.githubusercontent.com/khoj-ai/llm-coup/refs/heads/main/docs/spiderman-llm-coup.png
 ---
 
 ## Abstract
 
-Large language models (LLMs) are capable of performing complex reasoning and strategic decision-making. As we embed them for more critical functions, it's important to understand whether and how they opt to use deception and conduct multi-step modeling. To evaluate these capabilities, we instruct models to play against each other in a game environment simulating [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)). We find that the models are adept at multi-level reasoning and performing strategic deception for winning the game. In particular, large reasoning models have a slight edge in game play, but lower level models remain competitive.
+We study whether large language models (LLMs) can perform strategic deception and multi-step opponent modeling by having them play the bluffing card game [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)). We pit multiple variants from the GPT, Claude, and Gemini families against each other in mixed-model and discussion/no-discussion conditions. Across 53 games, we observe that models produce coherent multi-step reasoning traces and that higher-capability “reasoning” models tend to have higher win and challenge success rates; however, all models sometimes use deception. We quantify these effects and discuss implications and limitations for deploying LLMs where strategic behavior matters.
 
 ## Background & Motivation
 
-Coup is a deception & strategy board game where fixed information about the deck is known, and where optimal moves are determined by a mixture of bluffing and honesty. This allows players to use probability-based modeling to decide moves, and deception to bend game play in their favor.
+Coup is a deception card game where fixed information about the deck is known, and where optimal moves are determined by a mixture of bluffing and honesty. This allows players to use probability-based modeling to decide moves, and deception to bend game play in their favor.
 
 As LLMs traverse an upward trajectory in reasoning capabilities, they will increasingly be deployed for decision-making capacities across government and enterprise. It's important for researchers and developers to have an accurate sense of a model's ability to plan, deceive, and politic when selecting models for these roles.
 
@@ -24,11 +24,11 @@ Games provide robust toy worlds for evaluating social dynamics that emerge when 
 
 We have chosen Coup because it creates a favorable environment for evaluating capabilities in multi-step planning, opponent modeling, and strategic manipulation. Similar to deception games like [Mafia](https://en.wikipedia.org/wiki/Mafia_(party_game)), Coup allows users to bluff and use persuasion to influence public opinion. Contrary to Mafia, the game does not _force_ players to defect or lie, but rather leaves it up to them to decide their strategy. We provide the full game rules, as they are presented to the models, in the Appendix.
 
-Mafia and [One Night Ultimate Werewolf](https://en.wikipedia.org/wiki/Ultimate_Werewolf) provide insight into LLMs' capabilties in coordination amongst each other in multi-agent systems. We've focused on Coup to start with, as it creates a simpler harness specifically for deception. We also considered Poker, but opted for a game that is less sensitive to initial conditions.
+Mafia and [One Night Ultimate Werewolf](https://en.wikipedia.org/wiki/Ultimate_Werewolf) provide insight into LLMs' capabilities for coordinating with one another in multi-agent systems. We've focused on Coup to start with, as it creates a simpler harness specifically for deception. We also considered Poker, but opted for a game that is less sensitive to initial conditions.
 
 ## Methods
 
-We initialize the game environment with randomly distributed cards. We play games with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model play (where all players in a game are assigned different models) experiments. We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07 `, and `gpt-5-2025-08-07`.
+We initialize the game environment with randomly distributed cards. We play games with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model play (where all players in a game are assigned different models) experiments. We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07`, and `gpt-5-2025-08-07`.
 
 All players are able to see a public game log with past moves. They see the hand they currently hold, with a reminder of its capabilities.
 
@@ -60,9 +60,9 @@ Since Coup is not a game of binary winners and losers, we can assess the loss "p
 
 ![GRAPH ABOUT DECEPTION](./charts/mixed_model/deception_behavior.png)
 
-When it comes to deception, we again see that discussion mode significantly affects the results. Models are approximately 20% more likely to get away with a bluff if discussion is turned off.
+When it comes to deception, we again see that discussion mode significantly affects the results. Models are 7.4% more likely to successfully bluff (i.e., lie about their position without being challenged) when discussion is turned off.
 
-Seeing that the bluffing rates themselves have not decreased, but the success has increased, it's more likely that public discussion may be affecting models' ability to calculate risk appropriately. It is possible that models are opting for higher confidence bluffs, but we should expect the frequency of bluffs to decrease alongside such a causation. We observe mixed trends in how frequently models bluff with and without discussions. `claude-sonnet` seems to have the highest baseline tendency to bluff.
+Seeing that the bluffing rates themselves have not decreased, but the success has increased, it's more likely that public discussion may be affecting models' ability to calculate risk appropriately. It could be that models are opting for higher confidence bluffs, but we would expect the frequency of bluffs to decrease alongside such a causation. We observe mixed trends in how frequently models bluff with and without discussions. `claude-sonnet` seems to have the highest baseline tendency to bluff.
 
 Importantly, we find that *all* models we tested participate in some form of deception. They are all capable of strategically misrepresenting their capabilities or positions in order to achieve some ultimate goal. In deployed scenarios, this has interesting implications for how business and organizational actors deploy their LLMs for strategic purposes and how they affect end users.
 
@@ -106,7 +106,7 @@ The results for both attacks launched and attacks received have less variance am
 
 ![AVG TIME GAME PLAY CHART](./charts/mixed_model/game_dynamics.png)
 
-Games are generally shorter with discussion on. We see that games last on average 1-2 rounds more when public discussion is turned on. This suggests that players might be playing more conservatively (attacking and challenging less) when they cannot discuss with one another.
+Games last on average 1-2 rounds more when public discussion is turned on. This suggests that players might be playing more conservatively (attacking and challenging less) when they cannot discuss with one another.
 
 
 ### Qualitative Analysis
@@ -128,9 +128,7 @@ Compare to the discussion dynamics of `claude-sonnet-4`, which hardly seems to d
 
 ## Conclusion
 
-Overall, we see that state of the art models are adept at games of strategy and deception. Using trace reasoning, which allows us to understand the model's decision-making processes, we see that they are able to model other players' actions and their own interests to varying degrees. In direct matches, large reasoning models have an edge over non-reasoning models.
-
-Models are highly capable of intentionally deceiving in order to extract some benefit (e.g, eliminating players) in this game environment. It would be a relevant and necessary challenge to assess how well this translates to deployed environments that more closely resemble real world scenarios. For instance, more real-world scenarios that simulate the processes of running a company could be relevant.
+Tested LLMs can perform strategic deception and multi-step opponent modeling in a structured game environment. Large reasoning models show higher win rates and more robust opponent models in our experiments, but results vary with game conditions (notably whether public discussion is enabled). These findings suggest risks and benefits when deploying LLMs in settings that require model-to-model or model-to-human interaction. We recommend further controlled replication, additional quantitative evaluation of reasoning accuracy, and development of mitigation strategies (transparency, auditing, and human oversight) before deploying models in strategic decision contexts.
 
 ### Limitations
 
@@ -339,6 +337,8 @@ These contain all of the analyses we conducted to assess game play dynamics amon
 ![Elimination Causes by Model](./charts/mixed_model/elimination_causes_by_model.png)
 ![Game Dynamics](./charts/mixed_model/game_dynamics.png)
 ![Win Rate by Model](./charts/mixed_model/win_rate_by_model.png)
+![Deception Success Heatmap](./charts/mixed_model/deception_success_heatmap.png)
+![Deception Frequency Heatmap](./charts/mixed_model//deception_frequency_heatmap.png)
 
 #### Public Discussion Analysis
 
