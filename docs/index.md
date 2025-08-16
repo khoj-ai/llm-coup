@@ -14,6 +14,9 @@ image: https://raw.githubusercontent.com/khoj-ai/llm-coup/refs/heads/main/docs/s
 
 We study whether large language models (LLMs) can perform strategic deception and multi-step opponent modeling by having them play the bluffing card game [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)). We pit multiple variants from the GPT, Claude, and Gemini families against each other in mixed-model and discussion/no-discussion conditions. Across 53 games, we observe that models produce coherent multi-step reasoning traces and that higher-capability “reasoning” models tend to have higher win and challenge success rates; however, all models sometimes use deception. We quantify these effects and discuss implications and limitations for deploying LLMs where strategic behavior matters.
 
+* TOC
+{:toc}
+
 ## Background & Motivation
 
 Coup is a deception card game where fixed information about the deck is known, and where optimal moves are determined by a mixture of bluffing and honesty. This allows players to use probability-based modeling to decide moves, and deception to bend game play in their favor.
