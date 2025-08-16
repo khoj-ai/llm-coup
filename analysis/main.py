@@ -264,7 +264,8 @@ def run_analysis(df, output_dir, analysis_type):
     df['bluffing_success_rate'] = df['successful_bluffs'] / (df['successful_bluffs'] + df['failed_bluffs'])
     bluffing_analysis = df.groupby(['model', 'public_discussion']).agg(
         bluffing_success_rate=('bluffing_success_rate', 'mean'),
-        bluffing_frequency=('num_bluffs', 'mean')
+        bluffing_frequency=('num_bluffs', 'mean'),
+        total_bluffs=('num_bluffs', 'sum')
     ).reset_index().fillna(0)
 
     discussion_map = {True: 'With Discussion', False: 'Without Discussion'}
@@ -292,7 +293,13 @@ def run_analysis(df, output_dir, analysis_type):
         group_data = group_data.sort_values(metric1, ascending=True)
         
         bar_positions = [x_pos + i * bar_width for i in range(len(group_data))]
-        ax1.bar(bar_positions, group_data[metric1], width=bar_width, color=[color_map[m] for m in group_data['model']])
+        bars = ax1.bar(bar_positions, group_data[metric1], width=bar_width, color=[color_map[m] for m in group_data['model']])
+
+        # Add bluff counts on top of the bars
+        for bar, bluffs in zip(bars, group_data['total_bluffs']):
+            if not np.isnan(bluffs):
+                ax1.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f'n={int(bluffs)}',
+                        ha='center', va='bottom', fontsize=9)
         
         group_center = x_pos + (len(models) - 1) * bar_width / 2
         x_ticks.append(group_center)

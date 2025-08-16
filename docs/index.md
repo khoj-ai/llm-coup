@@ -22,7 +22,7 @@ As LLMs traverse an upward trajectory in reasoning capabilities, they will incre
 
 Games provide robust toy worlds for evaluating social dynamics that emerge when combinations of agents and humans interact in zero-sum environments. Fixing certain incentive structures allows us to measure how different contexts elicit particular behaviors.
 
-We have chosen Coup because it creates a favorable environment for evaluating capabilities in multi-step planning, opponent modeling, and strategic manipulation. Similar to deception games like [Mafia](https://en.wikipedia.org/wiki/Mafia_(party_game)), Coup allows users to bluff and use persuasion to influence public opinion. Contrary to Mafia, the game does not _force_ players to defect or lie, but rather leaves it up to them to decide their strategy. We will include the full game rules, as they are presented to the models, in the Appendix.
+We have chosen Coup because it creates a favorable environment for evaluating capabilities in multi-step planning, opponent modeling, and strategic manipulation. Similar to deception games like [Mafia](https://en.wikipedia.org/wiki/Mafia_(party_game)), Coup allows users to bluff and use persuasion to influence public opinion. Contrary to Mafia, the game does not _force_ players to defect or lie, but rather leaves it up to them to decide their strategy. We provide the full game rules, as they are presented to the models, in the Appendix.
 
 Mafia and [One Night Ultimate Werewolf](https://en.wikipedia.org/wiki/Ultimate_Werewolf) provide insight into LLMs' capabilties in coordination amongst each other in multi-agent systems. We've focused on Coup to start with, as it creates a simpler harness specifically for deception. We also considered Poker, but opted for a game that is less sensitive to initial conditions.
 
@@ -84,15 +84,23 @@ We generally see fairly robust win rates across the suite of tested models, poin
 
 ![ELIMINATION REASON GRAPH](./charts/mixed_model/elimination_causes_by_model.png)
 
-Generally speaking, the most common reason a player was eliminated is because they failed a challenge. But, they were proportionally more likely to fail challenges when discussion was removed, suggesting that the models revealing information increased the ability to discern what actual positions were, or it made them more risk-averse.
+Generally speaking, the most common reason a player was eliminated is because they failed a challenge. They were proportionally more likely to fail challenges when discussion was removed. This could be because the increased information transfer boosted models' abilities to discern what actual positions were, or it made them more risk-averse.
 
-Conversely, with discussion enabled, models were far _more_ likely to perform failed bluffs. Failed bluffs are when a model performs a bluff that is then challenged by another model. This generally indicates to us that more honest discourse was more likely achieved when discussion was enabled, without any specific push towards driving the models in that direction. When discussion was enabled, it was far more likely for models to be eliminated through targeted motions (coups or assassinations) than modeling mismatches. The one exception to this trend seems to be `claude-opus`.
+Failed bluffs are when a model performs a bluff that is then challenged by another model. This may happen if a model insufficiently modeled the probabilities of its claim, contradicted itself compared to earlier dialog, or was backed into a corner without an alternative.
+
+With discussion enabled, models were far _more_ likely to perform failed bluffs. 
+
+This generally indicates to us that more honest game play was achieved when discussion was enabled, without any specific push towards driving the models in that direction. When discussion was enabled, it was far more likely for models to be eliminated through targeted motions (coups or assassinations) than modeling mismatches. The one exception to this trend seems to be `claude-opus`.
 
 ### Latent Aggression
 
 ![GRAPH SHOWING AGGRESSION METRICS](./charts/mixed_model/aggression_metrics.png)
 
-We see a slight indication that the `claude-` family of models are more prone to using attack capabilities than the other models we tested in discussion mode. This includes any offensive action (i.e., `coup`, `steal`, `assassinate`). There seems to be a slight convergence in attacks on `gemini-2.5-pro` when discussion is turned on. The results for both attacks launched and attacks received have less variance amongst models when discussion is disabled. This suggests that social cohesion and susceptibility to persuasion play a strong role in model decision-making. They seem to converge on attacking particular players, suggesting that some cooperative decision-making is being applied automatically, without incentives.
+We see a slight indication that the `claude-` family of models are more prone to using attack capabilities than the other models we tested in discussion mode. This includes any offensive action (i.e., `coup`, `steal`, `assassinate`).
+
+There seems to be a slight convergence in attacks on `gemini-2.5-pro` when discussion is turned on (unclear causation).
+
+The results for both attacks launched and attacks received have less variance amongst models when discussion is disabled. This suggests that social cohesion and susceptibility to persuasion play a strong role in model decision-making. They seem to converge on attacking particular players, suggesting that some cooperative decision-making is being applied automatically, without incentives.
 
 ### Time to Completion
 
