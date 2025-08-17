@@ -49,13 +49,13 @@ Generally, we are seeing that all tested models are able to maintain coherent re
 
 ### Large Reasoning Models Surpass Normal LLMs (Usually)
 
-![OVERALL WIN RATE GRAPH](./charts/mixed_model/win_rate_by_model.png)
-
-We encounter fairly surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-sonnet-4` beating their competition and winning. However, we do see that the `gpt-5` models come out ahead in both scenarios, with and without discussion enabled. This implies that they are highly capable of opponent modeling and targeted bluffing. We find that the distribution is more or less consistent with overall reasoning capabilities when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat `gpt-5-mini` without discussion.
-
 ![ELIMINATION ROUND RATES](./charts/mixed_model/average_elimination_round_by_model.png)
 
 Since Coup is not a game of binary winners and losers, we can assess the loss "placement" of players—e.g., how many rounds they lasted before they were eliminated. This helps us collect a more normalized measurement of skill at the game overall. The longer a model lasts, the better it is at the game. Interestingly, games with discussion tend to last slightly longer, implying that they also demonstrate reduced aggression.
+
+![OVERALL WIN RATE GRAPH](./charts/mixed_model/win_rate_by_model.png)
+
+We encounter somewhat surprising results in the overall win statistics. It's not uncommon to see upset victories, with `gemini-2.5-flash` or `claude-sonnet-4` beating their competition and winning. However, we do see that the `gpt-5` models come out ahead in both scenarios, with and without discussion enabled. This implies that they are highly capable of opponent modeling and targeted bluffing. We find that the distribution is more or less consistent with overall reasoning capabilities when we have discussion turned on. However, with discussion turned off, we see some surprising results. For instance, `gemini-2.5-flash` seems to beat `gpt-5-mini` without discussion.
 
 ### Capabilities for Strategic Deception
 
