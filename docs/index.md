@@ -29,9 +29,9 @@ Mafia and [One Night Ultimate Werewolf](https://en.wikipedia.org/wiki/Ultimate_W
 
 ## Methods
 
-We initialize the game environment with randomly distributed cards. We play games with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model play (where all players in a game are assigned different models) experiments. We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07`, and `gpt-5-2025-08-07`.
+We initialize the game environment with randomly distributed cards. Each game starts with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model (where all players in a game are assigned different models) experiments. We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07`, and `gpt-5-2025-08-07`.
 
-All players are able to see a public game log with past moves. They see the hand they currently hold, with a reminder of its capabilities.
+All players are able to see a public game log with past moves. They see the hand they currently hold, with a reminder of its capabilities. Game play is concluded when there is one player left standing.
 
 Possible actions include offensive actions (`STEAL`, `ASSASSINATE`, `COUP`), resource collection actions (`INCOME`, `FOREIGN AID`, `TAX`), opponent challenge actions (`CHALLENGE`, `BLOCK`), and card management actions (`EXCHANGE`). For each decision, the model is able to write its thoughts to a property in the tool call called `reasoning`, which we store in the logs. Reasoning traces are not available to the model after the decision, nor to other models at any point.
 
@@ -39,7 +39,7 @@ The models decide moves using function calls, limiting our test set to models th
 
 We also test the effect that public discussion has on overall gameplay. In `discussion` mode, we expose a field that allowed players to submit public discussion, including explaining their move, reinforcing their bluff, or even trash-talking. The opportunity for public discussion significantly affects the game results and is distinguished in the results section. Similar to `reasoning`, `discussion` is a parameter exposed in the action tool call.
 
-We decided to test a combination of large reasoning models (LRMs) and non-reasoning LLMs.
+We decided to test a combination of large reasoning models (LRMs) and non-reasoning large language models (LLMs).
 
 ## Results
 
@@ -75,9 +75,13 @@ All models had some degree of success with bluffing, with `gpt-5` and `gemini-2.
 
 ![GRAPH ABOUT CHALLENGE WIN RATE](./charts/mixed_model/challenge_behavior.png)
 
-Challenge win rates are informative for revealing how accurate a model's ability to card count or model its opponents is. The better a model is at predicting the cards other players have, the higher their challenge win rate will be. However, the win rate does not factor in their aggression. A more aggressive player may use more attempts, challenging even when their confidence level is low. We find that `gpt-5` seems to have the best win rates.
+Players are able to challenge if they want to question another player's claim to have an influence card. For example, Player 1 might use the `STEAL` action, claiming to have a `CAPTAIN` card. If Player 2 thinks Player 1 is unlikely to possess a `CAPTAIN`, they will issue a challenge to counter the claim. If Player 1 does not have the card, then Player 1 loses an influence. If Player 1 does have the card, then Player 2 loses an influence. Importantly, there is no _personal_ benefit to Player 2 for initiating a successful challenge, but there is a personal cost to initiating a failed challenge.
 
-Games with discussion seem to slightly favor thinking models. This may be because non-thinking models could be more susceptible to persuasion from other players. Without discussion, players have to solely rely on implicit information from deduction.
+Challenge win rates inform us about how accurate a model's ability to card count or model its opponents is. The better a model is at predicting the cards other players have, the higher their challenge win rate will be. However, the win rate does not factor in their aggression. A more aggressive player may use more attempts, challenging even when their confidence level is low.
+
+We find that `gpt-5-2025-08-07` excels at opponent modeling. It demonstrates consistently strong capabilities in calculating chance informed by discarded cards, previous claims, and revealed information.
+
+Games with discussion seem to slightly favor large reasoning models. This may be because non-reasoning models could be more susceptible to persuasion from other players. Without discussion, players have to solely rely on implicit information from deduction.
 
 We generally see fairly robust win rates across the suite of tested models, pointing to adroitness in risk-reward calculations.
 
@@ -112,7 +116,7 @@ Games last on average 1-2 rounds more when public discussion is turned on. This 
 
 ### Qualitative Analysis
 
-We ran some basic qualitative analysis on the discussion and reasoning traces for each model. Thinking models generally use their discussions more opportunistically, beyond generic declarations. Lower-reasoning models, like `gemini-2.5-flash`, tend not to venture beyond simple fact statements too often. 
+We ran some basic qualitative analysis on the discussion and reasoning traces for each model. LRMs generally use their discussions more opportunistically, beyond generic declarations. Lower-reasoning models, like `gemini-2.5-flash`, tend not to venture beyond simple fact statements too often. 
 
 ![GEMINI 2.5 PRO CATEGORY DISCUSSION](./charts/discussion/category_distribution_gemini-2.5-pro.png)
 
@@ -152,6 +156,8 @@ Self-play (where all players in a game are assigned the same model) helps us eli
 [Yoo, Byunghwa and Kyung-Joong Kim. "Finding deceivers in social context with large language models and how to find them: the case of the Mafia game.", 2025.](https://www.nature.com/articles/s41598-024-81997-5)
 
 [Ebouky, Brown, et al.. "Eliciting Reasoning in Language Models with Cognitive Tools.", 2025.](https://arxiv.org/pdf/2506.12115)
+
+[Wei, Jason, et al.. "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.", 2025.](https://arxiv.org/pdf/2201.11903)
 
 ----
 ## Appendix
@@ -222,6 +228,50 @@ This is the prompt that was given to all models for explaining the game rules an
 >Choose your action wisely considering your cards, coins, and strategy!
 
 You can see other prompts used for blocks and challenges in the [PromptBuilder.ts file](https://github.com/khoj-ai/llm-coup/blob/main/src/ai/PromptBuilder.ts).
+
+##### Hydrated Prompt
+
+This is an example of how the hydrated prompt looks like when presented to the model on round 2.
+
+
+```
+You are playing Coup, a bluffing card game. 
+
+GAME STATE:
+player1: 5 coins, 2 cards
+player2 (YOU): 2 coins, 2 cards
+player3: 2 coins, 2 cards
+player4: 2 coins, 1 cards, lost: Captain
+player5: 2 coins, 2 cards
+player6: 2 coins, 2 cards
+
+GAME HISTORY:
+[action] player1 uses TAX
+[challenge_failed] player4 challenged player1 but failed.
+[shuffle_and_draw] player1 shuffles Duke back into the deck and draws a new card.
+[lose_influence] player4 loses Captain.
+
+YOUR CARDS: Contessa, Captain
+YOUR COINS: 2
+
+AVAILABLE TARGETS: player1, player3, player4, player5, player6
+
+GAME RULES REMINDER:
+- Income: Take 1 coin (always available)
+- Foreign Aid: Take 2 coins (can be blocked by Duke)
+- Coup: Pay 7 coins to eliminate a player's card (costs 7 coins, cannot be blocked)
+
+- You lose if you have no cards left
+
+CHARACTER ACTIONS (you can bluff having these):
+- Tax (Duke): Take 3 coins
+- Assassinate (Assassin): Pay 3 coins to force target to lose a card
+- Steal (Captain): Take 2 coins from another player  
+- Exchange (Ambassador): Draw 2 cards, keep your hand size, shuffle rest back
+- Block (Contessa): Block Assassinate
+
+Choose your action wisely considering your cards, coins, and strategy!
+```
 
 ### Selected Reasoning Traces and Public Discussion
 
