@@ -2,7 +2,7 @@
 
 ![llm coup cover image](./docs/spiderman-llm-coup.png)
 
-This project is a simulation environment for evaluating the capabilities of Large Language Models (LLMs) in the context of deception and multi-level strategy games. The game of [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)) is used as the testing ground for these evaluations.
+This project is a simulation environment for evaluating the capabilities of Large Language Models (LLMs) in the context of deception and multi-level strategy games. The game of [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)) is used as the testing ground for these evaluations. To see the full breakdown, including background & results, check out the report:
 
 👉🏾 [Blink Twice: Measuring Strategic Deception Amongst LLMs](https://coup.khoj.dev) 👈🏾
 
@@ -16,9 +16,8 @@ The primary motivation for this experiment is to create a controlled environment
 
 Read more about the project's [motivation](https://coup.khoj.dev/#background--motivation).
 
-### Why Coup?
 
-![example game play img](./docs/coup_game_state.png)
+### Why Coup?
 
 Well, being able to measure the tendency that LLMs have for deception and longer-horizon strategy games is useful, especially as they're released into the wild in environments that reward those behaviors. This game gives us a toy environment where we can measure LLM capabilities for deception & strategy, measuring on baseline how well and individual model is able to compete, and then how models play against one another.
 
@@ -34,7 +33,9 @@ Read more about [why Coup was chosen](https://coup.khoj.dev/#background--motivat
 
 ## Results
 
-We see that large reasoning models are adept at handling multi-level strategy games and deceptions, but all LLMs tested performed well at Coup. [Check out the full results](https://coup.khoj.dev).
+![example game play img](./docs/coup_game_state.png)
+
+We see that large reasoning models are adept at handling multi-level strategy games and deceptions, but all LLMs tested performed well at Coup. [Check out the full report](https://coup.khoj.dev).
 
 You can find outputted data, including logs and charts, [here](/data)
 
