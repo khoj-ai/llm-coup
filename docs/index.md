@@ -29,17 +29,20 @@ Mafia and [One Night Ultimate Werewolf](https://en.wikipedia.org/wiki/Ultimate_W
 
 ## Methods
 
-We initialize the game environment with randomly distributed cards. Each game starts with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model (where all players in a game are assigned different models) experiments. We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07`, and `gpt-5-2025-08-07`.
+![COUP GAME STATE](./coup_game_state.png)
 
-All players are able to see a public game log with past moves. They see the hand they currently hold, with a reminder of its capabilities. Game play is concluded when there is one player left standing.
+We initialize the game environment with randomly distributed cards. Each game starts with 6 players, where each player is given a static model assignment. In our testing, we performed multi-model (where all players in a game are assigned different models) experiments.
 
-Possible actions include offensive actions (`STEAL`, `ASSASSINATE`, `COUP`), resource collection actions (`INCOME`, `FOREIGN AID`, `TAX`), opponent challenge actions (`CHALLENGE`, `BLOCK`), and card management actions (`EXCHANGE`). For each decision, the model is able to write its thoughts to a property in the tool call called `reasoning`, which we store in the logs. Reasoning traces are not available to the model after the decision, nor to other models at any point.
+We decided to test a combination of large reasoning models (LRMs) and non-reasoning large language models (LLMs). We perform rounds of repeated game play with `gemini-2.5-pro`, `gemini-2.5-flash`, `claude-opus-4-20250514`, `claude-sonnet-4-20250514`, `gpt-5-mini-2025-08-07`, and `gpt-5-2025-08-07`.
+
+All players are able to see a public game log with past moves. They see the hand they currently hold, with a reminder of its capabilities. Game play is concluded when there is one player left standing. No secondary incentive is provided to the models for winning.
+
+Possible actions include offensive actions, resource collection actions, opponent challenge actions, and card management actions. For each decision, the model is able to write its thoughts to a property in the tool call called `reasoning`, which we store in the logs. Reasoning traces are not available to the model after the decision, nor to other models at any point.
 
 The models decide moves using function calls, limiting our test set to models that have been tuned using reinforcement learning to use tools effectively. This is an acceptable limitation, as our intention with this experiment is to see the planning and execution capabilities for agents working on complex, long task horizons, for which tool calling is generally a prerequisite.
 
 We also test the effect that public discussion has on overall gameplay. In `discussion` mode, we expose a field that allowed players to submit public discussion, including explaining their move, reinforcing their bluff, or even trash-talking. The opportunity for public discussion significantly affects the game results and is distinguished in the results section. Similar to `reasoning`, `discussion` is a parameter exposed in the action tool call.
 
-We decided to test a combination of large reasoning models (LRMs) and non-reasoning large language models (LLMs).
 
 ## Results
 
