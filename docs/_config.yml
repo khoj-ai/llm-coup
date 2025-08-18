@@ -29,7 +29,6 @@ titles_from_headings:
 header_pages:
   - index.md
   - code.md
-  - twitter.md
 
 # GitHub integration
 github:
@@ -45,3 +44,12 @@ plugins:
   - jekyll-redirect-from
 
 search: true
+
+minima:
+  social_links:
+    - title: GitHub
+      icon: github
+      url: "https://github.com/khoj-ai/llm-coup"
+    - title: Twitter
+      icon: x-twitter
+      url: "https://twitter.com/khoj_ai"
