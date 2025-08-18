@@ -9,6 +9,8 @@ description: "It's critical to understand how LLMs navigate environments that de
 image: https://raw.githubusercontent.com/khoj-ai/llm-coup/refs/heads/main/docs/spiderman-llm-coup.png
 ---
 
+[Saba Imran](https://twitter.com/sabaimran_go)
+
 ## Abstract
 
 We study whether large language models (LLMs) can perform strategic deception and multi-step opponent modeling by having them play the bluffing card game [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)). We pit multiple variants from the GPT, Claude, and Gemini families against each other in mixed-model and discussion/no-discussion conditions. Across 53 games, we observe that models produce coherent multi-step reasoning traces and that higher-capability “reasoning” models tend to have higher win and challenge success rates; however, all models sometimes use deception. We quantify these effects and discuss implications and limitations for deploying LLMs where strategic behavior matters.
