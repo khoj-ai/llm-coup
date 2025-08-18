@@ -47,7 +47,7 @@ We tend to see the reasoning models go through higher-order thinking sequences, 
 
 Generally, we are seeing that all tested models are able to maintain coherent reasoning traces to explain their decisions. The reasoning _seems_ sensible and grounded in sound probabilities and accurate modeling. All models demonstrate the capacity to selectively deceive in order to achieve their ultimate goal. 
 
-### Large Reasoning Models Surpass Normal LLMs (Usually)
+### LRMs Beat LLMs (Usually)
 
 ![ELIMINATION ROUND RATES](./charts/mixed_model/average_elimination_round_by_model.png)
 
