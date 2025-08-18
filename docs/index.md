@@ -39,16 +39,15 @@ All players are able to see a public game log with past moves. They see the hand
 
 Possible actions include offensive actions, resource collection actions, opponent challenge actions, and card management actions. For each decision, the model is able to write its thoughts to a property in the tool call called `reasoning`, which we store in the logs. Reasoning traces are not available to the model after the decision, nor to other models at any point.
 
-The models decide moves using function calls, limiting our test set to models that have been tuned using reinforcement learning to use tools effectively. This is an acceptable limitation, as our intention with this experiment is to see the planning and execution capabilities for agents working on complex, long task horizons, for which tool calling is generally a prerequisite.
+The models decide moves using function calls, limiting our test set to models that have been tuned using reinforcement learning to use tools effectively. This is an acceptable limitation, as our intention with this experiment is to see the planning and execution capabilities for agents working on complex, long task horizons, for which tool calling is typically a prerequisite.
 
 We also test the effect that public discussion has on overall gameplay. In `discussion` mode, we expose a field that allowed players to submit public discussion, including explaining their move, reinforcing their bluff, or even trash-talking. The opportunity for public discussion significantly affects the game results and is distinguished in the results section. Similar to `reasoning`, `discussion` is a parameter exposed in the action tool call.
-
 
 ## Results
 
 We tend to see the reasoning models go through higher-order thinking sequences, simulating opponents' intentions, positions, and strategies to craft their own advantages throughout the game. Non-reasoning models seem to think along shorter horizons.
 
-Generally, we are seeing that all tested models are able to maintain coherent reasoning traces to explain their decisions. The reasoning _seems_ sensible and grounded in sound probabilities and accurate modeling. All models demonstrate the capacity to selectively deceive in order to achieve their ultimate goal. 
+All tested models are able to maintain coherent reasoning traces to explain their decisions. Their reasoning _seems_ sensible and grounded in sound probabilities and accurate modeling. All models demonstrate the capacity to selectively deceive in order to achieve their ultimate goal. 
 
 ### LRMs Beat LLMs (Usually)
 
@@ -70,7 +69,7 @@ Seeing that the bluffing rates themselves have not decreased, but the success ha
 
 Importantly, we find that *all* models we tested participate in some form of deception. They are all capable of strategically misrepresenting their capabilities or positions in order to achieve some ultimate goal. In deployed scenarios, this has interesting implications for how business and organizational actors deploy their LLMs for strategic purposes and how they affect end users.
 
-`claude-opus`, uniquely, never got away with a bluff when discussion mode was enabled and generally had poor success rates without discussion. Manually observing some of the failures, it seems that `claude-opus` was more likely to overreact when threatened with an attack (such as `STEAL`) and attempt to feign a card, even when the odds were not in its favor. This seemed to stem from a heightened fear/risk aversion to losing coins and, in turn, making poor tradeoff calculations.
+`claude-opus`, uniquely, never got away with a bluff when discussion mode was enabled and had poor success rates without discussion. Manually observing some of the failures, it seems that `claude-opus` was more likely to overreact when threatened with an attack (such as `STEAL`) and attempt to feign a card, even when the odds were not in its favor. This seemed to stem from a heightened fear/risk aversion to losing coins and, in turn, making poor tradeoff calculations.
 
 All models had some degree of success with bluffing, with `gpt-5` and `gemini-2.5` models outperforming the `claude` series.
 
@@ -86,7 +85,7 @@ We find that `gpt-5-2025-08-07` excels at opponent modeling. It demonstrates con
 
 Games with discussion seem to slightly favor large reasoning models. This may be because non-reasoning models could be more susceptible to persuasion from other players. Without discussion, players have to solely rely on implicit information from deduction.
 
-We generally see fairly robust win rates across the suite of tested models, pointing to adroitness in risk-reward calculations.
+We see fairly robust win rates across the suite of tested models, pointing to adroitness in risk-reward calculations.
 
 ### Models' Failure Modes
 
@@ -118,7 +117,7 @@ Games last on average 1-2 rounds more when public discussion is turned on. This 
 
 ### Qualitative Analysis
 
-We ran some basic qualitative analysis on the discussion and reasoning traces for each model. LRMs generally use their discussions more opportunistically, beyond generic declarations. Lower-reasoning models, like `gemini-2.5-flash`, tend not to venture beyond simple fact statements too often. 
+We ran some basic qualitative analysis on the discussion and reasoning traces for each model. LRMs tend to use their discussions more opportunistically, beyond generic declarations. Lower-reasoning models, like `gemini-2.5-flash`, tend not to venture beyond simple fact statements too often. 
 
 ![GEMINI 2.5 PRO CATEGORY DISCUSSION](./charts/discussion/category_distribution_gemini-2.5-pro.png)
 
