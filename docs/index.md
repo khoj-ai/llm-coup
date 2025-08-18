@@ -85,7 +85,7 @@ We generally see fairly robust win rates across the suite of tested models, poin
 
 ![ELIMINATION REASON GRAPH](./charts/mixed_model/elimination_causes_by_model.png)
 
-Generally speaking, the most common reason a player was eliminated is because they failed a challenge. They were proportionally more likely to fail challenges when discussion was removed. This could be because the increased information transfer boosted models' abilities to discern what actual positions were, or it made them more risk-averse.
+The most common reason a player was eliminated is because they failed a challenge. They were proportionally more likely to fail challenges when discussion was removed. This could be because the increased information transfer boosted models' abilities to discern what actual positions were, or it made them more risk-averse.
 
 Failed bluffs are when a model performs a bluff that is then challenged by another model. This may happen if a model insufficiently modeled the probabilities of its claim, contradicted itself compared to earlier dialog, or was backed into a corner without an alternative.
 
