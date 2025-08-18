@@ -21,13 +21,10 @@ Read more about the project's [motivation](https://coup.khoj.dev/#background--mo
 
 Well, being able to measure the tendency that LLMs have for deception and longer-horizon strategy games is useful, especially as they're released into the wild in environments that reward those behaviors. This game gives us a toy environment where we can measure LLM capabilities for deception & strategy, measuring on baseline how well and individual model is able to compete, and then how models play against one another.
 
-Pros of Coup:
-- Rewards deception
-- Requires some multi-stage thinking
-
-Cons of Coup:
-- Large element of chance based on initial conditions / "luck of the draw"
-- Doesn't reward deception _enough_; it's somewhat easy to get far in the game just playing honestly
+| Pros                               | Cons                                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Rewards deception                  | Large element of chance based on initial conditions / "luck of the draw"                         |
+| Requires some multi-stage thinking | Doesn't reward deception _enough_; it's somewhat easy to get far in the game just playing honestly |
 
 Read more about [why Coup was chosen](https://coup.khoj.dev/#background--motivation).
 

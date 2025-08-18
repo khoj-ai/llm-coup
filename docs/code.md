@@ -4,7 +4,7 @@ title: "GitHub"
 permalink: /code/
 ---
 
-[Click here for the GitHub with all the code](https://github.com/khoj-ai/llm-coup).
+[Go to the repository with all the code](https://github.com/khoj-ai/llm-coup). The project is fully open-source and can be run in a self-hosted environment for reproducibility.
 
 ### Source Code
 

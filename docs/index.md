@@ -15,7 +15,6 @@ image: https://raw.githubusercontent.com/khoj-ai/llm-coup/refs/heads/main/docs/s
 
 We study whether large language models (LLMs) can perform strategic deception and multi-step opponent modeling by having them play the bluffing card game [Coup](https://en.wikipedia.org/wiki/Coup_(card_game)). We pit multiple variants from the GPT, Claude, and Gemini families against each other in mixed-model and discussion/no-discussion conditions. Across 53 games, we observe that models produce coherent multi-step reasoning traces and that higher-capability “reasoning” models tend to have higher win and challenge success rates; however, all models sometimes use deception. We quantify these effects and discuss implications and limitations for deploying LLMs where strategic behavior matters.
 
-
 ## Background & Motivation
 
 Coup is a deception card game where fixed information about the deck is known, and where optimal moves are determined by a mixture of bluffing and honesty. This allows players to use probability-based modeling to decide moves, and deception to bend game play in their favor.
@@ -99,7 +98,7 @@ Failed bluffs are when a model performs a bluff that is then challenged by anoth
 
 With discussion enabled, models were far _more_ likely to perform failed bluffs. 
 
-This generally indicates to us that more honest game play was achieved when discussion was enabled, without any specific push towards driving the models in that direction. When discussion was enabled, it was far more likely for models to be eliminated through targeted motions (coups or assassinations) than modeling mismatches. The one exception to this trend seems to be `claude-opus`.
+This indicates that more honest game play was achieved when discussion was enabled, without any specific push towards driving the models in that direction. When discussion was enabled, it was far more likely for models to be eliminated through targeted motions (coups or assassinations) than modeling mismatches. The one exception to this trend seems to be `claude-opus`.
 
 ### Latent Aggression
 
@@ -116,7 +115,6 @@ The results for both attacks launched and attacks received have less variance am
 ![AVG TIME GAME PLAY CHART](./charts/mixed_model/game_dynamics.png)
 
 Games last on average 1-2 rounds more when public discussion is turned on. This suggests that players might be playing more conservatively (attacking and challenging less) when they cannot discuss with one another.
-
 
 ### Qualitative Analysis
 
