@@ -1,6 +1,6 @@
 # Data
 
-This directory contains the data from the experiments.
+This directory contains the data from the experiments. [See full a full analysis of the results of this experiment](https://coup.khoj.dev).
 
 ## Files
 
